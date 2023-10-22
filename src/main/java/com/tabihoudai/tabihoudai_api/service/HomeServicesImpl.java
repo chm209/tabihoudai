@@ -2,9 +2,12 @@ package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttractionDTO;
+import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
+import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
+import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ public class HomeServicesImpl implements HomeServices{
 
     private final BannerRepository bannerRepository;
     private final AttractionRepository attractionRepository;
+    private final BoardRepository boardRepository;
 
     @Override
     public List<AdminDTO.bannerInfo> getBanner() {
@@ -47,4 +51,31 @@ public class HomeServicesImpl implements HomeServices{
         }
         return resultEntity.stream().map(this::entityToDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<BoardDTO.recentBoard> getBoard() {
+        List<Object[]> boardList = boardRepository.getRecentBoard();
+        return boardList.stream().map(this::recentBoardEntityToDto).collect(Collectors.toList());
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

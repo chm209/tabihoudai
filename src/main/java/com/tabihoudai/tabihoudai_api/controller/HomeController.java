@@ -2,6 +2,8 @@ package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttractionDTO;
+import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
+import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.service.HomeServices;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,5 +35,9 @@ public class HomeController {
         // Main Screen: city == null
         // Region Selector Screen: city != null
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getAttraction(area, city));
+    }
+    @GetMapping("/board")
+    public ResponseEntity<List<BoardDTO.recentBoard>> getBoard() {
+        return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBoard());
     }
 }
