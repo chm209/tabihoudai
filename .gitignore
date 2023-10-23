@@ -89,3 +89,4 @@ cypress/screenshots/
 *.njsproj
 *.sln
 *.sw?
+/src/main/java/com/tabihoudai/tabihoudai_api/entity/
