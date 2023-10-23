@@ -3,11 +3,15 @@ package com.tabihoudai.tabihoudai_api.service;
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttractionDTO;
 import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionImageRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +28,9 @@ public class HomeServicesImpl implements HomeServices{
 
     private final BannerRepository bannerRepository;
     private final AttractionRepository attractionRepository;
+    private final AttractionImageRepository attractionImageRepository;
     private final BoardRepository boardRepository;
+    private final PlanRepository planRepository;
 
     @Override
     public List<AdminDTO.bannerInfo> getBanner() {
@@ -56,6 +62,20 @@ public class HomeServicesImpl implements HomeServices{
     public List<BoardDTO.recentBoard> getBoard() {
         List<Object[]> boardList = boardRepository.getRecentBoard();
         return boardList.stream().map(this::recentBoardEntityToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PlanDTO.bestPlan> getBestPlan(Integer area) {
+        // 여행계획 상위 5개 받아온다.
+        List<Object[]> planList = (area == null ? planRepository.getBestPlan() : planRepository.getAreaBestPlan(area));
+        // 담아온 엔티티에서 명소 리스트만 뽑아서 다시 List로 만든다.
+        List<String> planAttr = planList.stream().map(objects -> planImage(objects)).collect(Collectors.toList());
+        // 계획 1위의 첫번째 명소의 번호를 추출한다.
+        String[] str = planAttr.get(0).split(",");
+        String thumbnails = str[0];
+        AttractionImageEntity bestAttrImage = attractionImageRepository.getInfo(Long.parseLong(thumbnails));
+
+        return planList.stream().map(objects -> bestPlanEntityToDto(objects, bestAttrImage)).collect(Collectors.toList());
     }
 }
 

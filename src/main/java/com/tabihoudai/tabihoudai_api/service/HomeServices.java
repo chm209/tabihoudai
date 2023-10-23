@@ -3,20 +3,20 @@ package com.tabihoudai.tabihoudai_api.service;
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttractionDTO;
 import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
-import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 public interface HomeServices {
 
     List<AdminDTO.bannerInfo> getBanner();
     List<AttractionDTO.attrPreview> getAttraction(int area, Integer city);
     List<BoardDTO.recentBoard> getBoard();
+    List<PlanDTO.bestPlan> getBestPlan(Integer area);
 
     default AdminDTO.bannerInfo entityToDto(BannerEntity banner) {
         return AdminDTO.bannerInfo.builder()
@@ -46,6 +46,21 @@ public interface HomeServices {
                 .title(String.valueOf(objects[1]))
                 .regDate(LocalDateTime.parse(objects[2].toString()))
                 .nickname((String) objects[3])
+                .build();
+    }
+
+    default String planImage(Object[] objects) {
+        return String.valueOf(objects[4]);
+    }
+
+    default PlanDTO.bestPlan bestPlanEntityToDto(Object[] objects, AttractionImageEntity bestAttrImage) {
+        return PlanDTO.bestPlan.builder()
+                .planIdx(Long.parseLong(String.valueOf(objects[0])))
+                .dateFrom((Date) objects[1])
+                .dateTo((Date) objects[2])
+                .title(String.valueOf(objects[3]))
+                .nickname(String.valueOf(objects[5]))
+                .path(bestAttrImage.getPath())
                 .build();
     }
 }

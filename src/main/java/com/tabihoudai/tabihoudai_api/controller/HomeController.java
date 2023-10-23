@@ -3,6 +3,7 @@ package com.tabihoudai.tabihoudai_api.controller;
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttractionDTO;
 import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.service.HomeServices;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,10 @@ public class HomeController {
     @GetMapping("/board")
     public ResponseEntity<List<BoardDTO.recentBoard>> getBoard() {
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBoard());
+    }
+    @GetMapping("/plan")
+    public ResponseEntity<List<PlanDTO.bestPlan>> getPlan(
+            @RequestParam(value = "area", required = false) Integer area) {
+        return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBestPlan(area));
     }
 }
