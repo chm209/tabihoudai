@@ -1,0 +1,18 @@
+#error-container {
+    display: block;
+    padding: 10% 0px;
+    text-align: center;
+}
+
+#error-container img {
+    width: 50%;
+    height: auto;
+    margin: 0 auto;
+}
+
+#error-container #code {
+    display: block;
+    font-size: 8rem;
+    font-weight: 900;
+    margin: 0;
+}
