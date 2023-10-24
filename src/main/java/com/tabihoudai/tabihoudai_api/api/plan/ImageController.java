@@ -1,9 +1,7 @@
 package com.tabihoudai.tabihoudai_api.api.plan;
 
-import jakarta.servlet.ServletContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
@@ -19,9 +17,6 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ImageController {
-
-    @Autowired
-    private ServletContext servletContext;
 
     @ResponseBody
     @PostMapping("/upload")
