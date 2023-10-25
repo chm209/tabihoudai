@@ -41,14 +41,14 @@ public class HomeServicesImpl implements HomeServices{
     @Override
     public List<AttractionDTO.attrPreview> getAttraction(int area, Integer city) {
         List<Object[]> resultEntity;
-        if(city == null) {
+        if(city == null) { // main page
             resultEntity = attractionRepository.findAllByRegionEntity_RegionIdx_area((long) area / 10);
             Collections.shuffle(resultEntity);
             for (int k = resultEntity.size()-1; k >= 3; k--) {
                 resultEntity.remove(k);
             }
         }
-        else {
+        else { // region selector page
             resultEntity = attractionRepository.findAllByRegionEntity_RegionIdx_city((long) city);
             Collections.shuffle(resultEntity);
             for (int k = resultEntity.size()-1; k >= 6; k--) {
@@ -66,36 +66,11 @@ public class HomeServicesImpl implements HomeServices{
 
     @Override
     public List<PlanDTO.bestPlan> getBestPlan(Integer area) {
-        // 여행계획 상위 5개 받아온다.
-        List<Object[]> planList = (area == null ? planRepository.getBestPlan() : planRepository.getAreaBestPlan(area));
-        // 담아온 엔티티에서 명소 리스트만 뽑아서 다시 List로 만든다.
-        List<String> planAttr = planList.stream().map(objects -> planImage(objects)).collect(Collectors.toList());
-        // 계획 1위의 첫번째 명소의 번호를 추출한다.
+        List<Object[]> planList = (area == null ? planRepository.getBestPlan() : planRepository.getAreaBestPlan(areaFactory(area)));
+        List<String> planAttr = planList.stream().map(this::planImage).toList();
         String[] str = planAttr.get(0).split(",");
         String thumbnails = str[0];
         AttractionImageEntity bestAttrImage = attractionImageRepository.getInfo(Long.parseLong(thumbnails));
-
         return planList.stream().map(objects -> bestPlanEntityToDto(objects, bestAttrImage)).collect(Collectors.toList());
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -62,7 +62,7 @@ public class PlanRepositoryCustomImpl implements PlanRepositoryCustom {
                 .on(planEntity.planIdx.eq(planLikeEntity.planLikeIdx))
                 .leftJoin(usersEntity)
                 .on(planEntity.usersEntity.userIdx.eq(usersEntity.userIdx))
-                .where(planEntity.attrList.contains(Integer.toString(area)))
+                .where(planEntity.attrList.like(Integer.toString(area).concat("%")))
                 .groupBy(planEntity.planIdx,
                         planEntity.dateFrom,
                         planEntity.dateTo,

@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 src/test
 src/main/resources/application.yml
+src/main/**/dto
+src/main/**/entity
 
 ### STS ###
 .apt_generated
