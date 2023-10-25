@@ -90,3 +90,4 @@ cypress/screenshots/
 *.sln
 *.sw?
 /src/main/java/com/tabihoudai/tabihoudai_api/entity/
+/src/main/generated/
