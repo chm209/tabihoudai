@@ -7,6 +7,7 @@ import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
+import com.tabihoudai.tabihoudai_api.repository.admin.CsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,9 @@ public class AdminServicesImpl implements AdminServices {
     @Autowired
     private final BlameRepository blameRepository;
 
+    @Autowired
+    private final CsRepository csRepository;
+
     @Override
     public PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO) {
         if(item == 1) { // 배너 이미지
@@ -39,6 +43,7 @@ public class AdminServicesImpl implements AdminServices {
             return new PageResultDTO<>(result);
         }
         else if(item == 2) { // 관광 명소 관리
+        
         }
         else if(item == 3) { // 신고 관리
             PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("blameIdx").descending());
@@ -47,6 +52,10 @@ public class AdminServicesImpl implements AdminServices {
             return new PageResultDTO<>(result);
         }
         else { // 문의 관리
+            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("csIdx").descending());
+            Page<Object[]> list = csRepository.getCsPage(pageRequest);
+            Page<AdminDTO.csInfo> result = list.map(objects -> csEntityToDto(objects));
+            return new PageResultDTO<>(result);
         }
     }
 }

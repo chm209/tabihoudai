@@ -24,4 +24,13 @@ public interface AdminServices {
                         .content((String) blameEntity[2])
                         .build();
     }
+
+    default AdminDTO.csInfo csEntityToDto(Object[] csEntity) {
+        return AdminDTO.csInfo.builder()
+                        .csIdx((Long) csEntity[0])
+                        .nickname((String) csEntity[1])
+                        .type((byte) csEntity[2])
+                        .content((String) csEntity[3])
+                        .build();
+    }
 }
