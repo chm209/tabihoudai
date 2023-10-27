@@ -33,4 +33,14 @@ public interface AdminServices {
                         .content((String) csEntity[3])
                         .build();
     }
+
+    default AdminDTO.attrInfo attrEntityToDto(Object[] attrEntity) {
+        return AdminDTO.attrInfo.builder()
+                        .attrIdx((Long) attrEntity[0])
+                        .area((String) attrEntity[1])
+                        .city((String) attrEntity[2])
+                        .address((String) attrEntity[3])
+                        .name((String) attrEntity[4])
+                        .build();
+    }
 }

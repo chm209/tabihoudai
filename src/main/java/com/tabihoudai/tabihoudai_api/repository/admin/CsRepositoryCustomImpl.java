@@ -6,7 +6,6 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
-import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.CsEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +15,6 @@ import org.springframework.data.support.PageableExecutionUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.tabihoudai.tabihoudai_api.entity.admin.QBlameEntity.blameEntity;
 import static com.tabihoudai.tabihoudai_api.entity.admin.QCsEntity.csEntity;
 
 public class CsRepositoryCustomImpl implements CsRepositoryCustom {
@@ -38,8 +36,8 @@ public class CsRepositoryCustomImpl implements CsRepositoryCustom {
                 .fetch();
 
         JPAQuery<Long> countQuery = jpaQueryFactory
-                .select(blameEntity.count())
-                .from(blameEntity);
+                .select(csEntity.count())
+                .from(csEntity);
 
         return PageableExecutionUtils.getPage(
                 result.stream().map(csEntity -> new Object[] {

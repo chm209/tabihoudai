@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface AttractionRepository extends JpaRepository<AttractionEntity, Long> {
+public interface AttractionRepository extends JpaRepository<AttractionEntity, Long>, AttractionRepositoryCustom {
 
     @Query("SELECT A.attrIdx, A.address, A.attraction, A.description, A.latitude, A.longitude, A.tag, A.regionEntity.regionIdx, " +
             "I.path " +
