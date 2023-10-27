@@ -40,17 +40,21 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
-        Member member = new Member();
-        member.setNickname(memberSignupDto.getNickname());
-        member.setEmail(memberSignupDto.getEmail());
-        member.setPassword(passwordEncoder.encode(memberSignupDto.getPassword()));
-
-        String birthdayString = memberSignupDto.getBirthday();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate birthday = LocalDate.parse(birthdayString, formatter);
-        member.setBirthday(birthday);
-
         try {
+            long maxUserIdx = memberService.getMaxUserIdx();
+            Member member = new Member();
+            member.setNickname(memberSignupDto.getNickname());
+            member.setEmail(memberSignupDto.getEmail());
+            member.setPassword(passwordEncoder.encode(memberSignupDto.getPassword()));
+
+            String birthdayString = memberSignupDto.getBirthday();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            LocalDate birthday = LocalDate.parse(birthdayString, formatter);
+            member.setBirthday(birthday);
+
+            long newUserIdx = maxUserIdx + 1;
+            member.setUserIdx(newUserIdx);
+
             Member saveMember = memberService.addMember(member);
 
             MemberSignupResponseDto memberSignupResponse = new MemberSignupResponseDto();
@@ -62,7 +66,7 @@ public class MemberController {
 
             // 회원가입
             return new ResponseEntity(memberSignupResponse, HttpStatus.CREATED);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -75,7 +79,7 @@ public class MemberController {
 
         // email이 없을 경우 Exception이 발생한다. Global Exception에 대한 처리가 필요하다.
         Member member = memberService.findByEmail(loginDto.getEmail());
-        if(!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())){
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         // List<Role> ===> List<String>
@@ -116,7 +120,7 @@ public class MemberController {
         RefreshToken refreshToken = refreshTokenService.findRefreshToken(refreshTokenDto.getRefreshToken()).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
         Claims claims = jwtTokenizer.parseRefreshToken(refreshToken.getValue());
 
-        Long userIdx = Long.valueOf((Integer)claims.get("userIdx"));
+        Long userIdx = Long.valueOf((Integer) claims.get("userIdx"));
 
         Member member = memberService.getMember(userIdx).orElseThrow(() -> new IllegalArgumentException("Member not found"));
 
