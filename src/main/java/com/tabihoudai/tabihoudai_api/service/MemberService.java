@@ -30,11 +30,6 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Long getMaxUserIdx() {
-        return memberRepository.getMaxUserIdx();
-    }
-
-    @Transactional(readOnly = true)
     public Optional<Member> getMember(Long userIdx){
         return memberRepository.findById(userIdx);
     }

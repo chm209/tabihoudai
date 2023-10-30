@@ -187,6 +187,20 @@ export default {
     }
   },
 
+  checkEmail() {
+    axios.get(`/members/${this.registemail}/exists`)
+      .then(response => {
+        if (response.data) {
+          alert('사용 가능한 이메일입니다.');
+        } else {
+          alert('이미 존재하는 이메일입니다.');
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  },
+
   computed: {
     conformPasswordError() {
       return this.conformPassword && this.registpassword !== this.conformPassword ? ['*비밀번호가 일치하지 않습니다.'] : []
