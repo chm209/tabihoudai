@@ -12,6 +12,6 @@ public class AttrImgDto {
     private Long attrImgIdx;
     private Long attrIdx;
     private String path;
-    private String type;
+    private char type;
 
 }

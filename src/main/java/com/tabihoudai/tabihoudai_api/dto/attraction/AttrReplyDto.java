@@ -13,7 +13,7 @@ public class AttrReplyDto {
 
     private Long attrReplyIdx;
     private Long attrIdx;
-    private Long userIdx;
+    private byte[] userIdx;
     private String content;
     private LocalDateTime regDate;
     private double score;

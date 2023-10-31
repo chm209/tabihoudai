@@ -2,9 +2,16 @@ package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tabihoudai.tabihoudai_api.dto.attraction.AttrDetailDTO;
+import com.tabihoudai.tabihoudai_api.dto.attraction.AttrImgDto;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttrImgEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.QAttrReplyEntity;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -113,9 +121,54 @@ public class AttractionRepositoryImpl implements AttractionRepository{
                 pageable,count::fetchOne);
     }
 
+    @Override
+    public List<AttractionEntity> getAttractionDetail(Long attrIdx) {
 
+        List<AttractionEntity> result = queryFactory.select(attractionEntity
+                        )
+                .from(attractionEntity)
+                .where(attractionEntity.attrIdx.eq(attrIdx))
+                .fetch();
 
+        return result;
+    }
 
+    @Override
+    public List<AttrReplyEntity> getAttractionReply(Long attrIdx){
+
+        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
+
+        List<AttrReplyEntity> result = queryFactory.select(attrReplyEntity)
+                .from(attrReplyEntity)
+                .where(attrReplyEntity.attrIdx.eq(attraction))
+                .fetch();
+
+        return result;
+    }
+
+    @Override
+    public List<Double> getAttractionAvg(Long attrIdx){
+        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
+        List<Double> result =
+                queryFactory.select(attrReplyEntity.score.avg().coalesce(0.0))
+                .from(attrReplyEntity)
+                .where(attrReplyEntity.attrIdx.eq(attraction))
+                .fetch();
+
+        return result;
+    }
+
+    @Override
+    public List<AttrImgEntity> getAttractionImg(Long attrIdx){
+        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
+
+        List<AttrImgEntity> result = queryFactory.select(attrImgEntity)
+                .from(attrImgEntity)
+                .where(attrImgEntity.attrIdx.eq(attraction))
+                .fetch();
+
+        return result;
+    }
 
 
 }
