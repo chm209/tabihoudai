@@ -20,9 +20,7 @@ import java.time.LocalDate;
 public class MemberSignupDto {
 
     @NotEmpty
-    @Email
-    @Pattern(regexp = "^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$",
-            message = "이메일 형식을 맞춰야합니다")
+    @Email(message = "이메일 형식을 맞춰야합니다")
     private String email;
 
     @NotEmpty

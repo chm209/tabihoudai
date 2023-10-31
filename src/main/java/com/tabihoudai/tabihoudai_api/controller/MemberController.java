@@ -4,6 +4,7 @@ import com.tabihoudai.tabihoudai_api.domain.Member;
 import com.tabihoudai.tabihoudai_api.domain.RefreshToken;
 import com.tabihoudai.tabihoudai_api.domain.Role;
 import com.tabihoudai.tabihoudai_api.dto.*;
+import com.tabihoudai.tabihoudai_api.repository.MemberRepository;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.IfLogin;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.JwtTokenizer;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.LoginUserDto;
@@ -34,7 +35,7 @@ public class MemberController {
     private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
-
+    private final MemberRepository memberRepository;
 
 
     @PostMapping("/signup")
@@ -42,6 +43,16 @@ public class MemberController {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
+
+//        String email = memberSignupDto.getEmail();
+//
+//        // DB에서 중복 체크
+//        boolean emailExists = memberRepository.existsByEmail(email);
+//
+//        if (emailExists) {
+//            return new ResponseEntity<>("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
+//        }
+
         Member member = new Member();
         member.setNickname(memberSignupDto.getNickname());
         member.setEmail(memberSignupDto.getEmail());
@@ -64,10 +75,23 @@ public class MemberController {
 
             // 회원가입
             return new ResponseEntity(memberSignupResponse, HttpStatus.CREATED);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<String> checkEmailExistence(@PathVariable String email) {
+        // DB에서 중복 체크
+        boolean emailExists = memberRepository.existsByEmail(email);
+
+        if (emailExists) {
+            return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
+        } else {
+            return ResponseEntity.ok("사용 가능한 이메일입니다.");
+        }
+    }
+
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid MemberLoginDto loginDto, BindingResult bindingResult) {
@@ -77,7 +101,7 @@ public class MemberController {
 
         // email이 없을 경우 Exception이 발생한다. Global Exception에 대한 처리가 필요하다.
         Member member = memberService.findByEmail(loginDto.getEmail());
-        if(!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())){
+        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         // List<Role> ===> List<String>
@@ -118,7 +142,7 @@ public class MemberController {
         RefreshToken refreshToken = refreshTokenService.findRefreshToken(refreshTokenDto.getRefreshToken()).orElseThrow(() -> new IllegalArgumentException("Refresh token not found"));
         Claims claims = jwtTokenizer.parseRefreshToken(refreshToken.getValue());
 
-        Long userIdx = Long.valueOf((Integer)claims.get("userIdx"));
+        Long userIdx = Long.valueOf((Integer) claims.get("userIdx"));
 
         Member member = memberService.getMember(userIdx).orElseThrow(() -> new IllegalArgumentException("Member not found"));
 

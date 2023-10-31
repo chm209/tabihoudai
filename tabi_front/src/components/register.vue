@@ -187,20 +187,6 @@ export default {
     }
   },
 
-  checkEmail() {
-    axios.get(`/members/${this.registemail}/exists`)
-      .then(response => {
-        if (response.data) {
-          alert('사용 가능한 이메일입니다.');
-        } else {
-          alert('이미 존재하는 이메일입니다.');
-        }
-      })
-      .catch(error => {
-        console.error(error);
-      });
-  },
-
   computed: {
     conformPasswordError() {
       return this.conformPassword && this.registpassword !== this.conformPassword ? ['*비밀번호가 일치하지 않습니다.'] : []
@@ -229,6 +215,19 @@ export default {
     closeDialog() {
       this.registrationFalse = false;
     },
-  }
+  },
+  checkEmail() {
+  axios.get(`/members/check-email/${this.registemail}`)
+    .then(response => {
+      if (response.data === "사용 가능한 이메일입니다.") {
+        alert("사용 가능한 이메일입니다.");
+      } else {
+        alert("이미 사용중인 이메일입니다.");
+      }
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
 }
 </script>
