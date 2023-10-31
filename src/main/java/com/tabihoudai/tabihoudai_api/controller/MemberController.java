@@ -38,21 +38,63 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
 
-    @PostMapping("/check-email")
-    public ResponseEntity checkEmailExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResponseEntity("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
-        }
+//    @PostMapping("/check/email")
+//    public ResponseEntity checkEmailExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        String email = memberSignupDto.getEmail();
+//
+//        // DB에서 중복 체크
+//        boolean emailExists = memberRepository.existsByEmail(email);
+//
+//        if (emailExists) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 이메일입니다.");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.OK).body("쌉가능");
+//        }
+//    }
+//
+//    @PostMapping("/check/nickname")
+//    public ResponseEntity checkNicknameExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            return new ResponseEntity<>("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        String nickname = memberSignupDto.getNickname();
+//
+//        // DB에서 중복 체크
+//        boolean emailExists = memberRepository.existsByNickname(nickname);
+//
+//        if (emailExists) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 이메일입니다.");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.OK).body("쌉가능");
+//        }
+//    }
 
-        String email = memberSignupDto.getEmail();
-
+    @GetMapping("/check-email/{email}")
+    public ResponseEntity<String> checkEmailExistence(@PathVariable String email) {
         // DB에서 중복 체크
         boolean emailExists = memberRepository.existsByEmail(email);
 
         if (emailExists) {
-            return new ResponseEntity("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.ok("이미 사용 중인 이메일입니다.");
         } else {
-            return new ResponseEntity("사용 가능한 이메일입니다.", HttpStatus.OK);
+            return ResponseEntity.ok("사용 가능한 이메일입니다.");
+        }
+    }
+
+    @GetMapping("/check-nickname/{nickname}")
+    public ResponseEntity<String> checkNicknameExistence(@PathVariable String nickname) {
+        // DB에서 중복 체크
+        boolean existsByNickname = memberRepository.existsByNickname(nickname);
+
+        if (existsByNickname) {
+            return ResponseEntity.ok("이미 사용 중인 닉네임입니다.");
+        } else {
+            return ResponseEntity.ok("사용 가능한 닉네임입니다.");
         }
     }
 

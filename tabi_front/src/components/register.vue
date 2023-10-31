@@ -216,6 +216,7 @@ export default {
       this.registrationFalse = false;
     },
   },
+  
   checkEmail() {
   axios.get(`/members/check-email/${this.registemail}`)
     .then(response => {

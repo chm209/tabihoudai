@@ -38,4 +38,14 @@ public class MemberService {
     public Optional<Member> getMember(String email){
         return memberRepository.findByEmail(email);
     }
+
+    @Transactional(readOnly = true)
+    public boolean checkEmailExistence(String email) {
+        return memberRepository.existsByEmail(email);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkNicknameExistence(String nickname) {
+        return memberRepository.existsByNickname(nickname);
+    }
 }
