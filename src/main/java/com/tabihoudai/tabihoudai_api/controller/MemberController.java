@@ -38,20 +38,39 @@ public class MemberController {
     private final MemberRepository memberRepository;
 
 
+    @PostMapping("/check-email")
+    public ResponseEntity checkEmailExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResponseEntity("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        String email = memberSignupDto.getEmail();
+
+        // DB에서 중복 체크
+        boolean emailExists = memberRepository.existsByEmail(email);
+
+        if (emailExists) {
+            return new ResponseEntity("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
+        } else {
+            return new ResponseEntity("사용 가능한 이메일입니다.", HttpStatus.OK);
+        }
+    }
+
+
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
-//        String email = memberSignupDto.getEmail();
-//
-//        // DB에서 중복 체크
-//        boolean emailExists = memberRepository.existsByEmail(email);
-//
-//        if (emailExists) {
-//            return new ResponseEntity<>("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
-//        }
+        String email = memberSignupDto.getEmail();
+
+        // DB에서 중복 체크
+        boolean emailExists = memberRepository.existsByEmail(email);
+
+        if (emailExists) {
+            return new ResponseEntity("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
+        }
 
         Member member = new Member();
         member.setNickname(memberSignupDto.getNickname());
@@ -79,19 +98,6 @@ public class MemberController {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @GetMapping("/check-email/{email}")
-    public ResponseEntity<String> checkEmailExistence(@PathVariable String email) {
-        // DB에서 중복 체크
-        boolean emailExists = memberRepository.existsByEmail(email);
-
-        if (emailExists) {
-            return ResponseEntity.badRequest().body("이미 존재하는 이메일입니다.");
-        } else {
-            return ResponseEntity.ok("사용 가능한 이메일입니다.");
-        }
-    }
-
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid MemberLoginDto loginDto, BindingResult bindingResult) {
