@@ -1,7 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
-import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageRequestDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
@@ -13,17 +12,17 @@ import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +43,9 @@ public class AdminServicesImpl implements AdminServices {
 
     @Autowired
     private final RegionRepository regionRepository;
+
+    @Value("${com.tabihoudai.upload.path}")
+    private String uploadPath;
 
     @Override
     public PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO) {
@@ -73,5 +75,30 @@ public class AdminServicesImpl implements AdminServices {
             Page<AdminDTO.csInfo> result = list.map(objects -> csEntityToDto(objects));
             return new PageResultDTO<>(result);
         }
+    }
+
+    @Override
+    public String uploadBannerImage(MultipartFile uploadFile) {
+        if (uploadFile.getContentType().startsWith("image") == false) {
+            return "fail";
+        }
+        String fileName = uploadFile.getOriginalFilename();
+        String folderPath = makeForder();
+        String saveName = uploadPath + File.separator + folderPath + File.separator + fileName;
+        Path path = Paths.get(saveName);
+        try {
+            uploadFile.transferTo(path);
+            bannerRepository.save(BannerEntity.builder().path(saveName).build());
+        }
+        catch (IOException e) { }
+        return "success";
+    }
+
+    private String makeForder() {
+        File uploadPathFolder = new File(uploadPath, "banner");
+        if (!uploadPathFolder.exists()) {
+            uploadPathFolder.mkdirs();
+        }
+        return "banner";
     }
 }

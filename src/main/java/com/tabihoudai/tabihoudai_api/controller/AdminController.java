@@ -9,8 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/admin")
@@ -25,14 +24,23 @@ public class AdminController {
     // -----------------------
     // ~ 완료 항목
     //  ⌘ 배너 이미지 리스트 구현 완료
+    //  ⌘ 관광 명소 관리 리스트 구현 완료
+    //  ⌘ 신고 관리 리스트 구현 완료
+    //  ⌘ 문의 관리 리스트 구현 완료
+    //  ⌘ 이미지 업로드
     // ~ 남은 항목
-    // ✗ 관광 명소 관리 리스트
-    // ✗ 신고 관리 리스트
-    // ✗ 문의 관리 리스트
+    //  ⌘ Admin 필터 처리
+    //  ⌘ 명소 추가
+    // 프론트 이미지 업로드 -> 
     @PostMapping(value =  "/list", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity getAdminManagementList(
             @RequestParam(value = "item", required = true, defaultValue = "1") int item,
             @Validated @RequestBody PageRequestDTO pageRequestDTO ) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAdminManagementList(item, pageRequestDTO));
+    }
+
+    @PostMapping(value =  "/banner/upload")
+    public ResponseEntity<String> uploadBannerImage(MultipartFile uploadFile) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.uploadBannerImage(uploadFile));
     }
 }

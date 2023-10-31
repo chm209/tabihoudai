@@ -1,12 +1,14 @@
 package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
 public interface AdminServices {
 
     PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO);
+    String uploadBannerImage(MultipartFile uploadFile);
 
     // 배너 이미지 관리 리스트
     default AdminDTO.bannerInfo bannerEntityToDto(Object[] bannerEntity) {
