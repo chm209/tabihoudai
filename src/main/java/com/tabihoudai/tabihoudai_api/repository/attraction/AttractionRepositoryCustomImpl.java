@@ -1,6 +1,5 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
-import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;

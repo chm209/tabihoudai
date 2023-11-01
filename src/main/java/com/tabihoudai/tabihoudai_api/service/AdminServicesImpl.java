@@ -1,12 +1,15 @@
 package com.tabihoudai.tabihoudai_api.service;
 
+import com.querydsl.core.Tuple;
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageRequestDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.CsRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionImageRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +46,9 @@ public class AdminServicesImpl implements AdminServices {
 
     @Autowired
     private final AttractionRepository attractionRepository;
+
+    @Autowired
+    private final AttractionImageRepository attractionImageRepository;
 
     @Autowired
     private final RegionRepository regionRepository;
@@ -75,6 +84,12 @@ public class AdminServicesImpl implements AdminServices {
             Page<AdminDTO.csInfo> result = list.map(objects -> csEntityToDto(objects));
             return new PageResultDTO<>(result);
         }
+    }
+
+    @Override
+    public AdminDTO.attrDetailData getAttrDetailData(long attrIdx) {
+        List<AttractionImageEntity> attrImageResult = attractionImageRepository.findAllByAttrEntityAttrIdx(attrIdx);
+        return attrDetailEntityToDto(attrImageResult);
     }
 
     @Override

@@ -1,14 +1,46 @@
 package com.tabihoudai.tabihoudai_api.service;
 
+import com.querydsl.core.Tuple;
 import com.tabihoudai.tabihoudai_api.dto.*;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.attractionEntity;
 
 public interface AdminServices {
 
     PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO);
     String uploadBannerImage(MultipartFile uploadFile);
+    AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
+
+    default AdminDTO.attrDetailData attrDetailEntityToDto(List<AttractionImageEntity> attrImageResult) {
+        return AdminDTO.attrDetailData.builder()
+                .attrIdx(attrImageResult.get(0).getAttrEntity().getAttrIdx())
+                .name(attrImageResult.get(0).getAttrEntity().getAttraction())
+                .area(attrImageResult.get(0).getAttrEntity().getRegionEntity().getArea())
+                .city(attrImageResult.get(0).getAttrEntity().getRegionEntity().getCity())
+                .address(attrImageResult.get(0).getAttrEntity().getAddress())
+                .latitude(attrImageResult.get(0).getAttrEntity().getLatitude())
+                .longitude(attrImageResult.get(0).getAttrEntity().getLongitude())
+                .description(attrImageResult.get(0).getAttrEntity().getDescription())
+                .tag(attrImageResult.get(0).getAttrEntity().getTag())
+                .attrDetailImageData(attrImageResult.stream().map(attractionImageEntity -> attrImageDetailEntityToDto(attractionImageEntity)).collect(Collectors.toList()))
+                .build();
+    }
+
+    default AdminDTO.attrDetailImageData attrImageDetailEntityToDto(AttractionImageEntity attrImageResult) {
+        return AdminDTO.attrDetailImageData.builder()
+                .path(attrImageResult.getPath())
+                .type(attrImageResult.getType())
+                .attrImgIdx(attrImageResult.getAttrImgIdx())
+                .build();
+    }
 
     // 배너 이미지 관리 리스트
     default AdminDTO.bannerInfo bannerEntityToDto(Object[] bannerEntity) {

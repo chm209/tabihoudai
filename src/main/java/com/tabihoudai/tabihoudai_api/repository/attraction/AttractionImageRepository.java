@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import java.util.List;
 public interface AttractionImageRepository extends JpaRepository<AttractionImageEntity, Long> {
     @Query("SELECT A.attrIdx, A.address, A.attraction, A.description, A.latitude, A.longitude, A.tag, A.regionEntity.regionIdx, " +
             "I.path " +
-            "FROM AttractionEntity A "+
+            "FROM AttractionEntity A " +
             "INNER JOIN AttractionImageEntity I ON " +
             "A.attrIdx = I.attrEntity.attrIdx " +
             "AND I.type = '1'" +
@@ -22,4 +23,6 @@ public interface AttractionImageRepository extends JpaRepository<AttractionImage
             "WHERE AI.attrEntity.attrIdx = :attrIdx " +
             "AND AI.type = '1'  ")
     AttractionImageEntity getInfo(@Param("attrIdx") Long attrIdx);
+
+    List<AttractionImageEntity> findAllByAttrEntityAttrIdx(@Param("attrIdx") Long attrIdx);
 }
