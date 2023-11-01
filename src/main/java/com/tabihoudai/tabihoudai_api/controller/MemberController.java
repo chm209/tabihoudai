@@ -37,43 +37,6 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
 
-
-//    @PostMapping("/check/email")
-//    public ResponseEntity checkEmailExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            return new ResponseEntity<>("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        String email = memberSignupDto.getEmail();
-//
-//        // DB에서 중복 체크
-//        boolean emailExists = memberRepository.existsByEmail(email);
-//
-//        if (emailExists) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 이메일입니다.");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.OK).body("쌉가능");
-//        }
-//    }
-//
-//    @PostMapping("/check/nickname")
-//    public ResponseEntity checkNicknameExistence(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
-//        if (bindingResult.hasErrors()) {
-//            return new ResponseEntity<>("올바르지 않은 요청입니다.", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        String nickname = memberSignupDto.getNickname();
-//
-//        // DB에서 중복 체크
-//        boolean emailExists = memberRepository.existsByNickname(nickname);
-//
-//        if (emailExists) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 이메일입니다.");
-//        } else {
-//            return ResponseEntity.status(HttpStatus.OK).body("쌉가능");
-//        }
-//    }
-
     @GetMapping("/check-email/{email}")
     public ResponseEntity<String> checkEmailExistence(@PathVariable String email) {
         // DB에서 중복 체크
@@ -106,12 +69,19 @@ public class MemberController {
         }
 
         String email = memberSignupDto.getEmail();
+        String nickname = memberSignupDto.getNickname();
 
         // DB에서 중복 체크
         boolean emailExists = memberRepository.existsByEmail(email);
 
+        boolean existsByNickname = memberRepository.existsByNickname(nickname);
+
         if (emailExists) {
             return new ResponseEntity("이미 존재하는 이메일입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (existsByNickname) {
+            return new ResponseEntity("이미 존재하는 닉네임 입니다.", HttpStatus.BAD_REQUEST);
         }
 
         Member member = new Member();
