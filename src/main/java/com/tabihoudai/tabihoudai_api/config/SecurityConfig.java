@@ -40,7 +40,8 @@ public class SecurityConfig {
                         .requestMatchers
                                 ( "/members/signup", "/members/login",
                                   "/members/refreshToken", "/members/check-email/{email}",
-                                  "/members/check-nickname/{nickname}").permitAll()
+                                  "/members/check-nickname/{nickname}",
+                                  "/members/reset-password").permitAll()
                         .requestMatchers(GET, "/categories/**", "/products/**").permitAll()
                         .requestMatchers(GET,"/**").hasAnyRole( "USER")
                         .requestMatchers(POST,"/**").hasAnyRole("USER", "ADMIN")
