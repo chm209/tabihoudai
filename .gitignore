@@ -91,3 +91,6 @@ cypress/screenshots/
 *.sw?
 /src/main/java/com/tabihoudai/tabihoudai_api/entity/
 /src/main/generated/
+/src/main/java/com/tabihoudai/tabihoudai_api/repository/admin/
+/src/main/java/com/tabihoudai/tabihoudai_api/repository/attraction/
+/src/main/java/com/tabihoudai/tabihoudai_api/repository/plan/

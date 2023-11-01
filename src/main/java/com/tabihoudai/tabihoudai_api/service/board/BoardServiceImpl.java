@@ -50,4 +50,11 @@ public class BoardServiceImpl implements BoardService{
         return boardEntity.getBoardIdx();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void removeBoard(Long boardIdx) {
+        boardReplyRepository.deleteById(boardIdx);
+        boardRepository.deleteById(boardIdx);
+    }
+
 }

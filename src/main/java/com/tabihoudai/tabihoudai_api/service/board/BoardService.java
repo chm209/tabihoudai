@@ -50,4 +50,5 @@ public interface BoardService {
 
     Long registerBoard(BoardRegisterDTO dto);
 
+    void removeBoard(Long boardIdx);
 }

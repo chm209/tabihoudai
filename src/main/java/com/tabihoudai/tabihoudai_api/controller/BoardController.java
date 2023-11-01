@@ -40,5 +40,9 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(boardIdx.toString());
     }
 
-
+    @DeleteMapping("/{boardIdx}")
+    public String remove(@PathVariable("boardIdx")Long boardIdx){
+        log.info("boardIdx : {}",boardIdx);
+        return "success";
+    }
 }
