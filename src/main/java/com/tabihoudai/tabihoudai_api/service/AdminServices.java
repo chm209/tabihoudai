@@ -2,9 +2,12 @@ package com.tabihoudai.tabihoudai_api.service;
 
 import com.querydsl.core.Tuple;
 import com.tabihoudai.tabihoudai_api.dto.*;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -18,6 +21,30 @@ public interface AdminServices {
     PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO);
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
+    String patchAttraction(AttrCreateRequestDTO attrCreateRequestDTO);
+
+    default AttractionEntity attrDtoToEntity(AttrCreateRequestDTO request, RegionEntity regionEntity) {
+        return AttractionEntity.builder()
+                .attrIdx(request.getAttrIdx())
+                .address(request.getAddress())
+                .description(request.getDescription())
+                .latitude(request.getLatitude())
+                .longitude(request.getLongitude())
+                .attraction(request.getAttraction())
+                .tag(request.getTag())
+                .regionEntity(regionEntity)
+                .build();
+    }
+
+    default AttractionImageEntity attrImgDtoToEntity(Path path, String thumbnails, AttractionEntity attrEntity, MultipartFile image, Long attrImgIdx) {
+        return AttractionImageEntity.builder()
+                .attrImgIdx(attrImgIdx)
+                .path(path.toString())
+                .type(image.getName().replaceAll("[^0-9]", "").equals(thumbnails.replaceAll("[^0-9]", ""))
+                        ? '1' : '0')
+                .attrEntity(attrEntity)
+                .build();
+    }
 
     default AdminDTO.attrDetailData attrDetailEntityToDto(List<AttractionImageEntity> attrImageResult) {
         return AdminDTO.attrDetailData.builder()

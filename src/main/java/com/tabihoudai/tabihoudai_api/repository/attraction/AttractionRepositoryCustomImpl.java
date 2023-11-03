@@ -7,21 +7,59 @@ import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.attractionEntity;
+import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionImageEntity.attractionImageEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QRegionEntity.regionEntity;
 
 public class AttractionRepositoryCustomImpl implements AttractionRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
+    @PersistenceContext
+	EntityManager em;
 
     public AttractionRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
+    }
+
+    @Transactional
+    public void patchAttrImgIdx(AttractionImageEntity attrImg, Long attrIdx, Long attrImgIdx) {
+        jpaQueryFactory
+                .update(attractionImageEntity)
+                .set(attractionImageEntity.attrImgIdx, attrImgIdx)
+                .where(attractionImageEntity.attrEntity.attrIdx.eq(attrIdx))
+                .where(attractionImageEntity.attrImgIdx.eq(attrImg.getAttrImgIdx()))
+                .execute();
+    }
+
+    @Transactional
+    public void patchAttraction(AttractionEntity attrEntity) {
+        System.out.println(attrEntity.getAttrIdx());
+        System.out.println(attrEntity);
+        jpaQueryFactory
+                .update(attractionEntity)
+                .set(attractionEntity.attrIdx, attrEntity.getAttrIdx())
+                .set(attractionEntity.address, attrEntity.getAddress())
+                .set(attractionEntity.description, attrEntity.getDescription())
+                .set(attractionEntity.latitude, attrEntity.getLatitude())
+                .set(attractionEntity.longitude, attrEntity.getLongitude())
+                .set(attractionEntity.attraction, attrEntity.getAttraction())
+                .set(attractionEntity.tag, attrEntity.getTag())
+                .set(attractionEntity.regionEntity, attrEntity.getRegionEntity())
+                .where(attractionEntity.attrIdx.eq(attrEntity.getAttrIdx()))
+                .execute();
+        em.flush();
     }
 
      public Page<Object[]> getAttractionPage(String area, String city, Pageable pageable) {

@@ -1,10 +1,10 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,4 +25,7 @@ public interface AttractionImageRepository extends JpaRepository<AttractionImage
     AttractionImageEntity getInfo(@Param("attrIdx") Long attrIdx);
 
     List<AttractionImageEntity> findAllByAttrEntityAttrIdx(@Param("attrIdx") Long attrIdx);
+
+    @Transactional
+    void deleteByAttrImgIdx(@Param("attrImgIdx") Long attrImgIdx);
 }

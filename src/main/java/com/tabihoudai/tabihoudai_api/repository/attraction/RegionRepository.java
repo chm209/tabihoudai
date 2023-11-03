@@ -16,4 +16,6 @@ public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
             "FROM RegionEntity r " +
             "WHERE r.regionIdx = :regionIdx ")
     String getAreaCity(@Param("regionIdx") Long regionIdx);
+
+    RegionEntity findRegionEntityByAreaAndCity(@Param("area") String area, @Param("city") String city);
 }

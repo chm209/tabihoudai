@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -30,9 +31,11 @@ public class AdminController {
     //  ⌘ 신고 관리 리스트 구현 완료
     //  ⌘ 문의 관리 리스트 구현 완료
     //  ⌘ 이미지 업로드 / 서버에 배포할때 이미지 저장 경로 바꿔줘야함
+    //  ⌘ 명소 추가
     // ~ 남은 항목
     //  ⌘ Admin 필터 처리
-    //  ⌘ 명소 추가
+    //  ⌘ 명소 수정
+
 
     // http://localhost:2094/api/admin/list?item=2
     // 1. 배너 이미지 관리 / 2. 관광 명소 관리 / 3. 신고관리 / 4. 문의 관리
@@ -56,7 +59,13 @@ public class AdminController {
 
     // http://localhost:2094/api/admin/attraction/load?id=1131
     @GetMapping("/attraction/load")
-    public ResponseEntity<AdminDTO.attrDetailData> getAttraction( @RequestParam(value = "id", required = true) long id) {
+    public ResponseEntity<AdminDTO.attrDetailData> getAttraction(@RequestParam(value = "id", required = true) long id) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAttrDetailData(id));
+    }
+
+    // http://localhost:2094/api/admin/attraction/modify?id=1131
+    @PatchMapping("/attraction/modify")
+    public ResponseEntity patchAttraction(AttrCreateRequestDTO attrCreateRequestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrCreateRequestDTO));
     }
 }
