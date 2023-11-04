@@ -6,9 +6,11 @@ import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface HomeServices {
@@ -16,6 +18,7 @@ public interface HomeServices {
     List<AttractionDTO.attrPreview> getAttraction(int area, Integer city);
     List<BoardDTO.recentBoard> getBoard();
     List<PlanDTO.bestPlan> getBestPlan(Integer area);
+    AttractionDTO.resultCity<AttractionDTO.cityList> getCityList(Integer area);
 
     default String planImage(Object[] objects) {
         return String.valueOf(objects[4]);
@@ -31,6 +34,10 @@ public interface HomeServices {
                 .path(banner.getPath())
                 .regDate(banner.getRegDate())
                 .build();
+    }
+
+    default AttractionDTO.cityList regionEntityToDto(RegionEntity regions) {
+        return AttractionDTO.cityList.builder().city(regions.getCity()).build();
     }
 
     default AttractionDTO.attrPreview entityToDto(Object[] objects) {

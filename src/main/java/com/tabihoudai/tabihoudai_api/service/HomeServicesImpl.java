@@ -6,13 +6,16 @@ import com.tabihoudai.tabihoudai_api.dto.BoardDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionImageRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class HomeServicesImpl implements HomeServices{
 
     private final BannerRepository bannerRepository;
@@ -31,6 +35,7 @@ public class HomeServicesImpl implements HomeServices{
     private final AttractionImageRepository attractionImageRepository;
     private final BoardRepository boardRepository;
     private final PlanRepository planRepository;
+    private final RegionRepository regionRepository;
 
     @Override
     public List<AdminDTO.bannerInfo> getBanner() {
@@ -62,6 +67,13 @@ public class HomeServicesImpl implements HomeServices{
     public List<BoardDTO.recentBoard> getBoard() {
         List<Object[]> boardList = boardRepository.getRecentBoard();
         return boardList.stream().map(this::recentBoardEntityToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public AttractionDTO.resultCity<AttractionDTO.cityList> getCityList(Integer area) {
+        List<RegionEntity> regionEntities = regionRepository.findCity((long) (area / 10));
+        List<AttractionDTO.cityList> result = regionEntities.stream().map(regionEntity -> regionEntityToDto(regionEntity)).collect(Collectors.toList());
+        return new AttractionDTO.resultCity(result);
     }
 
     @Override
