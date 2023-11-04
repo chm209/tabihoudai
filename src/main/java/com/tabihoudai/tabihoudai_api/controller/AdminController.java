@@ -11,9 +11,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.List;
-
 @RestController
 @RequestMapping("api/admin")
 @RequiredArgsConstructor
@@ -65,7 +62,7 @@ public class AdminController {
 
     // http://localhost:2094/api/admin/attraction/modify?id=1131
     @PatchMapping("/attraction/modify")
-    public ResponseEntity patchAttraction(AttrCreateRequestDTO attrCreateRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrCreateRequestDTO));
+    public ResponseEntity patchAttraction(AttrMngRequestDTO attrMngRequestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
     }
 }

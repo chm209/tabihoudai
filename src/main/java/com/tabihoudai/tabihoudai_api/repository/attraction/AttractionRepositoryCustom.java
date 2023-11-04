@@ -9,4 +9,5 @@ public interface AttractionRepositoryCustom {
     Page<Object[]> getAttractionPage(String type, String keyword, Pageable pageable);
     void patchAttraction(AttractionEntity attrEntity);
     void patchAttrImgIdx(AttractionImageEntity attrImg, Long attrIdx, Long attrImgIdx);
+    public void patchThumnails(String newThumbnails, Long offsetIdx);
 }

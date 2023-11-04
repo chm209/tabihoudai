@@ -1,6 +1,5 @@
 package com.tabihoudai.tabihoudai_api.service;
 
-import com.querydsl.core.Tuple;
 import com.tabihoudai.tabihoudai_api.dto.*;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
@@ -9,39 +8,35 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.attractionEntity;
 
 public interface AdminServices {
 
     PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO);
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
-    String patchAttraction(AttrCreateRequestDTO attrCreateRequestDTO);
+    String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
 
-    default AttractionEntity attrDtoToEntity(AttrCreateRequestDTO request, RegionEntity regionEntity) {
+    default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
-                .attrIdx(request.getAttrIdx())
-                .address(request.getAddress())
-                .description(request.getDescription())
-                .latitude(request.getLatitude())
-                .longitude(request.getLongitude())
-                .attraction(request.getAttraction())
-                .tag(request.getTag())
-                .regionEntity(regionEntity)
+                .attrIdx(request.getAttrIdx() == originalAttrEntity.getAttrIdx() ? originalAttrEntity.getAttrIdx() : request.getAttrIdx())
+                .address(request.getAddress().equals(originalAttrEntity.getAddress()) ? originalAttrEntity.getAddress() : request.getAddress())
+                .description(request.getDescription().equals(originalAttrEntity.getDescription()) ? originalAttrEntity.getDescription() : request.getDescription())
+                .latitude(request.getLatitude() == originalAttrEntity.getLatitude() ? originalAttrEntity.getLatitude() : request.getLatitude())
+                .longitude(request.getLongitude() == originalAttrEntity.getLongitude() ? originalAttrEntity.getLongitude() : request.getLongitude())
+                .attraction(request.getAttraction().equals(originalAttrEntity.getAttraction()) ? originalAttrEntity.getAttraction() : request.getAttraction())
+                .tag(request.getTag().equals(originalAttrEntity.getTag()) ? originalAttrEntity.getTag() : request.getTag())
+                .regionEntity(regionEntity.equals(originalAttrEntity.getRegionEntity()) ? originalAttrEntity.getRegionEntity() : regionEntity)
                 .build();
     }
 
-    default AttractionImageEntity attrImgDtoToEntity(Path path, String thumbnails, AttractionEntity attrEntity, MultipartFile image, Long attrImgIdx) {
+    default AttractionImageEntity attrImgDtoToEntity(Path imageSavePath, String thumbnails, AttractionEntity attrEntity, MultipartFile image, Long attrImgIdx) {
         return AttractionImageEntity.builder()
                 .attrImgIdx(attrImgIdx)
-                .path(path.toString())
-                .type(image.getName().replaceAll("[^0-9]", "").equals(thumbnails.replaceAll("[^0-9]", ""))
-                        ? '1' : '0')
+                .path(imageSavePath.toString())
+                .type(image.getOriginalFilename().equals(thumbnails) ? '1' : '0')
                 .attrEntity(attrEntity)
                 .build();
     }

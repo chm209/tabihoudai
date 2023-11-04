@@ -1,15 +1,18 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.dml.UpdateClause;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.jpa.impl.JPAUpdateClause;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,6 +27,7 @@ import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionImageEntity.attractionImageEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QRegionEntity.regionEntity;
 
+@Slf4j
 public class AttractionRepositoryCustomImpl implements AttractionRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     @PersistenceContext
@@ -34,19 +38,45 @@ public class AttractionRepositoryCustomImpl implements AttractionRepositoryCusto
     }
 
     @Transactional
-    public void patchAttrImgIdx(AttractionImageEntity attrImg, Long attrIdx, Long attrImgIdx) {
+    public void patchThumnails(String newThumbnails, Long offsetIdx) {
         jpaQueryFactory
                 .update(attractionImageEntity)
-                .set(attractionImageEntity.attrImgIdx, attrImgIdx)
-                .where(attractionImageEntity.attrEntity.attrIdx.eq(attrIdx))
-                .where(attractionImageEntity.attrImgIdx.eq(attrImg.getAttrImgIdx()))
+                .set(attractionImageEntity.type, '0')
+                .where(attractionImageEntity.attrImgIdx.eq(offsetIdx))
                 .execute();
+        em.flush();
+
+        AttractionImageEntity attrEntity = jpaQueryFactory
+                .select(attractionImageEntity)
+                .from(attractionImageEntity)
+                .where(attractionImageEntity.attrImgIdx.eq(offsetIdx))
+                .fetchOne();
+
+        if(attrEntity.getPath().equals(newThumbnails)) {
+            jpaQueryFactory
+                    .update(attractionImageEntity)
+                    .set(attractionImageEntity.type, '1')
+                    .where(attractionImageEntity.attrImgIdx.eq(offsetIdx))
+                    .execute();
+            em.flush();
+        }
+        em.clear();
+    }
+
+    @Transactional
+    public void patchAttrImgIdx(AttractionImageEntity originalImgEntity, Long imgOffset, Long newIdx) {
+        jpaQueryFactory
+                .update(attractionImageEntity)
+                .set(attractionImageEntity.attrImgIdx, newIdx)
+                .where(attractionImageEntity.attrEntity.attrIdx.eq(imgOffset))
+                .where(attractionImageEntity.attrImgIdx.eq(originalImgEntity.getAttrImgIdx()))
+                .execute();
+        em.flush();
+        em.clear();
     }
 
     @Transactional
     public void patchAttraction(AttractionEntity attrEntity) {
-        System.out.println(attrEntity.getAttrIdx());
-        System.out.println(attrEntity);
         jpaQueryFactory
                 .update(attractionEntity)
                 .set(attractionEntity.attrIdx, attrEntity.getAttrIdx())
@@ -60,6 +90,7 @@ public class AttractionRepositoryCustomImpl implements AttractionRepositoryCusto
                 .where(attractionEntity.attrIdx.eq(attrEntity.getAttrIdx()))
                 .execute();
         em.flush();
+        em.clear();
     }
 
      public Page<Object[]> getAttractionPage(String area, String city, Pageable pageable) {
