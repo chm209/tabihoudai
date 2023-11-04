@@ -22,16 +22,12 @@ public class AdminController {
     // http://localhost:2094/api/admin/list?item=1
     // 1: banner image | 2: 관광 명소 관리 | 3: 신고 관리 | 4: 문의 관리
     // -----------------------
-    // ~ 완료 항목
-    //  ⌘ 배너 이미지 리스트 구현 완료
-    //  ⌘ 관광 명소 관리 리스트 구현 완료
-    //  ⌘ 신고 관리 리스트 구현 완료
-    //  ⌘ 문의 관리 리스트 구현 완료
-    //  ⌘ 이미지 업로드 / 서버에 배포할때 이미지 저장 경로 바꿔줘야함
-    //  ⌘ 명소 추가
-    // ~ 남은 항목
     //  ⌘ Admin 필터 처리
-    //  ⌘ 명소 수정
+    //  ⌘ cs Viewer
+    //  ⌘ blame Viewer
+    //  ⌘ cs 답변
+    //  ⌘ 이미지 삭제
+    //  ⌘ 명소 삭제
 
 
     // http://localhost:2094/api/admin/list?item=2
@@ -60,9 +56,15 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAttrDetailData(id));
     }
 
-    // http://localhost:2094/api/admin/attraction/modify?id=1131
+    // http://localhost:2094/api/admin/attraction/modify
+    // form-data는 attrMngRequestDTO에 맞춰서
     @PatchMapping("/attraction/modify")
     public ResponseEntity patchAttraction(AttrMngRequestDTO attrMngRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
+    }
+
+    @PostMapping("/attraction/create")
+    public ResponseEntity<String> createAttraction(AttrMngRequestDTO attrMngRequestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
     }
 }

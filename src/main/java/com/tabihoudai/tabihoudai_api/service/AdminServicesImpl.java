@@ -58,6 +58,54 @@ public class AdminServicesImpl implements AdminServices {
     private String uploadPath;
 
     @Override
+    public String craeteAttraction(AttrMngRequestDTO requestDTO) {
+        // requestDTO로 RegionEntity를 가져온다
+        RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
+        // idx 생성을 위해 기존 정보를 가져온다.
+        List<AttractionEntity> attrList = attractionRepository.findAllByRegionEntity_RegionIdx(regionEntity.getRegionIdx());
+        // Entity 생성
+        AttractionEntity attrEntity = AttractionEntity.builder()
+                .attrIdx(Long.parseLong(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attrList.size() + 1))))
+                .address(requestDTO.getAddress())
+                .description(requestDTO.getDescription())
+                .latitude(requestDTO.getLatitude())
+                .longitude(requestDTO.getLongitude())
+                .attraction(requestDTO.getAttraction())
+                .tag(requestDTO.getTag())
+                .regionEntity(regionEntity)
+                .build();
+        attractionRepository.save(attrEntity);
+
+        // 이미지 추가
+        if (requestDTO.getImages().get(0) != null) {
+            int imageIdx = 1;
+
+            for(MultipartFile createImage : requestDTO.getImages()) {
+                if (createImage.getContentType().startsWith("image") == false) break;
+                // 경로 지정
+                String fileName = createImage.getOriginalFilename();
+                String folderPath = makeForder("attraction/" + attrEntity.getAttrIdx());
+                String save = uploadPath + File.separator + folderPath + File.separator + fileName;
+                Path imageSavePath = Paths.get(save);
+
+                try {
+                    createImage.transferTo(imageSavePath);
+                } catch (IOException e) {}
+                // DB에 추가
+                AttractionImageEntity attractionImageEntity = attrImgDtoToEntity(
+                        imageSavePath,
+                        requestDTO.getThumbnail(),
+                        attrEntity,
+                        createImage,
+                        Long.valueOf(String.valueOf(requestDTO.getAttrIdx()).concat(String.valueOf(imageIdx++)))
+                );
+                attractionImageRepository.save(attractionImageEntity);
+            }
+        }
+        return "success";
+    }
+
+    @Override
     public String patchAttraction(AttrMngRequestDTO requestDTO) {
         // requestDTO로 RegionEntity를 가져온다
         RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
@@ -101,7 +149,7 @@ public class AdminServicesImpl implements AdminServices {
             }
         }
         // 추가한 이미지가 있으면 추가
-        if (requestDTO.getImages().get(0) == null) {
+        if (requestDTO.getImages().get(0) != null) {
             // 새로 받은 이미지 추가
             for (MultipartFile uploadFile : requestDTO.getImages()) {
                 if (uploadFile.getContentType().startsWith("image") == false) break;

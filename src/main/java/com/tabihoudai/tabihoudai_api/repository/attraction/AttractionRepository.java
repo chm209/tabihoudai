@@ -28,6 +28,7 @@ public interface AttractionRepository extends JpaRepository<AttractionEntity, Lo
     List<Object[]> findAllByRegionEntity_RegionIdx_city(@Param("regionIdx") Long regionIdx);
 
     AttractionEntity findByAttrIdx(@Param("attrIdx") Long attrIdx);
+    List<AttractionEntity> findAllByRegionEntity_RegionIdx(@Param("regionIdx") Long regionIdx);
 
     @Query("SELECT A " +
             "FROM AttractionEntity A " +

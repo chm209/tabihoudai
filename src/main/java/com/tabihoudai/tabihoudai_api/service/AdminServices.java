@@ -18,6 +18,7 @@ public interface AdminServices {
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
     String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
+    String craeteAttraction(AttrMngRequestDTO requestDTO);
 
     default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
