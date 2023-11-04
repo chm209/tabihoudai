@@ -7,11 +7,13 @@ import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.CsRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionImageRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
@@ -52,10 +54,63 @@ public class AdminServicesImpl implements AdminServices {
     private final AttractionImageRepository attractionImageRepository;
 
     @Autowired
+    private final AttractionReplyRepository attractionReplyRepository;
+
+    @Autowired
     private final RegionRepository regionRepository;
 
     @Value("${com.tabihoudai.upload.path}")
     private String uploadPath;
+
+    @Override
+    public String deleteAdminItem(int item, long idx) {
+        if(item == 1) { // 배너 이미지
+            BannerEntity banner = bannerRepository.findByBannerIdx(idx);
+            // 로컬에서 이미지 삭제
+            File file = new File(banner.getPath());
+            if (file.exists()) {
+                if (file.delete()) System.out.println("이미지 삭제 성공");
+                else System.out.println("이미지 삭제 실패");
+            } else System.out.println("파일이 존재하지 않습니다.");
+            bannerRepository.deleteByBannerIdx(idx);
+        }
+        else if(item == 2) { // 관광 명소 관리
+            List<AttractionImageEntity> attrImage = attractionImageRepository.findByAttrEntity_AttrIdx(idx);
+            String[] path = attrImage.get(0).getPath().split("/");
+            String forderPath = "";
+            out:for(String str : path) {
+                if(str.equals(path[path.length-1])) break out;
+                forderPath = forderPath.concat(str + File.separator);
+            }
+            File folder = new File(forderPath);
+
+            try {
+                while(folder.exists()) {
+                    File[] folderList = folder.listFiles();
+
+                    for(int offset = 0 ; offset < folderList.length; offset++) {
+                        folderList[offset].delete();
+                        System.out.println("파일 삭제");
+                    }
+                    if(folderList.length == 0 && folder.isDirectory()) {
+                        folder.delete();
+                        System.out.println("폴더 삭제");
+                    }
+                }
+            } catch (Exception e) { e.getStackTrace(); }
+
+            attractionImageRepository.deleteByAttrEntity_AttrIdx(idx);
+            attractionReplyRepository.deleteByAttrEntity_AttrIdx(idx);
+            attractionRepository.deleteByAttrIdx(idx);
+        }
+        else if(item == 3) { // 신고 관리
+            blameRepository.deleteByBlameIdx(idx);
+        }
+        else if(item == 4) { // 문의 관리
+            csRepository.deleteByCsIdx(idx);
+        }
+        return "";
+    }
 
     @Override
     public String craeteAttraction(AttrMngRequestDTO requestDTO) {
@@ -63,9 +118,14 @@ public class AdminServicesImpl implements AdminServices {
         RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
         // idx 생성을 위해 기존 정보를 가져온다.
         List<AttractionEntity> attrList = attractionRepository.findAllByRegionEntity_RegionIdx(regionEntity.getRegionIdx());
+        log.info("{}", regionEntity.getRegionIdx());
+        log.info("{}", attrList.size());
+        log.info("{}", attrList.get(attrList.size()-1).getAttrIdx());
+        long attractionOffset = Long.parseLong(String.valueOf(attrList.get(attrList.size()-1).getAttrIdx()).substring(2))+1;
         // Entity 생성
+        log.info("{}", attractionOffset);
         AttractionEntity attrEntity = AttractionEntity.builder()
-                .attrIdx(Long.parseLong(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attrList.size() + 1))))
+                .attrIdx(Long.parseLong(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attractionOffset))))
                 .address(requestDTO.getAddress())
                 .description(requestDTO.getDescription())
                 .latitude(requestDTO.getLatitude())
@@ -79,6 +139,7 @@ public class AdminServicesImpl implements AdminServices {
         // 이미지 추가
         if (requestDTO.getImages().get(0) != null) {
             int imageIdx = 1;
+            long attrIdx = attractionOffset;
 
             for(MultipartFile createImage : requestDTO.getImages()) {
                 if (createImage.getContentType().startsWith("image") == false) break;
@@ -97,7 +158,7 @@ public class AdminServicesImpl implements AdminServices {
                         requestDTO.getThumbnail(),
                         attrEntity,
                         createImage,
-                        Long.valueOf(String.valueOf(requestDTO.getAttrIdx()).concat(String.valueOf(imageIdx++)))
+                        Long.valueOf(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attrIdx).concat(String.valueOf(imageIdx++))))
                 );
                 attractionImageRepository.save(attractionImageEntity);
             }
@@ -118,9 +179,8 @@ public class AdminServicesImpl implements AdminServices {
         attractionRepository.patchAttraction(attrEntity);
 
         // 이미지 수정
-        // 1. 삭제할 이미지의 idx를 가져와서 DB와 저장소에서 삭제한다.
-        // 2. attrImgIdx를 새로 할당해준다.
-        // 3. 새로 받은 이미지를 저장소와 DB에 저장해준다.
+        // 1. 삭제할 이미지의 idx를 가져와서 DB와 저장소에서 삭제한다.=
+        // 2. 새로 받은 이미지를 저장소와 DB에 저장해준다.
 
         // 기존 이미지를 List로 받아온다.
         List<AttractionImageEntity> attrImage = attractionImageRepository.findAllByAttrEntityAttrIdx(attrEntity.getAttrIdx());

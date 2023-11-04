@@ -26,9 +26,6 @@ public class AdminController {
     //  ⌘ cs Viewer
     //  ⌘ blame Viewer
     //  ⌘ cs 답변
-    //  ⌘ 이미지 삭제
-    //  ⌘ 명소 삭제
-
 
     // http://localhost:2094/api/admin/list?item=2
     // 1. 배너 이미지 관리 / 2. 관광 명소 관리 / 3. 신고관리 / 4. 문의 관리
@@ -41,6 +38,12 @@ public class AdminController {
             @RequestParam(value = "item", required = true, defaultValue = "1") int item,
             @Validated @RequestBody PageRequestDTO pageRequestDTO ) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAdminManagementList(item, pageRequestDTO));
+    }
+
+    @DeleteMapping(value =  "/delete")
+    public ResponseEntity deleteAdminMngList(@RequestParam(value = "item", required = true, defaultValue = "1") int item,
+                                             @RequestParam(value = "idx", required = true) long idx) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.deleteAdminItem(item, idx));
     }
 
     // http://localhost:2094/api/admin/banner/upload
@@ -63,6 +66,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
     }
 
+    // http://localhost:2094/api/admin/attraction/create
     @PostMapping("/attraction/create")
     public ResponseEntity<String> createAttraction(AttrMngRequestDTO attrMngRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));

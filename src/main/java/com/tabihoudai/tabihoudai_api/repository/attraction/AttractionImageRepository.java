@@ -31,5 +31,9 @@ public interface AttractionImageRepository extends JpaRepository<AttractionImage
     void deleteByAttrImgIdx(@Param("attrImgIdx") Long attrImgIdx);
 
     AttractionImageEntity findByAttrImgIdx(@Param("attrImgIdx") Long attrImgIdx);
+    List<AttractionImageEntity> findByAttrEntity_AttrIdx(@Param("attrImgIdx") Long attrImgIdx);
     AttractionImageEntity findByPath(@Param("path") String path);
+
+    @Transactional
+    void deleteByAttrEntity_AttrIdx(@Param("attrIdx") long attrIdx);
 }

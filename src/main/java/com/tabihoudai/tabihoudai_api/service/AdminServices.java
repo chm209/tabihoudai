@@ -19,6 +19,7 @@ public interface AdminServices {
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
     String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
     String craeteAttraction(AttrMngRequestDTO requestDTO);
+    String deleteAdminItem(int item, long idx);
 
     default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
