@@ -25,6 +25,7 @@ public class AdminController {
     //  ⌘ Admin 필터 처리
     //  ⌘ cs Viewer
     //  ⌘ blame Viewer
+    //  ⌘ user block
     //  ⌘ cs 답변
 
     // http://localhost:2094/api/admin/list?item=2
@@ -40,6 +41,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAdminManagementList(item, pageRequestDTO));
     }
 
+    // http://localhost:2094/api/admin/delete?item=2&idx=1743
     @DeleteMapping(value =  "/delete")
     public ResponseEntity deleteAdminMngList(@RequestParam(value = "item", required = true, defaultValue = "1") int item,
                                              @RequestParam(value = "idx", required = true) long idx) {
@@ -70,5 +72,10 @@ public class AdminController {
     @PostMapping("/attraction/create")
     public ResponseEntity<String> createAttraction(AttrMngRequestDTO attrMngRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
+    }
+
+    @GetMapping("/blame/viewer")
+    public ResponseEntity<AdminDTO.blameDetailInfo> getBlameDetailViewer(@RequestParam(value = "id", required = true) long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getBlameDetailViewer(id));
     }
 }

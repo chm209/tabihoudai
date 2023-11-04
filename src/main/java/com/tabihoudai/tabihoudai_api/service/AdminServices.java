@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.*;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
@@ -20,6 +21,7 @@ public interface AdminServices {
     String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
     String craeteAttraction(AttrMngRequestDTO requestDTO);
     String deleteAdminItem(int item, long idx);
+    AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
 
     default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
@@ -100,5 +102,21 @@ public interface AdminServices {
                         .address((String) attrEntity[3])
                         .name((String) attrEntity[4])
                         .build();
+    }
+
+    default AdminDTO.blameDetailInfo blameEntityToDto(BlameEntity blameEntity) {
+        return AdminDTO.blameDetailInfo.builder()
+                .userIdx(blameEntity.getUsersEntity().getUserIdx())
+                .contentIdx(
+                        !String.valueOf(blameEntity.getAttrReplyEntity().getAttrReplyIdx()).isEmpty() ? blameEntity.getAttrReplyEntity().getAttrReplyIdx()
+                                : !String.valueOf(blameEntity.getBoardEntity().getBoardIdx()).isEmpty() ? blameEntity.getBoardEntity().getBoardIdx()
+                                : !String.valueOf(blameEntity.getBoardReplyEntity().getBoardReplyIdx()).isEmpty() ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
+                                : !String.valueOf(blameEntity.getPlanEntity().getPlanIdx()).isEmpty() ? blameEntity.getPlanEntity().getPlanIdx()
+                                :  blameEntity.getPlanReplyEntity().getPlanReplyIdx()
+                )
+                .blameContent(blameEntity.getCategory())
+                .content(blameEntity.getContent())
+                .date(blameEntity.getBlameDate())
+                .build();
     }
 }

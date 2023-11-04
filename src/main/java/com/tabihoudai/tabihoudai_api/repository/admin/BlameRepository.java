@@ -12,4 +12,5 @@ public interface BlameRepository extends JpaRepository<BlameEntity, Long>, Blame
     Page<BlameEntity> findAllByOrderByBlameDateDesc(Pageable pageable);
     @Transactional
     void deleteByBlameIdx(@Param("blameIdx") long blameIdx);
+    BlameEntity findByBlameIdx(@Param("blameIdx") long blameIdx);
 }

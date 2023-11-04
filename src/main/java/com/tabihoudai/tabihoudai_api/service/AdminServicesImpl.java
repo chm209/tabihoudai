@@ -5,6 +5,7 @@ import com.tabihoudai.tabihoudai_api.dto.AttrMngRequestDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageRequestDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionReplyEntity;
@@ -279,6 +280,12 @@ public class AdminServicesImpl implements AdminServices {
     public AdminDTO.attrDetailData getAttrDetailData(long attrIdx) {
         List<AttractionImageEntity> attrImageResult = attractionImageRepository.findAllByAttrEntityAttrIdx(attrIdx);
         return attrDetailEntityToDto(attrImageResult);
+    }
+
+    @Override
+    public AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx) {
+        BlameEntity blameEntity = blameRepository.findByBlameIdx(blameIdx);
+        return blameEntityToDto(blameEntity);
     }
 
     @Override
