@@ -22,6 +22,7 @@ public interface AdminServices {
     String craeteAttraction(AttrMngRequestDTO requestDTO);
     String deleteAdminItem(int item, long idx);
     AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
+    String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
 
     default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
@@ -107,12 +108,12 @@ public interface AdminServices {
     default AdminDTO.blameDetailInfo blameEntityToDto(BlameEntity blameEntity) {
         return AdminDTO.blameDetailInfo.builder()
                 .userIdx(blameEntity.getUsersEntity().getUserIdx())
-                .contentIdx(
-                        !String.valueOf(blameEntity.getAttrReplyEntity().getAttrReplyIdx()).isEmpty() ? blameEntity.getAttrReplyEntity().getAttrReplyIdx()
-                                : !String.valueOf(blameEntity.getBoardEntity().getBoardIdx()).isEmpty() ? blameEntity.getBoardEntity().getBoardIdx()
-                                : !String.valueOf(blameEntity.getBoardReplyEntity().getBoardReplyIdx()).isEmpty() ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
-                                : !String.valueOf(blameEntity.getPlanEntity().getPlanIdx()).isEmpty() ? blameEntity.getPlanEntity().getPlanIdx()
-                                :  blameEntity.getPlanReplyEntity().getPlanReplyIdx()
+                .blameIdx(blameEntity.getBlameIdx())
+                .contentIdx(!(blameEntity.getAttrReplyEntity() == null) ? blameEntity.getAttrReplyEntity().getAttrReplyIdx()
+                                : !(blameEntity.getBoardEntity() == null) ? blameEntity.getBoardEntity().getBoardIdx()
+                                : !(blameEntity.getBoardReplyEntity() == null) ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
+                                : !(blameEntity.getPlanEntity() == null) ? blameEntity.getPlanEntity().getPlanIdx()
+                                : blameEntity.getPlanReplyEntity().getPlanReplyIdx()
                 )
                 .blameContent(blameEntity.getCategory())
                 .content(blameEntity.getContent())

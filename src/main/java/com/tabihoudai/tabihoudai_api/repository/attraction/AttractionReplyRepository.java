@@ -12,4 +12,7 @@ public interface AttractionReplyRepository extends JpaRepository<AttractionReply
 
     @Transactional
     void deleteByAttrEntity_AttrIdx(@Param("attrIdx") long attrIdx);
+
+    @Transactional
+    void deleteByAttrReplyIdx(@Param("attrReplyIdx") long attrReplyIdx);
 }

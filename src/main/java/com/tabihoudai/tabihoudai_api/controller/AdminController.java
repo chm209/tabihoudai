@@ -74,8 +74,15 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
     }
 
+    // http://localhost:2094/api/admin/blame/viewer?id=293
     @GetMapping("/blame/viewer")
     public ResponseEntity<AdminDTO.blameDetailInfo> getBlameDetailViewer(@RequestParam(value = "id", required = true) long id) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getBlameDetailViewer(id));
+    }
+
+    @PostMapping(value =  "/user/manage", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity userBlockManager(@RequestParam(value = "id", required = true) long id,
+            @Validated @RequestBody AdminDTO.userBlockRequestDto userBlockRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.userBlockManager(id, userBlockRequestDto));
     }
 }

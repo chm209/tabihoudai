@@ -5,8 +5,13 @@ import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
-public interface BlockRepository extends JpaRepository<BlockEntity, Long> {
+import java.util.UUID;
+
+public interface BlockRepository extends JpaRepository<BlockEntity, Long>, BlockRepositoryCustom {
 
     Page<BlockEntity> findAllByOrderByStartDateDesc(Pageable pageable);
+
+    BlockEntity findByUsersEntity_UserIdx(@Param("userIdx") UUID userIdx);
 }

@@ -6,20 +6,27 @@ import com.tabihoudai.tabihoudai_api.dto.PageRequestDTO;
 import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BannerRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
+import com.tabihoudai.tabihoudai_api.repository.admin.BlockRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.CsRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionImageRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
+import com.tabihoudai.tabihoudai_api.repository.board.BoardLikeRepository;
+import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
+import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanLikeRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
+import com.tabihoudai.tabihoudai_api.repository.users.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,10 +35,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -39,33 +46,28 @@ import java.util.List;
 @Slf4j
 public class AdminServicesImpl implements AdminServices {
 
-    @Autowired
     private final BannerRepository bannerRepository;
-
-    @Autowired
+    private final BoardReplyRepository boardReplyRepository;
+    private final BoardLikeRepository boardLikeRepository;
+    private final BoardRepository boardRepository;
+    private final PlanRepository planRepository;
+    private final PlanLikeRepository planLikeRepository;
+    private final PlanReplyRepository planReplyRepository;
     private final BlameRepository blameRepository;
-
-    @Autowired
+    private final BlockRepository blockRepository;
     private final CsRepository csRepository;
-
-    @Autowired
     private final AttractionRepository attractionRepository;
-
-    @Autowired
     private final AttractionImageRepository attractionImageRepository;
-
-    @Autowired
     private final AttractionReplyRepository attractionReplyRepository;
-
-    @Autowired
     private final RegionRepository regionRepository;
+    private final UsersRepository usersRepository;
 
     @Value("${com.tabihoudai.upload.path}")
     private String uploadPath;
 
     @Override
     public String deleteAdminItem(int item, long idx) {
-        if(item == 1) { // 배너 이미지
+        if (item == 1) { // 배너 이미지
             BannerEntity banner = bannerRepository.findByBannerIdx(idx);
             // 로컬에서 이미지 삭제
             File file = new File(banner.getPath());
@@ -74,40 +76,39 @@ public class AdminServicesImpl implements AdminServices {
                 else System.out.println("이미지 삭제 실패");
             } else System.out.println("파일이 존재하지 않습니다.");
             bannerRepository.deleteByBannerIdx(idx);
-        }
-        else if(item == 2) { // 관광 명소 관리
+        } else if (item == 2) { // 관광 명소 관리
             List<AttractionImageEntity> attrImage = attractionImageRepository.findByAttrEntity_AttrIdx(idx);
             String[] path = attrImage.get(0).getPath().split("/");
             String forderPath = "";
-            out:for(String str : path) {
-                if(str.equals(path[path.length-1])) break out;
+            for (String str : path) {
+                if (str.equals(path[path.length - 1])) break;
                 forderPath = forderPath.concat(str + File.separator);
             }
             File folder = new File(forderPath);
 
             try {
-                while(folder.exists()) {
+                while (folder.exists()) {
                     File[] folderList = folder.listFiles();
 
-                    for(int offset = 0 ; offset < folderList.length; offset++) {
+                    for (int offset = 0; offset < folderList.length; offset++) {
                         folderList[offset].delete();
                         System.out.println("파일 삭제");
                     }
-                    if(folderList.length == 0 && folder.isDirectory()) {
+                    if (folderList.length == 0 && folder.isDirectory()) {
                         folder.delete();
                         System.out.println("폴더 삭제");
                     }
                 }
-            } catch (Exception e) { e.getStackTrace(); }
+            } catch (Exception e) {
+                e.getStackTrace();
+            }
 
             attractionImageRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionReplyRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionRepository.deleteByAttrIdx(idx);
-        }
-        else if(item == 3) { // 신고 관리
+        } else if (item == 3) { // 신고 관리
             blameRepository.deleteByBlameIdx(idx);
-        }
-        else if(item == 4) { // 문의 관리
+        } else if (item == 4) { // 문의 관리
             csRepository.deleteByCsIdx(idx);
         }
         return "";
@@ -121,8 +122,8 @@ public class AdminServicesImpl implements AdminServices {
         List<AttractionEntity> attrList = attractionRepository.findAllByRegionEntity_RegionIdx(regionEntity.getRegionIdx());
         log.info("{}", regionEntity.getRegionIdx());
         log.info("{}", attrList.size());
-        log.info("{}", attrList.get(attrList.size()-1).getAttrIdx());
-        long attractionOffset = Long.parseLong(String.valueOf(attrList.get(attrList.size()-1).getAttrIdx()).substring(2))+1;
+        log.info("{}", attrList.get(attrList.size() - 1).getAttrIdx());
+        long attractionOffset = Long.parseLong(String.valueOf(attrList.get(attrList.size() - 1).getAttrIdx()).substring(2)) + 1;
         // Entity 생성
         log.info("{}", attractionOffset);
         AttractionEntity attrEntity = AttractionEntity.builder()
@@ -142,7 +143,7 @@ public class AdminServicesImpl implements AdminServices {
             int imageIdx = 1;
             long attrIdx = attractionOffset;
 
-            for(MultipartFile createImage : requestDTO.getImages()) {
+            for (MultipartFile createImage : requestDTO.getImages()) {
                 if (createImage.getContentType().startsWith("image") == false) break;
                 // 경로 지정
                 String fileName = createImage.getOriginalFilename();
@@ -152,7 +153,8 @@ public class AdminServicesImpl implements AdminServices {
 
                 try {
                     createImage.transferTo(imageSavePath);
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                }
                 // DB에 추가
                 AttractionImageEntity attractionImageEntity = attrImgDtoToEntity(
                         imageSavePath,
@@ -178,10 +180,6 @@ public class AdminServicesImpl implements AdminServices {
         AttractionEntity attrEntity = attrDtoToEntity(originalAttrEntity, requestDTO, regionEntity);
         // Attraction 정보부터 patch 한다.
         attractionRepository.patchAttraction(attrEntity);
-
-        // 이미지 수정
-        // 1. 삭제할 이미지의 idx를 가져와서 DB와 저장소에서 삭제한다.=
-        // 2. 새로 받은 이미지를 저장소와 DB에 저장해준다.
 
         // 기존 이미지를 List로 받아온다.
         List<AttractionImageEntity> attrImage = attractionImageRepository.findAllByAttrEntityAttrIdx(attrEntity.getAttrIdx());
@@ -241,7 +239,7 @@ public class AdminServicesImpl implements AdminServices {
         }
         // 메인 이미지 변경
         attrImage = attractionImageRepository.findAllByAttrEntityAttrIdx(attrEntity.getAttrIdx());
-        for(AttractionImageEntity offset : attrImage) {
+        for (AttractionImageEntity offset : attrImage) {
             String folderPath = makeForder("attraction/" + attrEntity.getAttrIdx());
             String save = uploadPath + File.separator + folderPath + File.separator + requestDTO.getThumbnail();
             attractionRepository.patchThumnails(save, offset.getAttrImgIdx());
@@ -266,7 +264,7 @@ public class AdminServicesImpl implements AdminServices {
         } else if (item == 3) { // 신고 관리
             PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("blameIdx").descending());
             Page<Object[]> list = blameRepository.getBlamePage(pageRequest);
-            Page<AdminDTO.attrInfo> result = list.map(objects -> attrEntityToDto(objects));
+            Page<AdminDTO.blameInfo> result = list.map(objects -> blameEntityToDto(objects));
             return new PageResultDTO<>(result);
         } else { // 문의 관리
             PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("csIdx").descending());
@@ -289,6 +287,58 @@ public class AdminServicesImpl implements AdminServices {
     }
 
     @Override
+    public String userBlockManager(long blameIdx, AdminDTO.userBlockRequestDto userBlockRequestDto) {
+        // 1. blameIdx로 검색
+        BlameEntity blame = blameRepository.findByBlameIdx(blameIdx);
+        // 2. 유저Idx랑 비교해서 동일한지 검사
+        if (blame.getUsersEntity().getUserIdx().equals(userBlockRequestDto.getUserIdx())) {
+            // 3. 동일하면 시간 설정을 위해 기존 차단 내역을 가져온다.
+            BlockEntity originalBlock = blockRepository.findByUsersEntity_UserIdx(blame.getUsersEntity().getUserIdx());
+            if (originalBlock == null) { // 첫 차단
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, 3);
+                java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
+                usersRepository.patchUsersBlockCondition(blame.getUsersEntity()); // 유저 차단
+                BlockEntity newBlock = BlockEntity.builder()
+                        .count((byte) 1)
+                        .endDate(endDate)
+                        .usersEntity(blame.getUsersEntity())
+                        .build();
+                blockRepository.save(newBlock); // 차단
+                // 컨텐츠 삭제
+                blockAndDelete(blame, userBlockRequestDto);
+            } else if (originalBlock.getCount() == 1) { // 두 번째 차단
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, 7);
+                java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
+                usersRepository.patchUsersBlockCondition(blame.getUsersEntity()); // 유저 차단
+                BlockEntity newBlock = BlockEntity.builder()
+                        .count((byte) 2)
+                        .endDate(endDate)
+                        .usersEntity(blame.getUsersEntity())
+                        .build();
+                blockRepository.patchBlockManager(newBlock); // 차단
+                // 컨텐츠 삭제
+                blockAndDelete(blame, userBlockRequestDto);
+            } else if (originalBlock.getCount() == 2) { // 세 번째 차단 (영구 차단)
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.YEAR, 100);
+                java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
+                usersRepository.patchUsersBlockCondition(blame.getUsersEntity()); // 유저 차단
+                BlockEntity newBlock = BlockEntity.builder()
+                        .count((byte) 3)
+                        .endDate(endDate)
+                        .usersEntity(blame.getUsersEntity())
+                        .build();
+                blockRepository.patchBlockManager(newBlock); // 차단
+                // 컨텐츠 삭제
+                blockAndDelete(blame, userBlockRequestDto);
+            }
+        } else return "유저 정보가 올바르지 않습니다.";
+        return "차단 완료";
+    }
+
+    @Override
     public String uploadBannerImage(MultipartFile uploadFile) {
         if (uploadFile.getContentType().startsWith("image") == false) {
             return "fail";
@@ -303,6 +353,30 @@ public class AdminServicesImpl implements AdminServices {
         } catch (IOException e) {
         }
         return "success";
+    }
+
+    private void blockAndDelete(BlameEntity blame, AdminDTO.userBlockRequestDto userBlockRequestDto) {
+        // CASCADE.ALL은 자제하는게 좋다고 해서 직접 지워줌
+        if (blame.getBoardReplyEntity() != null && (blame.getBoardReplyEntity().getBoardReplyIdx() == userBlockRequestDto.getContentIdx())) {
+            blameRepository.deleteByBlameIdx(blame.getBlameIdx());
+            boardReplyRepository.deleteByBoardReplyIdx(userBlockRequestDto.getContentIdx());
+        } else if (blame.getAttrReplyEntity() != null && (blame.getAttrReplyEntity().getAttrReplyIdx() == userBlockRequestDto.getContentIdx())) {
+            blameRepository.deleteByBlameIdx(blame.getBlameIdx());
+            attractionReplyRepository.deleteByAttrReplyIdx(userBlockRequestDto.getContentIdx());
+        } else if (blame.getBoardEntity() != null && (blame.getBoardEntity().getBoardIdx() == userBlockRequestDto.getContentIdx())) {
+            blameRepository.deleteByBlameIdx(blame.getBlameIdx());
+            boardReplyRepository.deleteByBoardEntity_BoardIdx(userBlockRequestDto.getContentIdx());
+            boardLikeRepository.deleteByBoardEntity_BoardIdx(userBlockRequestDto.getContentIdx());
+            boardRepository.deleteByBoardIdx(userBlockRequestDto.getContentIdx());
+        } else if (blame.getPlanEntity() != null && (blame.getPlanEntity().getPlanIdx() == userBlockRequestDto.getContentIdx())) {
+            blameRepository.deleteByBlameIdx(blame.getBlameIdx());
+            planLikeRepository.deleteByPlanEntity_PlanIdx(userBlockRequestDto.getContentIdx());
+            planReplyRepository.deleteByPlanEntity_PlanIdx(userBlockRequestDto.getContentIdx());
+            planRepository.deleteByPlanIdx(userBlockRequestDto.getContentIdx());
+        } else if (blame.getPlanReplyEntity() != null && (blame.getPlanReplyEntity().getPlanReplyIdx() == userBlockRequestDto.getContentIdx())) {
+            blameRepository.deleteByBlameIdx(blame.getBlameIdx());
+            planReplyRepository.deleteByPlanReplyIdx(userBlockRequestDto.getContentIdx());
+        }
     }
 
     private String makeForder(String path) {

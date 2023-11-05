@@ -7,17 +7,23 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.tabihoudai.tabihoudai_api.entity.admin.QBlameEntity.blameEntity;
+import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionImageEntity.attractionImageEntity;
 
 @Repository
 @Slf4j
@@ -25,7 +31,8 @@ public class BlameRepositoryCustomImpl implements BlameRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-
+    @PersistenceContext
+    EntityManager em;
     public BlameRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
