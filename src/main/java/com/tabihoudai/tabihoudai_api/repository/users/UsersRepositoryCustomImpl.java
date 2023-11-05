@@ -19,12 +19,21 @@ public class UsersRepositoryCustomImpl implements UsersRepositoryCustom {
     }
 
     @Transactional
-    public void patchUsersBlockCondition(UsersEntity user) {
-        jpaQueryFactory
+    public void patchUsersBlockCondition(UsersEntity user, int flag) {
+        if(flag == 0) { // 차단
+            jpaQueryFactory
                 .update(usersEntity)
                 .set(usersEntity.block, (byte) 1)
                 .where(usersEntity.userIdx.eq(user.getUserIdx()))
                 .execute();
+        }
+        else {
+            jpaQueryFactory
+                .update(usersEntity)
+                .set(usersEntity.block, (byte) 0)
+                .where(usersEntity.userIdx.eq(user.getUserIdx()))
+                .execute();
+        }
         em.flush();
         em.clear();
     }

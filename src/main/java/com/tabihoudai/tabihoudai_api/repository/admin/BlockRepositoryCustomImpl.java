@@ -27,6 +27,7 @@ public class BlockRepositoryCustomImpl implements BlockRepositoryCustom {
                 .update(blockEntity)
                 .set(blockEntity.count, block.getCount())
                 .set(blockEntity.endDate, block.getEndDate())
+                .where(blockEntity.usersEntity.userIdx.eq(block.getUsersEntity().getUserIdx()))
                 .execute();
         em.flush();
         em.clear();

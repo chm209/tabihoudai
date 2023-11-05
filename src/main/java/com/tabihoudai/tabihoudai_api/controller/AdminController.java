@@ -24,7 +24,6 @@ public class AdminController {
     // -----------------------
     //  ⌘ Admin 필터 처리
     //  ⌘ cs Viewer
-    //  ⌘ blame Viewer
     //  ⌘ user block
     //  ⌘ cs 답변
 
