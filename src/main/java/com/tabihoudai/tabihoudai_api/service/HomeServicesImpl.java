@@ -38,10 +38,13 @@ public class HomeServicesImpl implements HomeServices{
     private final RegionRepository regionRepository;
 
     @Override
-    public List<AdminDTO.bannerInfo> getBanner() {
-        List<BannerEntity> entityList = bannerRepository.findAll();
-        return entityList.stream().map(this::entityToDto).collect(Collectors.toList());
+    public AdminDTO.bannerInfoResponse getBanner() {
+        List<BannerEntity> bannerList = bannerRepository.findAll();
+        List<AdminDTO.mainBannerData> bannerListDto = bannerList.stream().map(this::entityToDto).collect(Collectors.toList());
+        return new AdminDTO.bannerInfoResponse<>(bannerListDto);
     }
+
+    
 
     @Override
     public List<AttractionDTO.attrPreview> getAttraction(int area, Integer city) {

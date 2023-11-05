@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface HomeServices {
-    List<AdminDTO.bannerInfo> getBanner();
+    AdminDTO.bannerInfoResponse getBanner();
     List<AttractionDTO.attrPreview> getAttraction(int area, Integer city);
     List<BoardDTO.recentBoard> getBoard();
     List<PlanDTO.bestPlan> getBestPlan(Integer area);
@@ -28,11 +28,9 @@ public interface HomeServices {
         return Integer.valueOf(area) / 10;
     }
 
-    default AdminDTO.bannerInfo entityToDto(BannerEntity banner) {
-        return AdminDTO.bannerInfo.builder()
-                .bannerIdx(banner.getBannerIdx())
+    default AdminDTO.mainBannerData entityToDto(BannerEntity banner) {
+        return AdminDTO.mainBannerData.builder()
                 .path(banner.getPath())
-                .regDate(banner.getRegDate())
                 .build();
     }
 

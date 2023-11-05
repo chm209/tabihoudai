@@ -19,11 +19,9 @@ public class HomeController {
 
     private final HomeServices homeServices;
 
-    // http://localhost:2094/api/main/banner
     @GetMapping("/banner")
-    public ResponseEntity<List<AdminDTO.bannerInfo>> getBanner() {
-        List<AdminDTO.bannerInfo> list = homeServices.getBanner();
-        return ResponseEntity.status(HttpStatus.OK).body(list);
+    public ResponseEntity<AdminDTO.bannerInfoResponse> getBanner() {
+        return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBanner());
     }
 
     // http://localhost:2094/api/main/attraction?area=10&city=13
