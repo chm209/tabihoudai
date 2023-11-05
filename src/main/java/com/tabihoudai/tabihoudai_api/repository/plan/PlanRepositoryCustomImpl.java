@@ -21,59 +21,58 @@ public class PlanRepositoryCustomImpl implements PlanRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<Object[]> getBestPlan() {
-        List<Tuple> result = queryFactory
-                .select(planEntity.planIdx,
-                        planEntity.dateFrom,
-                        planEntity.dateTo,
-                        planEntity.title,
-                        planEntity.attrList,
-                        usersEntity.nickname)
-                .from(planEntity)
-                .leftJoin(planLikeEntity)
-                .on(planEntity.planIdx.eq(planLikeEntity.planLikeIdx))
-                .leftJoin(usersEntity)
-                .on(planEntity.usersEntity.userIdx.eq(usersEntity.userIdx))
-                .groupBy(planEntity.planIdx,
-                        planEntity.dateFrom,
-                        planEntity.dateTo,
-                        planEntity.title,
-                        planEntity.attrList,
-                        usersEntity.nickname,
-                        planLikeEntity.planEntity.planIdx)
-                .orderBy(planLikeEntity.planEntity.planIdx.count().desc())
-                .limit(5)
-                .fetch();
-        log.info("{}", result.stream().toList());
-        return result.stream().map(Tuple::toArray).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Object[]> getAreaBestPlan(Integer area) {
-        List<Tuple> result = queryFactory
-                .select(planEntity.planIdx,
-                        planEntity.dateFrom,
-                        planEntity.dateTo,
-                        planEntity.title,
-                        planEntity.attrList,
-                        usersEntity.nickname)
-                .from(planEntity)
-                .leftJoin(planLikeEntity)
-                .on(planEntity.planIdx.eq(planLikeEntity.planLikeIdx))
-                .leftJoin(usersEntity)
-                .on(planEntity.usersEntity.userIdx.eq(usersEntity.userIdx))
-                .where(planEntity.attrList.like(Integer.toString(area).concat("%")))
-                .groupBy(planEntity.planIdx,
-                        planEntity.dateFrom,
-                        planEntity.dateTo,
-                        planEntity.title,
-                        planEntity.attrList,
-                        usersEntity.nickname,
-                        planLikeEntity.planEntity.planIdx)
-                .orderBy(planLikeEntity.planEntity.planIdx.count().desc())
-                .limit(5)
-                .fetch();
-        log.info("{}", result.stream().toList());
+    public List<Object[]> getAllPlan(Integer area) {
+        List<Tuple> result;
+        if (area == null) {
+            result = queryFactory
+                    .select(planEntity.planIdx,
+                            planEntity.dateFrom,
+                            planEntity.dateTo,
+                            planEntity.title,
+                            planEntity.attrList,
+                            planLikeEntity.planLikeIdx.count(),
+                            usersEntity.nickname)
+                    .from(planEntity)
+                    .leftJoin(planLikeEntity)
+                    .on(planEntity.planIdx.eq(planLikeEntity.planEntity.planIdx))
+                    .leftJoin(usersEntity)
+                    .on(planEntity.usersEntity.userIdx.eq(usersEntity.userIdx))
+                    .groupBy(planEntity.planIdx,
+                            planEntity.dateFrom,
+                            planEntity.dateTo,
+                            planEntity.title,
+                            planEntity.attrList,
+                            usersEntity.nickname,
+                            planLikeEntity.planEntity.planIdx)
+                    .orderBy(planLikeEntity.planEntity.planIdx.count().desc())
+                    .limit(5)
+                    .fetch();
+        } else {
+            result = queryFactory
+                    .select(planEntity.planIdx,
+                            planEntity.dateFrom,
+                            planEntity.dateTo,
+                            planEntity.title,
+                            planEntity.attrList,
+                            planLikeEntity.planLikeIdx.count(),
+                            usersEntity.nickname)
+                    .from(planEntity)
+                    .leftJoin(planLikeEntity)
+                    .on(planEntity.planIdx.eq(planLikeEntity.planEntity.planIdx))
+                    .leftJoin(usersEntity)
+                    .on(planEntity.usersEntity.userIdx.eq(usersEntity.userIdx))
+                    .where(planEntity.attrList.like(Integer.toString(area).concat("%")))
+                    .groupBy(planEntity.planIdx,
+                            planEntity.dateFrom,
+                            planEntity.dateTo,
+                            planEntity.title,
+                            planEntity.attrList,
+                            usersEntity.nickname,
+                            planLikeEntity.planEntity.planIdx)
+                    .orderBy(planLikeEntity.planEntity.planIdx.count().desc())
+                    .limit(5)
+                    .fetch();
+        }
         return result.stream().map(Tuple::toArray).collect(Collectors.toList());
     }
 }

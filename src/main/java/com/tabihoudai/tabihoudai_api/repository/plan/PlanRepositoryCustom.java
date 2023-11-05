@@ -4,6 +4,5 @@ import java.util.List;
 
 public interface PlanRepositoryCustom {
 
-    List<Object[]> getBestPlan();
-    List<Object[]> getAreaBestPlan(Integer area);
+    List<Object[]> getAllPlan(Integer area);
 }

@@ -63,8 +63,18 @@ public class HomeServicesImpl implements HomeServices{
                 result.remove(offset);
             }
         }
-        List<AttractionDTO.mainAttractionData> collect = result.stream().map(this::entityToDto).collect(Collectors.toList());
-        return new AttractionDTO.attractionInfoResponse<>(collect);
+        List<AttractionDTO.mainAttractionData> attractionDataList = result.stream().map(this::entityToDto).collect(Collectors.toList());
+        return new AttractionDTO.attractionInfoResponse<>(attractionDataList);
+    }
+
+    @Override
+    public PlanDTO.planInfoResponse getPlan(Integer area) {
+        List<Object[]> planList = planRepository.getAllPlan(area);
+        List<String> planAttrImgList = planList.stream().map(this::extractPlanAttrImage).toList();
+        String[] mostPlanAttrImgList = planAttrImgList.get(0).split(",");
+        AttractionImageEntity attractionImage = attractionImageRepository.findByAttrEntity_AttrIdxAndType(Long.parseLong(mostPlanAttrImgList[0]), '1');
+        List<PlanDTO.mainPlanData> planDataList = planList.stream().map(objects -> entityToDto(objects, attractionImage)).collect(Collectors.toList());
+        return new PlanDTO.planInfoResponse<>(planDataList);
     }
 
 
@@ -81,15 +91,5 @@ public class HomeServicesImpl implements HomeServices{
         List<RegionEntity> regionEntities = regionRepository.findCity((long) (area / 10));
         List<AttractionDTO.cityList> result = regionEntities.stream().map(regionEntity -> regionEntityToDto(regionEntity)).collect(Collectors.toList());
         return new AttractionDTO.resultCity(result);
-    }
-
-    @Override
-    public List<PlanDTO.bestPlan> getBestPlan(Integer area) {
-        List<Object[]> planList = (area == null ? planRepository.getBestPlan() : planRepository.getAreaBestPlan(areaFactory(area)));
-        List<String> planAttr = planList.stream().map(this::planImage).toList();
-        String[] str = planAttr.get(0).split(",");
-        String thumbnails = str[0];
-        AttractionImageEntity bestAttrImage = attractionImageRepository.getInfo(Long.parseLong(thumbnails));
-        return planList.stream().map(objects -> bestPlanEntityToDto(objects, bestAttrImage)).collect(Collectors.toList());
     }
 }

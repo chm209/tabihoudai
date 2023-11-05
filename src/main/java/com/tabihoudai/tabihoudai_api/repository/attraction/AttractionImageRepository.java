@@ -10,6 +10,10 @@ import java.nio.file.Path;
 import java.util.List;
 
 public interface AttractionImageRepository extends JpaRepository<AttractionImageEntity, Long> {
+    AttractionImageEntity findByAttrEntity_AttrIdxAndType(@Param("attrIdx") Long attrIdx, @Param("type") char type);
+
+
+
     @Query("SELECT A.attrIdx, A.address, A.attraction, A.description, A.latitude, A.longitude, A.tag, A.regionEntity.regionIdx, " +
             "I.path " +
             "FROM AttractionEntity A " +
@@ -19,11 +23,7 @@ public interface AttractionImageRepository extends JpaRepository<AttractionImage
             "WHERE A.regionEntity.regionIdx = :regionIdx ")
     List<Object[]> findAllByRegionEntity_RegionIdx_city(@Param("regionIdx") Long regionIdx);
 
-    @Query("SELECT AI " +
-            "FROM AttractionImageEntity AI " +
-            "WHERE AI.attrEntity.attrIdx = :attrIdx " +
-            "AND AI.type = '1'  ")
-    AttractionImageEntity getInfo(@Param("attrIdx") Long attrIdx);
+
 
     List<AttractionImageEntity> findAllByAttrEntityAttrIdx(@Param("attrIdx") Long attrIdx);
 
