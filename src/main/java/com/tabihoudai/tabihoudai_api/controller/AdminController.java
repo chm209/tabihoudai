@@ -33,15 +33,15 @@ public class AdminController {
      * { "page" : 2, "size" : 10, "searchArea" : "20", "searchCity" : "1" } // item == 2
      * { "page" : 1, "size" : 10, "searchArea" : "", "searchCity" : "" } // item == 1, 3, 4
      */
-    @PostMapping(value =  "/list", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/list", consumes = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity getAdminManagementList(
             @RequestParam(value = "item", required = true, defaultValue = "1") int item,
-            @Validated @RequestBody PageRequestDTO pageRequestDTO ) {
+            @Validated @RequestBody PageRequestDTO pageRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAdminManagementList(item, pageRequestDTO));
     }
 
     // http://localhost:2094/api/admin/delete?item=2&idx=1743
-    @DeleteMapping(value =  "/delete")
+    @DeleteMapping(value = "/delete")
     public ResponseEntity deleteAdminMngList(@RequestParam(value = "item", required = true, defaultValue = "1") int item,
                                              @RequestParam(value = "idx", required = true) long idx) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.deleteAdminItem(item, idx));
@@ -49,7 +49,7 @@ public class AdminController {
 
     // http://localhost:2094/api/admin/banner/upload
     // form-data: uploadFile, imageFile
-    @PostMapping(value =  "/banner/upload")
+    @PostMapping(value = "/banner/upload")
     public ResponseEntity<String> uploadBannerImage(MultipartFile uploadFile) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.uploadBannerImage(uploadFile));
     }
@@ -73,15 +73,40 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
     }
 
+    // http://localhost:2094/api/admin/cs/viewer?id=246
+    @GetMapping("/cs/viewer")
+    public ResponseEntity<AdminDTO.csDetailInfo> getCsDetailViewer(@RequestParam(value = "id", required = true) long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getCsDetailViewer(id));
+    }
+
+    // http://localhost:2094/api/admin/cs/reply?id=245
+    // { "reply" : "딥변 내용" }
+    @PostMapping(value = "/cs/reply", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> postCsReply(@RequestParam(value = "id", required = true) long id,
+                                              @Validated @RequestBody AdminDTO.CsReplyRequestDto csReplyRequestDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.postCsReply(id, csReplyRequestDto));
+    }
+
     // http://localhost:2094/api/admin/blame/viewer?id=293
     @GetMapping("/blame/viewer")
     public ResponseEntity<AdminDTO.blameDetailInfo> getBlameDetailViewer(@RequestParam(value = "id", required = true) long id) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getBlameDetailViewer(id));
     }
 
-    @PostMapping(value =  "/user/manage", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity userBlockManager(@RequestParam(value = "id", required = true) long id,
-            @Validated @RequestBody AdminDTO.userBlockRequestDto userBlockRequestDto) {
+    // http://localhost:2094/api/admin/user/manage?id=0
+    /* {
+            "userIdx": "fa721489-4a0e-43aa-aba4-b1613384ceec",
+            "flag": 1,
+            "contentIdx": 0
+       } */
+    @PostMapping(value = "/user/manage", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> userBlockManager(@RequestParam(value = "id", required = true) long id,
+                                                   @Validated @RequestBody AdminDTO.userBlockRequestDto userBlockRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.userBlockManager(id, userBlockRequestDto));
+    }
+
+    @GetMapping("/block/cron")
+    public void blockCron() {
+        adminServices.blockCron();
     }
 }

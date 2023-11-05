@@ -2,6 +2,7 @@ package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.*;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
+import com.tabihoudai.tabihoudai_api.entity.admin.CsEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
@@ -23,6 +24,9 @@ public interface AdminServices {
     String deleteAdminItem(int item, long idx);
     AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
     String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
+    AdminDTO.csDetailInfo getCsDetailViewer(long csIdx);
+    String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto);
+    void blockCron();
 
     default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
@@ -84,6 +88,17 @@ public interface AdminServices {
                         .category((byte) blameEntity[1])
                         .content((String) blameEntity[2])
                         .build();
+    }
+
+     default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {
+        return AdminDTO.csDetailInfo.builder()
+                .userIdx(csEntity.getUsersEntity().getUserIdx())
+                .askDate(csEntity.getAskDate())
+                .title(csEntity.getTitle())
+                .content(csEntity.getContent())
+                .reply(csEntity.getReply())
+                .replyDate(csEntity.getReplyDate())
+                .build();
     }
 
     default AdminDTO.csInfo csEntityToDto(Object[] csEntity) {

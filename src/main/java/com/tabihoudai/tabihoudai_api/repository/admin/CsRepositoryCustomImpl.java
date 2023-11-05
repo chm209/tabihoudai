@@ -5,21 +5,29 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.CsEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.tabihoudai.tabihoudai_api.entity.admin.QBlockEntity.blockEntity;
 import static com.tabihoudai.tabihoudai_api.entity.admin.QCsEntity.csEntity;
 
 public class CsRepositoryCustomImpl implements CsRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
+    @PersistenceContext
+    EntityManager em;
 
     public CsRepositoryCustomImpl(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
@@ -40,14 +48,27 @@ public class CsRepositoryCustomImpl implements CsRepositoryCustom {
                 .from(csEntity);
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(csEntity -> new Object[] {
+                result.stream().map(csEntity -> new Object[]{
                         csEntity.getCsIdx(),
                         csEntity.getUsersEntity().getNickname(),
                         csEntity.getType(),
                         csEntity.getContent()}).collect(Collectors.toList()),
                 pageable,
                 countQuery::fetchOne
-                );
+        );
+    }
+
+    @Override
+    @Transactional
+    public void patchCs(long csIdx, String reply) {
+        jpaQueryFactory
+                .update(csEntity)
+                .set(csEntity.reply, reply)
+                .set(csEntity.replyDate, LocalDate.now())
+                .where(csEntity.csIdx.eq(csIdx))
+                .execute();
+        em.flush();
+        em.clear();
     }
 
     private OrderSpecifier[] orderBySort(Sort sort) {

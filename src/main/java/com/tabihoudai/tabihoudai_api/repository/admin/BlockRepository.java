@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface BlockRepository extends JpaRepository<BlockEntity, Long>, BlockRepositoryCustom {
@@ -18,4 +19,5 @@ public interface BlockRepository extends JpaRepository<BlockEntity, Long>, Block
 
     @Transactional
     void deleteByBlockIdx(@Param("blockIdx") long blockIdx);
+    List<BlockEntity> findAll();
 }

@@ -1,5 +1,6 @@
 package com.tabihoudai.tabihoudai_api.repository.admin;
 
+import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.CsEntity;
 import org.springframework.data.domain.Page;
@@ -14,4 +15,6 @@ public interface CsRepository extends JpaRepository<CsEntity, Long>, CsRepositor
 
     @Transactional
     void deleteByCsIdx(@Param("csIdx") long csIdx);
+
+    CsEntity findByCsIdx(@Param("csIdx") long csIdx);
 }

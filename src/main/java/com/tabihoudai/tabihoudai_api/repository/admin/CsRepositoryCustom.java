@@ -5,4 +5,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface CsRepositoryCustom {
     Page<Object[]> getCsPage(Pageable pageable);
+    void patchCs(long csIdx, String reply);
 }

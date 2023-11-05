@@ -7,6 +7,7 @@ import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
+import com.tabihoudai.tabihoudai_api.entity.admin.CsEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
@@ -39,8 +40,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -288,6 +292,44 @@ public class AdminServicesImpl implements AdminServices {
     }
 
     @Override
+    public AdminDTO.csDetailInfo getCsDetailViewer(long csIdx) {
+        CsEntity csEntity = csRepository.findByCsIdx(csIdx);
+        return csEntityToDto(csEntity);
+    }
+
+    @Override
+    public String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto) {
+        csRepository.patchCs(csIdx, csReplyRequestDto.getReply());
+        return "";
+    }
+
+    @Override
+    public void blockCron() {
+        Calendar calendar = Calendar.getInstance();
+        List<BlockEntity> blockEntities = blockRepository.findAll();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
+        String timeNow = simpleDateFormat.format(new java.util.Date(calendar.getTimeInMillis()));
+        String blockTime = "";
+
+        for (BlockEntity block : blockEntities) {
+            blockTime = simpleDateFormat.format(block.getEndDate());
+            if (blockTime.compareTo(timeNow) < 1) {
+                // 날짜가 같거나 지났음
+                UsersEntity user = usersRepository.findByUserIdx(block.getUsersEntity().getUserIdx());
+                // 유저 테이블에서 블락 0 으로 변경
+                usersRepository.patchUsersBlockCondition(user, 1); // 차단 해제
+                java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis()); // 시간 리셋
+                BlockEntity newBlock = BlockEntity.builder()
+                        .count(block.getCount())
+                        .endDate(endDate)
+                        .usersEntity(user)
+                        .build();
+                blockRepository.patchBlockManager(newBlock); // 해제
+            }
+        }
+    }
+
+    @Override
     public String userBlockManager(long blameIdx, AdminDTO.userBlockRequestDto userBlockRequestDto) {
         BlockEntity originalBlock = blockRepository.findByUsersEntity_UserIdx(userBlockRequestDto.getUserIdx());
         Calendar calendar = Calendar.getInstance();
@@ -337,7 +379,7 @@ public class AdminServicesImpl implements AdminServices {
         } else {
             UsersEntity user = usersRepository.findByUserIdx(userBlockRequestDto.getUserIdx());
             // 유저 테이블에서 블락 0 으로 변경
-            usersRepository.patchUsersBlockCondition(user, 1); // 유저 차단
+            usersRepository.patchUsersBlockCondition(user, 1); // 차단 해제
             // 블락 테이블에서 1회면 삭제
             // 2회 이상은 1 차감
             if (originalBlock.getCount() > 1) { // 차감
@@ -347,7 +389,7 @@ public class AdminServicesImpl implements AdminServices {
                         .endDate(endDate)
                         .usersEntity(user)
                         .build();
-                blockRepository.patchBlockManager(newBlock); // 차단
+                blockRepository.patchBlockManager(newBlock); // 해제
             } else { // 삭제
                 blockRepository.deleteByBlockIdx(originalBlock.getBlockIdx());
             }
