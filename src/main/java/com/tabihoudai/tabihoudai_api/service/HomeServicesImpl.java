@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -44,27 +45,30 @@ public class HomeServicesImpl implements HomeServices{
         return new AdminDTO.bannerInfoResponse<>(bannerListDto);
     }
 
-    
-
     @Override
-    public List<AttractionDTO.attrPreview> getAttraction(int area, Integer city) {
-        List<Object[]> resultEntity;
+    public AttractionDTO.attractionInfoResponse getAttraction(int area, Integer city) {
+        List<Object[]> result;
+
         if(city == null) { // main page
-            resultEntity = attractionRepository.findAllByRegionEntity_RegionIdx_area((long) area / 10);
-            Collections.shuffle(resultEntity);
-            for (int k = resultEntity.size()-1; k >= 3; k--) {
-                resultEntity.remove(k);
+            result = attractionRepository.findAllByRegionEntity_RegionIdx_area((long) area / 10);
+            Collections.shuffle(result);
+            for (int offset = result.size()-1; offset >= 3; offset--) {
+                result.remove(offset);
             }
         }
         else { // region selector page
-            resultEntity = attractionRepository.findAllByRegionEntity_RegionIdx_city((long) city);
-            Collections.shuffle(resultEntity);
-            for (int k = resultEntity.size()-1; k >= 6; k--) {
-                resultEntity.remove(k);
+            result = attractionRepository.findAllByRegionEntity_RegionIdx_city((long) city);
+            Collections.shuffle(result);
+            for (int offset = result.size()-1; offset >= 6; offset--) {
+                result.remove(offset);
             }
         }
-        return resultEntity.stream().map(this::entityToDto).collect(Collectors.toList());
+        List<AttractionDTO.mainAttractionData> collect = result.stream().map(this::entityToDto).collect(Collectors.toList());
+        return new AttractionDTO.attractionInfoResponse<>(collect);
     }
+
+
+
 
     @Override
     public List<BoardDTO.recentBoard> getBoard() {

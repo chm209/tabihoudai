@@ -24,17 +24,20 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBanner());
     }
 
-    // http://localhost:2094/api/main/attraction?area=10&city=13
-    // http://localhost:2094/api/main/attraction?area=10
     @GetMapping("/attraction")
-    public ResponseEntity<List<AttractionDTO.attrPreview>> getAttraction(
+    public ResponseEntity<AttractionDTO.attractionInfoResponse> getAttraction(
             @RequestParam(value = "area", required = true, defaultValue = "10") int area,
             @RequestParam(value = "city", required = false) Integer city) {
-
         // Main Screen: city == null
         // Region Selector Screen: city != null
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getAttraction(area, city));
     }
+
+
+
+
+
+
 
     // http://localhost:2094/api/main/board
     @GetMapping("/board")

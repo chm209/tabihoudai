@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface HomeServices {
     AdminDTO.bannerInfoResponse getBanner();
-    List<AttractionDTO.attrPreview> getAttraction(int area, Integer city);
+    AttractionDTO.attractionInfoResponse getAttraction(int area, Integer city);
     List<BoardDTO.recentBoard> getBoard();
     List<PlanDTO.bestPlan> getBestPlan(Integer area);
     AttractionDTO.resultCity<AttractionDTO.cityList> getCityList(Integer area);
@@ -34,23 +34,27 @@ public interface HomeServices {
                 .build();
     }
 
+    default AttractionDTO.mainAttractionData entityToDto(Object[] objects) {
+        return AttractionDTO.mainAttractionData.builder()
+                .attrIdx(Long.parseLong(String.valueOf(objects[0])))
+                .address(String.valueOf(objects[1]))
+                .name(String.valueOf(objects[2]))
+                .tag(String.valueOf(objects[6]))
+                .path(String.valueOf(objects[8]))
+                .build();
+    }
+
+
+
+
+
+
+
     default AttractionDTO.cityList regionEntityToDto(RegionEntity regions) {
         return AttractionDTO.cityList.builder().city(regions.getCity()).build();
     }
 
-    default AttractionDTO.attrPreview entityToDto(Object[] objects) {
-        return AttractionDTO.attrPreview.builder()
-                    .attrIdx(Long.parseLong(String.valueOf(objects[0])))
-                    .address(String.valueOf(objects[1]))
-                    .attraction(String.valueOf(objects[2]))
-                    .description(String.valueOf(objects[3]))
-                    .latitude((Double) objects[4])
-                    .longitude((Double) objects[5])
-                    .tag(String.valueOf(objects[6]))
-                    .regionIdx(Long.parseLong(String.valueOf(objects[7])))
-                    .path(String.valueOf(objects[8]))
-                    .build();
-    }
+
 
     default BoardDTO.recentBoard recentBoardEntityToDto(Object[] objects) {
         return BoardDTO.recentBoard.builder()
