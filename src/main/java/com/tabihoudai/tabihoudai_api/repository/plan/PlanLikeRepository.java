@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface PlanLikeRepository extends JpaRepository<PlanLikeEntity, Long> {
-
     @Transactional
     void deleteByPlanEntity_PlanIdx(@Param("planIdx") long planIdx);
 }

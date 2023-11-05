@@ -8,9 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface PlanReplyRepository extends JpaRepository<PlanReplyEntity, Long> {
-
-    PlanReplyEntity findByPlanReplyIdx(@Param("planReplyIdx") Long planReplyIdx);
-
     @Transactional
     void deleteByPlanReplyIdx(@Param("planReplyIdx") long planReplyIdx);
 

@@ -9,16 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface BoardRepository extends JpaRepository<BoardEntity, Long> {
-
-    BoardEntity findByBoardIdx(@Param("boardIdx") Long boardIdx);
-
-    @Query("SELECT B.boardIdx, B.title, B.regDate, U.nickname " +
+    @Query("SELECT B " +
             "FROM BoardEntity B " +
-            "INNER JOIN UsersEntity U ON " +
-            "U.userIdx = B.usersEntity.userIdx " +
-            "ORDER BY B.regDate " +
+            "ORDER BY B.regDate ASC " +
             "LIMIT 5 ")
-    List<Object[]> getRecentBoard();
+    List<BoardEntity> getBoard();
 
     @Transactional
     void deleteByBoardIdx(@Param("boardIdx") long boardIdx);

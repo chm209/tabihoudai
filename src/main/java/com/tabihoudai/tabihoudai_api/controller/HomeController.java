@@ -39,28 +39,14 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getPlan(area));
     }
 
-
-
-
-
-
-
-    // http://localhost:2094/api/main/board
     @GetMapping("/board")
-    public ResponseEntity<List<BoardDTO.recentBoard>> getBoard() {
+    public ResponseEntity<BoardDTO.boardInfoResponse> getBoard() {
         return ResponseEntity.status(HttpStatus.OK).body(homeServices.getBoard());
     }
 
-
-
-    // http://localhost:2094/api/main/plan
-    // http://localhost:2094/api/main/plan?area=16
-    // Plan 테이블 명소 리스트에 없을 경우 404 에러
     @GetMapping("/city/list")
-    public ResponseEntity<AttractionDTO.resultCity> getCityList(
+    public ResponseEntity<AttractionDTO.regionCityInfoResponse> getCity(
             @RequestParam(value = "area", required = false) Integer area) {
-        return ResponseEntity.status(HttpStatus.OK).body(homeServices.getCityList(area));
+        return ResponseEntity.status(HttpStatus.OK).body(homeServices.getCity(area));
     }
-
-
 }

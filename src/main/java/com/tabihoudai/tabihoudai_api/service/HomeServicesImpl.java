@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class HomeServicesImpl implements HomeServices{
+public class HomeServicesImpl implements HomeServices {
 
     private final BannerRepository bannerRepository;
     private final AttractionRepository attractionRepository;
@@ -49,17 +49,16 @@ public class HomeServicesImpl implements HomeServices{
     public AttractionDTO.attractionInfoResponse getAttraction(int area, Integer city) {
         List<Object[]> result;
 
-        if(city == null) { // main page
+        if (city == null) { // main page
             result = attractionRepository.findAllByRegionEntity_RegionIdx_area((long) area / 10);
             Collections.shuffle(result);
-            for (int offset = result.size()-1; offset >= 3; offset--) {
+            for (int offset = result.size() - 1; offset >= 3; offset--) {
                 result.remove(offset);
             }
-        }
-        else { // region selector page
+        } else { // region selector page
             result = attractionRepository.findAllByRegionEntity_RegionIdx_city((long) city);
             Collections.shuffle(result);
-            for (int offset = result.size()-1; offset >= 6; offset--) {
+            for (int offset = result.size() - 1; offset >= 6; offset--) {
                 result.remove(offset);
             }
         }
@@ -77,19 +76,17 @@ public class HomeServicesImpl implements HomeServices{
         return new PlanDTO.planInfoResponse<>(planDataList);
     }
 
-
-
-
     @Override
-    public List<BoardDTO.recentBoard> getBoard() {
-        List<Object[]> boardList = boardRepository.getRecentBoard();
-        return boardList.stream().map(this::recentBoardEntityToDto).collect(Collectors.toList());
+    public BoardDTO.boardInfoResponse getBoard() {
+        List<BoardEntity> boardList = boardRepository.getBoard();
+        List<BoardDTO.mainBoardData> boardDataList = boardList.stream().map(this::entityToDto).collect(Collectors.toList());
+        return new BoardDTO.boardInfoResponse<>(boardDataList);
     }
 
     @Override
-    public AttractionDTO.resultCity<AttractionDTO.cityList> getCityList(Integer area) {
-        List<RegionEntity> regionEntities = regionRepository.findCity((long) (area / 10));
-        List<AttractionDTO.cityList> result = regionEntities.stream().map(regionEntity -> regionEntityToDto(regionEntity)).collect(Collectors.toList());
-        return new AttractionDTO.resultCity(result);
+    public AttractionDTO.regionCityInfoResponse getCity(Integer area) {
+        List<RegionEntity> cities = regionRepository.findCity((long) (area / 10));
+        List<AttractionDTO.cityData> cityDataList = cities.stream().map(this::entityToDto).collect(Collectors.toList());
+        return new AttractionDTO.regionCityInfoResponse(cityDataList);
     }
 }

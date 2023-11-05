@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
-
     @Query("SELECT r " +
             "FROM RegionEntity r " +
             "WHERE r.regionIdx  = :regionIdx " )

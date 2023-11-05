@@ -7,6 +7,7 @@ import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
+import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 
 import java.sql.Date;
 import java.text.ParseException;
@@ -26,8 +27,14 @@ import static com.tabihoudai.tabihoudai_api.entity.users.QUsersEntity.usersEntit
 
 public interface HomeServices {
     AdminDTO.bannerInfoResponse getBanner();
+
     AttractionDTO.attractionInfoResponse getAttraction(int area, Integer city);
+
     PlanDTO.planInfoResponse getPlan(Integer area);
+
+    BoardDTO.boardInfoResponse getBoard();
+
+    AttractionDTO.regionCityInfoResponse getCity(Integer area);
 
     default AdminDTO.mainBannerData entityToDto(BannerEntity banner) {
         return AdminDTO.mainBannerData.builder()
@@ -56,7 +63,7 @@ public interface HomeServices {
         LocalDate dateTo = LocalDate.parse(String.valueOf(objects[2]));
         Period period = Period.between(dateFrom, dateTo);
         int diff = period.getDays();
-        String date = String.valueOf(diff-1).concat("泊").concat(String.valueOf(diff)).concat("日");
+        String date = String.valueOf(diff - 1).concat("泊").concat(String.valueOf(diff)).concat("日");
 
         return PlanDTO.mainPlanData.builder()
                 .planIdx(Long.parseLong(String.valueOf(objects[0])))
@@ -68,33 +75,16 @@ public interface HomeServices {
                 .build();
     }
 
-
-
-
-
-    List<BoardDTO.recentBoard> getBoard();
-    AttractionDTO.resultCity<AttractionDTO.cityList> getCityList(Integer area);
-
-
-
-    default Integer areaFactory(Integer area) {
-        return Integer.valueOf(area) / 10;
-    }
-
-    default AttractionDTO.cityList regionEntityToDto(RegionEntity regions) {
-        return AttractionDTO.cityList.builder().city(regions.getCity()).build();
-    }
-
-
-
-    default BoardDTO.recentBoard recentBoardEntityToDto(Object[] objects) {
-        return BoardDTO.recentBoard.builder()
-                .boardIdx(Long.parseLong(String.valueOf(objects[0])))
-                .title(String.valueOf(objects[1]))
-                .regDate(LocalDateTime.parse(objects[2].toString()))
-                .nickname((String) objects[3])
+    default BoardDTO.mainBoardData entityToDto(BoardEntity board) {
+        return BoardDTO.mainBoardData.builder()
+                .boardIdx(board.getBoardIdx())
+                .title(board.getTitle())
+                .date(board.getRegDate())
+                .nickname(board.getUsersEntity().getNickname())
                 .build();
     }
 
-
+    default AttractionDTO.cityData entityToDto(RegionEntity regions) {
+        return AttractionDTO.cityData.builder().city(regions.getCity()).build();
+    }
 }
