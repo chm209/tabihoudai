@@ -42,8 +42,8 @@ public class AdminController {
     }
 
     @GetMapping("/attraction/load")
-    public ResponseEntity<AdminDTO.attrModifyDataResponse> getModifyAttractionData(@RequestParam(value = "id", required = true) long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getModifyAttractionData(id));
+    public ResponseEntity<AdminDTO.attrModifyDataResponse> getModifyAttractionData(@RequestParam(value = "idx", required = true) long idx) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getModifyAttractionData(idx));
     }
 
     @PatchMapping("/attraction/modify")
@@ -52,57 +52,29 @@ public class AdminController {
     }
 
     @GetMapping("/cs/viewer")
-    public ResponseEntity<AdminDTO.csViewerResponse> getCSViewer(@RequestParam(value = "id", required = true) long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getCSViewer(id));
+    public ResponseEntity<AdminDTO.csViewerResponse> getCSViewer(@RequestParam(value = "idx", required = true) long idx) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getCSViewer(idx));
     }
 
     @PostMapping(value = "/cs/reply", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> insertCsReply(@RequestParam(value = "id", required = true) long id,
+    public ResponseEntity<String> insertCsReply(@RequestParam(value = "idx", required = true) long idx,
                                               @Validated @RequestBody AdminDTO.CsReplyRequest csReplyRequest) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.insertCsReply(id, csReplyRequest));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // http://localhost:2094/api/admin/blame/viewer?id=293
-    @GetMapping("/blame/viewer")
-    public ResponseEntity<AdminDTO.blameDetailInfo> getBlameDetailViewer(@RequestParam(value = "id", required = true) long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getBlameDetailViewer(id));
-    }
-
-    // http://localhost:2094/api/admin/user/manage?id=0
-    /* {
-            "userIdx": "fa721489-4a0e-43aa-aba4-b1613384ceec",
-            "flag": 1,
-            "contentIdx": 0
-       } */
-    @PostMapping(value = "/user/manage", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> userBlockManager(@RequestParam(value = "id", required = true) long id,
-                                                   @Validated @RequestBody AdminDTO.userBlockRequestDto userBlockRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.userBlockManager(id, userBlockRequestDto));
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.insertCsReply(idx, csReplyRequest));
     }
 
     @GetMapping("/block/cron")
     public void blockCron() {
         adminServices.blockCron();
+    }
+
+    @GetMapping("/blame/viewer")
+    public ResponseEntity<AdminDTO.blameViewerResponse> getBlameViewerData(@RequestParam(value = "idx", required = true) long idx) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getBlameViewerData(idx));
+    }
+
+    @PostMapping(value = "/user/manage", consumes = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> userBlockManager(@RequestParam(value = "idx", required = true) long idx,
+                                                   @Validated @RequestBody AdminDTO.userBlockRequest userBlockRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.userBlockManager(idx, userBlockRequest));
     }
 }

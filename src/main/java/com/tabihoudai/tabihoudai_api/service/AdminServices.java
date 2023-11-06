@@ -31,6 +31,11 @@ public interface AdminServices {
 
     String insertCsReply(long csIdx, AdminDTO.CsReplyRequest csReplyRequest);
 
+    void blockCron();
+
+    AdminDTO.blameViewerResponse getBlameViewerData(long blameIdx);
+    String userBlockManager(long id, AdminDTO.userBlockRequest userBlockRequest);
+
     default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
         return AdminDTO.adminBannerList.builder()
                 .bannerIdx((Long) bannerPage[0])
@@ -121,38 +126,19 @@ public interface AdminServices {
                 .build();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
-
-    String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
-
-    void blockCron();
-
-
-    default AdminDTO.blameDetailInfo blameEntityToDto(BlameEntity blameEntity) {
-        return AdminDTO.blameDetailInfo.builder()
-                .userIdx(blameEntity.getUsersEntity().getUserIdx())
-                .blameIdx(blameEntity.getBlameIdx())
-                .contentIdx(!(blameEntity.getAttrReplyEntity() == null) ? blameEntity.getAttrReplyEntity().getAttrReplyIdx()
-                        : !(blameEntity.getBoardEntity() == null) ? blameEntity.getBoardEntity().getBoardIdx()
-                        : !(blameEntity.getBoardReplyEntity() == null) ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
-                        : !(blameEntity.getPlanEntity() == null) ? blameEntity.getPlanEntity().getPlanIdx()
-                        : blameEntity.getPlanReplyEntity().getPlanReplyIdx()
+    default AdminDTO.blameViewerResponse entityToDto(BlameEntity blame) {
+        return AdminDTO.blameViewerResponse.builder()
+                .userIdx(blame.getUsersEntity().getUserIdx())
+                .blameIdx(blame.getBlameIdx())
+                .blameContentIdx(!(blame.getAttrReplyEntity() == null) ? blame.getAttrReplyEntity().getAttrReplyIdx()
+                        : !(blame.getBoardEntity() == null) ? blame.getBoardEntity().getBoardIdx()
+                        : !(blame.getBoardReplyEntity() == null) ? blame.getBoardReplyEntity().getBoardReplyIdx()
+                        : !(blame.getPlanEntity() == null) ? blame.getPlanEntity().getPlanIdx()
+                        : blame.getPlanReplyEntity().getPlanReplyIdx()
                 )
-                .blameContent(blameEntity.getCategory())
-                .content(blameEntity.getContent())
-                .date(blameEntity.getBlameDate())
+                .blameReason(blame.getCategory())
+                .blameContent(blame.getContent())
+                .date(blame.getBlameDate())
                 .build();
     }
 }

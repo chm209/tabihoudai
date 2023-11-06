@@ -334,38 +334,18 @@ public class AdminServicesImpl implements AdminServices {
         return "登録成功";
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx) {
-        BlameEntity blameEntity = blameRepository.findByBlameIdx(blameIdx);
-        return blameEntityToDto(blameEntity);
-    }
-
-
-
     @Override
     public void blockCron() {
         Calendar calendar = Calendar.getInstance();
-        List<BlockEntity> blockEntities = blockRepository.findAll();
+        List<BlockEntity> blockList = blockRepository.findAll();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy년 MM월 dd일");
         String timeNow = simpleDateFormat.format(new java.util.Date(calendar.getTimeInMillis()));
         String blockTime = "";
 
-        for (BlockEntity block : blockEntities) {
+        for (BlockEntity block : blockList) {
             blockTime = simpleDateFormat.format(block.getEndDate());
+            // 차단 종료 일자와 현재 시간이 동일하거나 지났을때
             if (blockTime.compareTo(timeNow) < 1) {
-                // 날짜가 같거나 지났음
                 UsersEntity user = usersRepository.findByUserIdx(block.getUsersEntity().getUserIdx());
                 // 유저 테이블에서 블락 0 으로 변경
                 usersRepository.patchUsersBlockCondition(user, 1); // 차단 해제
@@ -381,74 +361,71 @@ public class AdminServicesImpl implements AdminServices {
     }
 
     @Override
-    public String userBlockManager(long blameIdx, AdminDTO.userBlockRequestDto userBlockRequestDto) {
-        BlockEntity originalBlock = blockRepository.findByUsersEntity_UserIdx(userBlockRequestDto.getUserIdx());
-        Calendar calendar = Calendar.getInstance();
+    public AdminDTO.blameViewerResponse getBlameViewerData(long blameIdx) {
+        BlameEntity blame = blameRepository.findByBlameIdx(blameIdx);
+        return entityToDto(blame);
+    }
 
-        // 차단인지 검사
-        if (userBlockRequestDto.getFlag() == 0) { // 차단
-            // 기존 차단 내역
+
+    @Override
+    public String userBlockManager(long blameIdx, AdminDTO.userBlockRequest userBlockRequest) {
+        BlockEntity originalBlock = blockRepository.findByUsersEntity_UserIdx(userBlockRequest.getUserIdx());
+        Calendar calendar = Calendar.getInstance();
+        // 0 = 차단 / 1 = 해제
+        if (userBlockRequest.getFlag() == 0) {
             BlameEntity blame = blameRepository.findByBlameIdx(blameIdx);
-            // 유저Idx랑 비교해서 동일한지 검사
-            if (blame.getUsersEntity().getUserIdx().equals(userBlockRequestDto.getUserIdx())) {
-                // + 차단 해제
-                // 0 == 차단, 1 == 해제
-                usersRepository.patchUsersBlockCondition(blame.getUsersEntity(), 0); // 유저 차단
+            // UserIdx 검사
+            if (blame.getUsersEntity().getUserIdx().equals(userBlockRequest.getUserIdx())) {
+                // 유저 차단
+                usersRepository.patchUsersBlockCondition(blame.getUsersEntity(), 0);
                 if (originalBlock == null) { // 첫 차단
                     calendar.add(Calendar.DATE, 3);
                     java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
-                    BlockEntity newBlock = BlockEntity.builder()
-                            .count((byte) 1)
-                            .endDate(endDate)
-                            .usersEntity(blame.getUsersEntity())
-                            .build();
+                    BlockEntity newBlock = makeBlockEntity((byte) 1, endDate, blame.getUsersEntity());
                     blockRepository.save(newBlock); // 차단
-                    blockAndDelete(blame, userBlockRequestDto); // 컨텐츠 삭제
+                    blockAndDelete(blame, userBlockRequest); // 컨텐츠 삭제
                 } else if (originalBlock.getCount() == 1) { // 두 번째 차단
                     calendar.add(Calendar.DATE, 7);
                     java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
-                    BlockEntity newBlock = BlockEntity.builder()
-                            .count((byte) 2)
-                            .endDate(endDate)
-                            .usersEntity(blame.getUsersEntity())
-                            .build();
+                    BlockEntity newBlock = makeBlockEntity((byte) 2, endDate, blame.getUsersEntity());
                     blockRepository.patchBlockManager(newBlock); // 차단
-                    blockAndDelete(blame, userBlockRequestDto); // 컨텐츠 삭제
-                } else if (originalBlock.getCount() == 2) { // 세 번째 차단 (영구 차단)
+                    blockAndDelete(blame, userBlockRequest); // 컨텐츠 삭제
+                } else if (originalBlock.getCount() == 2)  { // 세 번째 차단 (영구 차단)
                     calendar.add(Calendar.YEAR, 100);
                     java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis());
-                    BlockEntity newBlock = BlockEntity.builder()
-                            .count((byte) 3)
-                            .endDate(endDate)
-                            .usersEntity(blame.getUsersEntity())
-                            .build();
+                    BlockEntity newBlock = makeBlockEntity((byte) 3, endDate, blame.getUsersEntity());
                     blockRepository.patchBlockManager(newBlock); // 차단
-                    blockAndDelete(blame, userBlockRequestDto); // 컨텐츠 삭제
+                    blockAndDelete(blame, userBlockRequest); // 컨텐츠 삭제
+                } else {
+                    return "処理失敗";
                 }
-            } else return "유저 정보가 올바르지 않습니다.";
-            return "차단 완료";
+            } else return "処理失敗";
+            return "処理完了";
         } else {
-            UsersEntity user = usersRepository.findByUserIdx(userBlockRequestDto.getUserIdx());
-            // 유저 테이블에서 블락 0 으로 변경
+            UsersEntity user = usersRepository.findByUserIdx(userBlockRequest.getUserIdx());
             usersRepository.patchUsersBlockCondition(user, 1); // 차단 해제
             // 블락 테이블에서 1회면 삭제
             // 2회 이상은 1 차감
             if (originalBlock.getCount() > 1) { // 차감
                 java.util.Date endDate = new java.util.Date(calendar.getTimeInMillis()); // 시간 리셋
-                BlockEntity newBlock = BlockEntity.builder()
-                        .count((byte) (originalBlock.getCount() - 1))
-                        .endDate(endDate)
-                        .usersEntity(user)
-                        .build();
+                BlockEntity newBlock = makeBlockEntity((byte) (originalBlock.getCount() - 1), endDate, user);
                 blockRepository.patchBlockManager(newBlock); // 해제
             } else { // 삭제
                 blockRepository.deleteByBlockIdx(originalBlock.getBlockIdx());
             }
-            return "차단 해제";
+            return "処理完了";
         }
     }
 
-    private void blockAndDelete(BlameEntity blame, AdminDTO.userBlockRequestDto userBlockRequestDto) {
+    private BlockEntity makeBlockEntity(byte count, java.util.Date endDate, UsersEntity users) {
+        return BlockEntity.builder()
+                .count(count)
+                .endDate(endDate)
+                .usersEntity(users)
+                .build();
+    }
+
+    private void blockAndDelete(BlameEntity blame, AdminDTO.userBlockRequest userBlockRequestDto) {
         // CASCADE.ALL은 자제하는게 좋다고 해서 직접 지워줌
         if (blame.getBoardReplyEntity() != null && (blame.getBoardReplyEntity().getBoardReplyIdx() == userBlockRequestDto.getContentIdx())) {
             blameRepository.deleteByBlameIdx(blame.getBlameIdx());
