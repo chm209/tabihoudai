@@ -51,35 +51,37 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.modifyAttractionData(attrCreateModifyRequestList));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // http://localhost:2094/api/admin/cs/viewer?id=246
     @GetMapping("/cs/viewer")
-    public ResponseEntity<AdminDTO.csDetailInfo> getCsDetailViewer(@RequestParam(value = "id", required = true) long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getCsDetailViewer(id));
+    public ResponseEntity<AdminDTO.csViewerResponse> getCSViewer(@RequestParam(value = "id", required = true) long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getCSViewer(id));
     }
 
-    // http://localhost:2094/api/admin/cs/reply?id=245
-    // { "reply" : "딥변 내용" }
     @PostMapping(value = "/cs/reply", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> postCsReply(@RequestParam(value = "id", required = true) long id,
-                                              @Validated @RequestBody AdminDTO.CsReplyRequestDto csReplyRequestDto) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.postCsReply(id, csReplyRequestDto));
+    public ResponseEntity<String> insertCsReply(@RequestParam(value = "id", required = true) long id,
+                                              @Validated @RequestBody AdminDTO.CsReplyRequest csReplyRequest) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.insertCsReply(id, csReplyRequest));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // http://localhost:2094/api/admin/blame/viewer?id=293
     @GetMapping("/blame/viewer")

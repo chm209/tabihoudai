@@ -16,45 +16,54 @@ import java.util.stream.Collectors;
 
 public interface AdminServices {
     AdminDTO.adminPageResponse getAdminManagementList(int item, AdminDTO.adminPageRequestList pageRequestDTO);
+
     String deleteAdminItem(int item, long idx);
+
     String craeteAttraction(AdminDTO.attrCreateModifyRequestList requestDTO);
+
     String uploadBannerImage(MultipartFile uploadFile);
+
     AdminDTO.attrModifyDataResponse getModifyAttractionData(long attrIdx);
+
     String modifyAttractionData(AdminDTO.attrCreateModifyRequestList attrCreateModifyRequestList);
+
+    AdminDTO.csViewerResponse getCSViewer(long csIdx);
+
+    String insertCsReply(long csIdx, AdminDTO.CsReplyRequest csReplyRequest);
 
     default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
         return AdminDTO.adminBannerList.builder()
-                        .bannerIdx((Long) bannerPage[0])
-                        .path((String) bannerPage[1])
-                        .regDate((LocalDateTime) bannerPage[2])
-                        .build();
+                .bannerIdx((Long) bannerPage[0])
+                .path((String) bannerPage[1])
+                .regDate((LocalDateTime) bannerPage[2])
+                .build();
     }
 
     default AdminDTO.adminAttrList attrPageEntityToDto(Object[] attrPage) {
         return AdminDTO.adminAttrList.builder()
-                        .attrIdx((Long) attrPage[0])
-                        .area((String) attrPage[1])
-                        .city((String) attrPage[2])
-                        .address((String) attrPage[3])
-                        .name((String) attrPage[4])
-                        .build();
+                .attrIdx((Long) attrPage[0])
+                .area((String) attrPage[1])
+                .city((String) attrPage[2])
+                .address((String) attrPage[3])
+                .name((String) attrPage[4])
+                .build();
     }
 
     default AdminDTO.adminBlameList blamePageEntityToDto(Object[] blamePage) {
         return AdminDTO.adminBlameList.builder()
-                        .blameIdx((Long) blamePage[0])
-                        .category((byte) blamePage[1])
-                        .content((String) blamePage[2])
-                        .build();
+                .blameIdx((Long) blamePage[0])
+                .category((byte) blamePage[1])
+                .content((String) blamePage[2])
+                .build();
     }
 
-       default AdminDTO.adminCsList csPageEntityToDto(Object[] csPage) {
+    default AdminDTO.adminCsList csPageEntityToDto(Object[] csPage) {
         return AdminDTO.adminCsList.builder()
-                        .csIdx((Long) csPage[0])
-                        .nickname((String) csPage[1])
-                        .type((byte) csPage[2])
-                        .content((String) csPage[3])
-                        .build();
+                .csIdx((Long) csPage[0])
+                .nickname((String) csPage[1])
+                .type((byte) csPage[2])
+                .content((String) csPage[3])
+                .build();
     }
 
     default AdminDTO.attrModifyDataResponse attrModiftDataEntityToDto(List<AttractionImageEntity> attraction) {
@@ -71,6 +80,7 @@ public interface AdminServices {
                 .attrImgList(attraction.stream().map(this::attrModifyImgDataEntityToDto).collect(Collectors.toList()))
                 .build();
     }
+
     default AdminDTO.attrModifyImgDataResponse attrModifyImgDataEntityToDto(AttractionImageEntity attractionImage) {
         return AdminDTO.attrModifyImgDataResponse.builder()
                 .path(attractionImage.getPath())
@@ -100,8 +110,16 @@ public interface AdminServices {
                 .build();
     }
 
-
-
+    default AdminDTO.csViewerResponse entityToDto(CsEntity csEntity) {
+        return AdminDTO.csViewerResponse.builder()
+                .userIdx(csEntity.getUsersEntity().getUserIdx())
+                .askDate(csEntity.getAskDate())
+                .title(csEntity.getTitle())
+                .content(csEntity.getContent())
+                .reply(csEntity.getReply())
+                .replyDate(csEntity.getReplyDate())
+                .build();
+    }
 
 
 
@@ -116,24 +134,10 @@ public interface AdminServices {
 
 
     AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
+
     String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
-    AdminDTO.csDetailInfo getCsDetailViewer(long csIdx);
-    String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto);
+
     void blockCron();
-
-
-
-    default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {
-        return AdminDTO.csDetailInfo.builder()
-                .userIdx(csEntity.getUsersEntity().getUserIdx())
-                .askDate(csEntity.getAskDate())
-                .title(csEntity.getTitle())
-                .content(csEntity.getContent())
-                .reply(csEntity.getReply())
-                .replyDate(csEntity.getReplyDate())
-                .build();
-    }
-
 
 
     default AdminDTO.blameDetailInfo blameEntityToDto(BlameEntity blameEntity) {
@@ -141,10 +145,10 @@ public interface AdminServices {
                 .userIdx(blameEntity.getUsersEntity().getUserIdx())
                 .blameIdx(blameEntity.getBlameIdx())
                 .contentIdx(!(blameEntity.getAttrReplyEntity() == null) ? blameEntity.getAttrReplyEntity().getAttrReplyIdx()
-                                : !(blameEntity.getBoardEntity() == null) ? blameEntity.getBoardEntity().getBoardIdx()
-                                : !(blameEntity.getBoardReplyEntity() == null) ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
-                                : !(blameEntity.getPlanEntity() == null) ? blameEntity.getPlanEntity().getPlanIdx()
-                                : blameEntity.getPlanReplyEntity().getPlanReplyIdx()
+                        : !(blameEntity.getBoardEntity() == null) ? blameEntity.getBoardEntity().getBoardIdx()
+                        : !(blameEntity.getBoardReplyEntity() == null) ? blameEntity.getBoardReplyEntity().getBoardReplyIdx()
+                        : !(blameEntity.getPlanEntity() == null) ? blameEntity.getPlanEntity().getPlanIdx()
+                        : blameEntity.getPlanReplyEntity().getPlanReplyIdx()
                 )
                 .blameContent(blameEntity.getCategory())
                 .content(blameEntity.getContent())

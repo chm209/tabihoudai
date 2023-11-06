@@ -318,6 +318,22 @@ public class AdminServicesImpl implements AdminServices {
         return fullLoaction;
     }
 
+    @Override
+    public AdminDTO.csViewerResponse getCSViewer(long csIdx) {
+        CsEntity cs = csRepository.findByCsIdx(csIdx);
+        return entityToDto(cs);
+    }
+
+    @Override
+    public String insertCsReply(long csIdx, AdminDTO.CsReplyRequest csReplyRequest) {
+        try {
+            csRepository.patchCsReply(csIdx, csReplyRequest.getReply());
+        } catch (Exception e) {
+            return "登録失敗";
+        }
+        return "登録成功";
+    }
+
 
 
 
@@ -336,17 +352,7 @@ public class AdminServicesImpl implements AdminServices {
         return blameEntityToDto(blameEntity);
     }
 
-    @Override
-    public AdminDTO.csDetailInfo getCsDetailViewer(long csIdx) {
-        CsEntity csEntity = csRepository.findByCsIdx(csIdx);
-        return csEntityToDto(csEntity);
-    }
 
-    @Override
-    public String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto) {
-        csRepository.patchCs(csIdx, csReplyRequestDto.getReply());
-        return "";
-    }
 
     @Override
     public void blockCron() {

@@ -60,7 +60,7 @@ public class CsRepositoryCustomImpl implements CsRepositoryCustom {
 
     @Override
     @Transactional
-    public void patchCs(long csIdx, String reply) {
+    public void patchCsReply(long csIdx, String reply) {
         jpaQueryFactory
                 .update(csEntity)
                 .set(csEntity.reply, reply)
