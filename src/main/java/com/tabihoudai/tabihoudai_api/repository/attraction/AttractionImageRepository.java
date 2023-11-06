@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface AttractionImageRepository extends JpaRepository<AttractionImageEntity, Long> {
     List<AttractionImageEntity> findByAttrEntity_AttrIdx(@Param("attrImgIdx") Long attrImgIdx);
-
     List<AttractionImageEntity> findAllByAttrEntityAttrIdx(@Param("attrIdx") Long attrIdx);
     AttractionImageEntity findByAttrEntity_AttrIdxAndType(@Param("attrIdx") Long attrIdx, @Param("type") char type);
     @Transactional

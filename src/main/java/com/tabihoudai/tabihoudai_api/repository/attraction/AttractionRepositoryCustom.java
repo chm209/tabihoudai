@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 public interface AttractionRepositoryCustom {
     Page<Object[]> getAttractionPage(String type, String keyword, Pageable pageable);
 
-    void patchAttraction(AttractionEntity attrEntity);
+    void patchModifyAttraction(AttractionEntity attrEntity);
 
-    void patchAttrImgIdx(AttractionImageEntity attrImg, Long attrIdx, Long attrImgIdx);
+    void patchModifyAttrImg(AttractionImageEntity attrImg, Long attrIdx, Long attrImgIdx);
 
-    void patchThumnails(String newThumbnails, Long offsetIdx);
+    void patchModifyAttrMainImg(String newThumbnails, Long offsetIdx);
 }

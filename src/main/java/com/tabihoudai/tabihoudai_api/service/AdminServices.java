@@ -20,6 +20,7 @@ public interface AdminServices {
     String craeteAttraction(AdminDTO.attrCreateModifyRequestList requestDTO);
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrModifyDataResponse getModifyAttractionData(long attrIdx);
+    String modifyAttractionData(AdminDTO.attrCreateModifyRequestList attrCreateModifyRequestList);
 
     default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
         return AdminDTO.adminBannerList.builder()
@@ -77,28 +78,7 @@ public interface AdminServices {
                 .build();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    String patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO);
-
-
-    AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
-    String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
-    AdminDTO.csDetailInfo getCsDetailViewer(long csIdx);
-    String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto);
-    void blockCron();
-
-    default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AdminDTO.attrCreateModifyRequestList request, RegionEntity regionEntity) {
+    default AttractionEntity dtoToEntity(AttractionEntity originalAttrEntity, AdminDTO.attrCreateModifyRequestList request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
                 .attrIdx(request.getAttrIdx() == originalAttrEntity.getAttrIdx() ? originalAttrEntity.getAttrIdx() : request.getAttrIdx())
                 .address(request.getAddress().equals(originalAttrEntity.getAddress()) ? originalAttrEntity.getAddress() : request.getAddress())
@@ -111,7 +91,7 @@ public interface AdminServices {
                 .build();
     }
 
-    default AttractionImageEntity attrImgDtoToEntity(Path imageSavePath, String thumbnails, AttractionEntity attrEntity, MultipartFile image, Long attrImgIdx) {
+    default AttractionImageEntity dtoToEntity(Path imageSavePath, String thumbnails, AttractionEntity attrEntity, MultipartFile image, Long attrImgIdx) {
         return AttractionImageEntity.builder()
                 .attrImgIdx(attrImgIdx)
                 .path(imageSavePath.toString())
@@ -119,6 +99,28 @@ public interface AdminServices {
                 .attrEntity(attrEntity)
                 .build();
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
+    String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
+    AdminDTO.csDetailInfo getCsDetailViewer(long csIdx);
+    String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto);
+    void blockCron();
+
 
 
     default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {

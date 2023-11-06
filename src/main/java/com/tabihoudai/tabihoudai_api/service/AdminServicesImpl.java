@@ -203,7 +203,7 @@ public class AdminServicesImpl implements AdminServices {
                         attractionRepository.deleteByAttrIdx(tempAttrIdx);
                     }
                     // DB에 추가
-                    AttractionImageEntity attractionImage = attrImgDtoToEntity(
+                    AttractionImageEntity attractionImage = dtoToEntity(
                             imageSavePath,
                             requestDTO.getThumbnail(),
                             attraction,
@@ -228,60 +228,43 @@ public class AdminServicesImpl implements AdminServices {
         return attrModiftDataEntityToDto(attraction);
     }
 
-
-
-
-
-
-
-
-
     @Override
-    public String patchAttraction(AdminDTO.attrCreateModifyRequestList requestDTO) {
-        // requestDTO로 RegionEntity를 가져온다
-        RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
-        // 기존 데이터와 비교를 위해 기존 정보를 가져온다.
-        AttractionEntity originalAttrEntity = attractionRepository.findByAttrIdx(requestDTO.getAttrIdx());
-        // RegionEntity로 Attraction Entity를 생성한다.
-        // 기존 데이터와 비교후 바뀐 데이터를 반영해서 엔티티를 만든다.
-        AttractionEntity attrEntity = attrDtoToEntity(originalAttrEntity, requestDTO, regionEntity);
-        // Attraction 정보부터 patch 한다.
-        attractionRepository.patchAttraction(attrEntity);
+    public String modifyAttractionData(AdminDTO.attrCreateModifyRequestList requestDTO) {
+        String returnMsg = "";
+        RegionEntity region = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
+        AttractionEntity originalAttraction = attractionRepository.findByAttrIdx(requestDTO.getAttrIdx());
+        AttractionEntity newAttraction = dtoToEntity(originalAttraction, requestDTO, region);
+        attractionRepository.patchModifyAttraction(newAttraction);
+        List<AttractionImageEntity> attractionImg = attractionImageRepository.findAllByAttrEntityAttrIdx(newAttraction.getAttrIdx());
+        int attrImgSize = attractionImg.size();
 
-        // 기존 이미지를 List로 받아온다.
-        List<AttractionImageEntity> attrImage = attractionImageRepository.findAllByAttrEntityAttrIdx(attrEntity.getAttrIdx());
-        int size = attrImage.size();
-        // 삭제할 이미지가 있는지 없는지 검사해서 삭제할 이미지가 있다면
+        // 삭제할 이미지 검사
         if (!requestDTO.getRmImg().isEmpty()) {
-            // 삭제할 이미지의 리스트를 split으로 나눠 배열로 지정해준다.
             String[] removeImages = requestDTO.getRmImg().split(",");
-            // DB에서 이미지를 삭제한다.
             for (String rmImage : removeImages) {
-                AttractionImageEntity findImageData = attractionImageRepository.findByAttrImgIdx(Long.parseLong(rmImage.replaceAll("[^0-9]", "")));
+                AttractionImageEntity findImgData = attractionImageRepository.findByAttrImgIdx(Long.parseLong(rmImage.replaceAll("[^0-9]", "")));
                 attractionImageRepository.deleteByAttrImgIdx(Long.parseLong(rmImage.replaceAll("[^0-9]", "")));
                 // 저장소에서 이미지 삭제
-                File file = new File(findImageData.getPath());
+                File file = new File(findImgData.getPath());
                 if (file.exists()) {
-                    if (file.delete()) System.out.println("이미지 삭제 성공");
-                    else System.out.println("이미지 삭제 실패");
-                } else System.out.println("파일이 존재하지 않습니다.");
+                    if (file.delete()) returnMsg = "データを削除しました。";
+                    else returnMsg = "データの削除に失敗しました。";
+                } else returnMsg = "データの削除に失敗しました。";
             }
-            // attrImgIdx를 새로 설정해주기 위한 준비
-            String attrIdxBase = String.valueOf(requestDTO.getAttrIdx());
-            // List<AttractionImageEntity> attractionImageEntities = attractionImageRepository.findAllByAttrEntityAttrIdx(requestDTO.getAttrIdx());
-            // 새로 할당
-            for (int offset = 0; offset < size; offset++) {
-                attractionRepository.patchAttrImgIdx(attrImage.get(offset), requestDTO.getAttrIdx(), Long.parseLong(attrIdxBase.concat(String.valueOf(offset + 1))));
+            String newAttrIdxBase = String.valueOf(requestDTO.getAttrIdx());
+            for (int offset = 0; offset < attrImgSize; offset++) {
+                attractionRepository.patchModifyAttrImg(attractionImg.get(offset), requestDTO.getAttrIdx(), Long.parseLong(newAttrIdxBase.concat(String.valueOf(offset + 1))));
             }
         }
+
         // 추가한 이미지가 있으면 추가
         if (requestDTO.getImages().get(0) != null) {
-            // 새로 받은 이미지 추가
             for (MultipartFile uploadFile : requestDTO.getImages()) {
-                if (uploadFile.getContentType().startsWith("image") == false) break;
-                // 경로 지정
+                if (!uploadFile.getContentType().startsWith("image")) {
+                    break;
+                }
                 String fileName = uploadFile.getOriginalFilename();
-                String folderPath = makeForder("attraction/" + attrEntity.getAttrIdx());
+                String folderPath = makeForder("attraction/" + newAttraction.getAttrIdx());
                 String save = uploadPath + File.separator + folderPath + File.separator + fileName;
                 Path imageSavePath = Paths.get(save);
 
@@ -291,28 +274,59 @@ public class AdminServicesImpl implements AdminServices {
                     try {
                         uploadFile.transferTo(imageSavePath);
                     } catch (IOException e) {
+                        returnMsg = "イメージの保存に失敗しました。";
                     }
-                    // DB에 추가
-                    AttractionImageEntity attractionImageEntity = attrImgDtoToEntity(
+                    AttractionImageEntity attractionImageEntity = dtoToEntity(
                             imageSavePath,
                             requestDTO.getThumbnail(),
-                            attrEntity,
+                            newAttraction,
                             uploadFile,
-                            Long.valueOf(String.valueOf(requestDTO.getAttrIdx()).concat(String.valueOf(++size)))
+                            Long.valueOf(String.valueOf(requestDTO.getAttrIdx()).concat(String.valueOf(++attrImgSize)))
                     );
                     attractionImageRepository.save(attractionImageEntity);
-                } else System.out.println("중복");
+                } else returnMsg = "イメージが重複しています。";
             }
         }
-        // 메인 이미지 변경
-        attrImage = attractionImageRepository.findAllByAttrEntityAttrIdx(attrEntity.getAttrIdx());
-        for (AttractionImageEntity offset : attrImage) {
-            String folderPath = makeForder("attraction/" + attrEntity.getAttrIdx());
+        // 메인 이미지만 변경
+        attractionImg = attractionImageRepository.findAllByAttrEntityAttrIdx(newAttraction.getAttrIdx());
+        for (AttractionImageEntity offset : attractionImg) {
+            String folderPath = makeForder("attraction/" + newAttraction.getAttrIdx());
             String save = uploadPath + File.separator + folderPath + File.separator + requestDTO.getThumbnail();
-            attractionRepository.patchThumnails(save, offset.getAttrImgIdx());
+            attractionRepository.patchModifyAttrMainImg(save, offset.getAttrImgIdx());
         }
-        return "성공";
+        return returnMsg;
     }
+
+    private String makeForder(String path) {
+        String[] loactions = path.split("/");
+        String fullLoaction = loactions[0];
+
+        switch (loactions[0]) {
+            case "banner":
+                break;
+            case "attraction":
+                for (String location : loactions) {
+                    if (fullLoaction.equals(location)) continue;
+                    fullLoaction = fullLoaction.concat(File.separator + location);
+                }
+                break;
+        }
+        File uploadPathFolder = new File(uploadPath, fullLoaction);
+        if (!uploadPathFolder.exists()) {
+            uploadPathFolder.mkdirs();
+        }
+        return fullLoaction;
+    }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -450,26 +464,5 @@ public class AdminServicesImpl implements AdminServices {
             blameRepository.deleteByBlameIdx(blame.getBlameIdx());
             planReplyRepository.deleteByPlanReplyIdx(userBlockRequestDto.getContentIdx());
         }
-    }
-
-    private String makeForder(String path) {
-        String[] loactions = path.split("/");
-        String fullLoaction = loactions[0];
-
-        switch (loactions[0]) {
-            case "banner":
-                break;
-            case "attraction":
-                for (String location : loactions) {
-                    if (fullLoaction.equals(location)) continue;
-                    fullLoaction = fullLoaction.concat(File.separator + location);
-                }
-                break;
-        }
-        File uploadPathFolder = new File(uploadPath, fullLoaction);
-        if (!uploadPathFolder.exists()) {
-            uploadPathFolder.mkdirs();
-        }
-        return fullLoaction;
     }
 }

@@ -37,8 +37,8 @@ public class AdminController {
     }
 
     @PostMapping("/attraction/create")
-    public ResponseEntity<String> createAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
+    public ResponseEntity<String> createAttraction(AdminDTO.attrCreateModifyRequestList attrCreateModifyRequestList) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrCreateModifyRequestList));
     }
 
     @GetMapping("/attraction/load")
@@ -46,11 +46,9 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.getModifyAttractionData(id));
     }
 
-    // http://localhost:2094/api/admin/attraction/modify
-    // form-data는 attrMngRequestDTO에 맞춰서
     @PatchMapping("/attraction/modify")
-    public ResponseEntity patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
+    public ResponseEntity modifyAttractionData(AdminDTO.attrCreateModifyRequestList attrCreateModifyRequestList) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.modifyAttractionData(attrCreateModifyRequestList));
     }
 
 

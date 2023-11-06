@@ -38,7 +38,37 @@ public class AttractionRepositoryCustomImpl implements AttractionRepositoryCusto
     }
 
     @Transactional
-    public void patchThumnails(String newThumbnails, Long offsetIdx) {
+    public void patchModifyAttraction(AttractionEntity attrEntity) {
+        jpaQueryFactory
+                .update(attractionEntity)
+                .set(attractionEntity.attrIdx, attrEntity.getAttrIdx())
+                .set(attractionEntity.address, attrEntity.getAddress())
+                .set(attractionEntity.description, attrEntity.getDescription())
+                .set(attractionEntity.latitude, attrEntity.getLatitude())
+                .set(attractionEntity.longitude, attrEntity.getLongitude())
+                .set(attractionEntity.attraction, attrEntity.getAttraction())
+                .set(attractionEntity.tag, attrEntity.getTag())
+                .set(attractionEntity.regionEntity, attrEntity.getRegionEntity())
+                .where(attractionEntity.attrIdx.eq(attrEntity.getAttrIdx()))
+                .execute();
+        em.flush();
+        em.clear();
+    }
+
+    @Transactional
+    public void patchModifyAttrImg(AttractionImageEntity originalImgEntity, Long imgOffset, Long newIdx) {
+        jpaQueryFactory
+                .update(attractionImageEntity)
+                .set(attractionImageEntity.attrImgIdx, newIdx)
+                .where(attractionImageEntity.attrEntity.attrIdx.eq(imgOffset))
+                .where(attractionImageEntity.attrImgIdx.eq(originalImgEntity.getAttrImgIdx()))
+                .execute();
+        em.flush();
+        em.clear();
+    }
+
+    @Transactional
+    public void patchModifyAttrMainImg(String newThumbnails, Long offsetIdx) {
         jpaQueryFactory
                 .update(attractionImageEntity)
                 .set(attractionImageEntity.type, '0')
@@ -63,35 +93,16 @@ public class AttractionRepositoryCustomImpl implements AttractionRepositoryCusto
         em.clear();
     }
 
-    @Transactional
-    public void patchAttrImgIdx(AttractionImageEntity originalImgEntity, Long imgOffset, Long newIdx) {
-        jpaQueryFactory
-                .update(attractionImageEntity)
-                .set(attractionImageEntity.attrImgIdx, newIdx)
-                .where(attractionImageEntity.attrEntity.attrIdx.eq(imgOffset))
-                .where(attractionImageEntity.attrImgIdx.eq(originalImgEntity.getAttrImgIdx()))
-                .execute();
-        em.flush();
-        em.clear();
-    }
 
-    @Transactional
-    public void patchAttraction(AttractionEntity attrEntity) {
-        jpaQueryFactory
-                .update(attractionEntity)
-                .set(attractionEntity.attrIdx, attrEntity.getAttrIdx())
-                .set(attractionEntity.address, attrEntity.getAddress())
-                .set(attractionEntity.description, attrEntity.getDescription())
-                .set(attractionEntity.latitude, attrEntity.getLatitude())
-                .set(attractionEntity.longitude, attrEntity.getLongitude())
-                .set(attractionEntity.attraction, attrEntity.getAttraction())
-                .set(attractionEntity.tag, attrEntity.getTag())
-                .set(attractionEntity.regionEntity, attrEntity.getRegionEntity())
-                .where(attractionEntity.attrIdx.eq(attrEntity.getAttrIdx()))
-                .execute();
-        em.flush();
-        em.clear();
-    }
+
+
+
+
+
+
+
+
+
 
      public Page<Object[]> getAttractionPage(String area, String city, Pageable pageable) {
 
