@@ -1,4 +1,3 @@
-
 # key? 32byte (256bit)
 jwt:
   secretKey: 12345678901234567890123456789012
@@ -11,22 +10,22 @@ spring:
     username: login_test
     password: 1234
 
-    mail:
-      host: smtp.gmail.com
-      port: 587
-      username:
-      password:
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
-              required: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: 
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
