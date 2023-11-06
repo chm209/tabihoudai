@@ -36,6 +36,11 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.uploadBannerImage(uploadFile));
     }
 
+    @PostMapping("/attraction/create")
+    public ResponseEntity<String> createAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
+    }
+
 
 
 
@@ -57,14 +62,8 @@ public class AdminController {
     // http://localhost:2094/api/admin/attraction/modify
     // form-data는 attrMngRequestDTO에 맞춰서
     @PatchMapping("/attraction/modify")
-    public ResponseEntity patchAttraction(AttrMngRequestDTO attrMngRequestDTO) {
+    public ResponseEntity patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
-    }
-
-    // http://localhost:2094/api/admin/attraction/create
-    @PostMapping("/attraction/create")
-    public ResponseEntity<String> createAttraction(AttrMngRequestDTO attrMngRequestDTO) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
     }
 
     // http://localhost:2094/api/admin/cs/viewer?id=246

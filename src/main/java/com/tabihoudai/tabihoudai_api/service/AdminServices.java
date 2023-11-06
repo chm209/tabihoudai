@@ -15,8 +15,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public interface AdminServices {
-
     AdminDTO.adminPageResponse getAdminManagementList(int item, AdminDTO.adminPageRequestList pageRequestDTO);
+    String craeteAttraction(AdminDTO.attrCreateModifyRequestList requestDTO);
 
     default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
         return AdminDTO.adminBannerList.builder()
@@ -66,8 +66,8 @@ public interface AdminServices {
 
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
-    String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
-    String craeteAttraction(AttrMngRequestDTO requestDTO);
+    String patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO);
+
     String deleteAdminItem(int item, long idx);
     AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
     String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
@@ -75,7 +75,7 @@ public interface AdminServices {
     String postCsReply(long csIdx, AdminDTO.CsReplyRequestDto csReplyRequestDto);
     void blockCron();
 
-    default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AttrMngRequestDTO request, RegionEntity regionEntity) {
+    default AttractionEntity attrDtoToEntity(AttractionEntity originalAttrEntity, AdminDTO.attrCreateModifyRequestList request, RegionEntity regionEntity) {
         return AttractionEntity.builder()
                 .attrIdx(request.getAttrIdx() == originalAttrEntity.getAttrIdx() ? originalAttrEntity.getAttrIdx() : request.getAttrIdx())
                 .address(request.getAddress().equals(originalAttrEntity.getAddress()) ? originalAttrEntity.getAddress() : request.getAddress())

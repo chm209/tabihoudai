@@ -1,7 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
-import com.tabihoudai.tabihoudai_api.dto.AttrMngRequestDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
@@ -32,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -130,7 +130,9 @@ public class AdminServicesImpl implements AdminServices {
                         returnMsg = "フォルダを削除しました。";
                     }
                 }
-            } catch (Exception e) { e.getStackTrace(); }
+            } catch (Exception e) {
+                e.getStackTrace();
+            }
             attractionImageRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionReplyRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionRepository.deleteByAttrIdx(idx);
@@ -155,76 +157,74 @@ public class AdminServicesImpl implements AdminServices {
             uploadFile.transferTo(path);
             bannerRepository.save(BannerEntity.builder().path(saveName).build());
         } catch (IOException e) {
+            return "バナーイメージの追加に失敗しました。";
         }
-        return "success";
+        return "バナーイメージを追加しました。";
     }
 
-
-
-
-
-
-
-
-
-
     @Override
-    public String craeteAttraction(AttrMngRequestDTO requestDTO) {
-        // requestDTO로 RegionEntity를 가져온다
-        RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
-        // idx 생성을 위해 기존 정보를 가져온다.
-        List<AttractionEntity> attrList = attractionRepository.findAllByRegionEntity_RegionIdx(regionEntity.getRegionIdx());
-        log.info("{}", regionEntity.getRegionIdx());
-        log.info("{}", attrList.size());
-        log.info("{}", attrList.get(attrList.size() - 1).getAttrIdx());
-        long attractionOffset = Long.parseLong(String.valueOf(attrList.get(attrList.size() - 1).getAttrIdx()).substring(2)) + 1;
-        // Entity 생성
-        log.info("{}", attractionOffset);
-        AttractionEntity attrEntity = AttractionEntity.builder()
-                .attrIdx(Long.parseLong(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attractionOffset))))
-                .address(requestDTO.getAddress())
-                .description(requestDTO.getDescription())
-                .latitude(requestDTO.getLatitude())
-                .longitude(requestDTO.getLongitude())
-                .attraction(requestDTO.getAttraction())
-                .tag(requestDTO.getTag())
-                .regionEntity(regionEntity)
-                .build();
-        attractionRepository.save(attrEntity);
+    public String craeteAttraction(AdminDTO.attrCreateModifyRequestList requestDTO) {
+        long tempAttrIdx = 0L;
+        long tempAttrImgIdx = 0L;
 
-        // 이미지 추가
-        if (requestDTO.getImages().get(0) != null) {
-            int imageIdx = 1;
-            long attrIdx = attractionOffset;
+        try {
+            // requestDTO로 RegionEntity를 가져온다
+            RegionEntity region = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
+            // idx 생성을 위해 기존 정보를 가져온다.
+            List<AttractionEntity> attrList = attractionRepository.findAllByRegionEntity_RegionIdx(region.getRegionIdx());
+            long attractionOffset = Long.parseLong(String.valueOf(attrList.get(attrList.size() - 1).getAttrIdx()).substring(2)) + 1;
+            tempAttrIdx = Long.parseLong(String.valueOf(region.getRegionIdx()).concat(String.valueOf(attractionOffset)));
+            // Entity 생성
+            AttractionEntity attraction = AttractionEntity.builder()
+                    .attrIdx(tempAttrIdx)
+                    .address(requestDTO.getAddress())
+                    .description(requestDTO.getDescription())
+                    .latitude(requestDTO.getLatitude())
+                    .longitude(requestDTO.getLongitude())
+                    .attraction(requestDTO.getAttraction())
+                    .tag(requestDTO.getTag())
+                    .regionEntity(region)
+                    .build();
+            attractionRepository.save(attraction);
+            // 이미지 추가
+            if (requestDTO.getImages().get(0) != null) {
+                int imageIdx = 1;
+                for (MultipartFile createImage : requestDTO.getImages()) {
+                    if (!createImage.getContentType().startsWith("image")) break;
+                    // 경로 지정
+                    String fileName = createImage.getOriginalFilename();
+                    String folderPath = makeForder("attraction/" + attraction.getAttrIdx());
+                    String save = uploadPath + File.separator + folderPath + File.separator + fileName;
+                    Path imageSavePath = Paths.get(save);
 
-            for (MultipartFile createImage : requestDTO.getImages()) {
-                if (createImage.getContentType().startsWith("image") == false) break;
-                // 경로 지정
-                String fileName = createImage.getOriginalFilename();
-                String folderPath = makeForder("attraction/" + attrEntity.getAttrIdx());
-                String save = uploadPath + File.separator + folderPath + File.separator + fileName;
-                Path imageSavePath = Paths.get(save);
-
-                try {
-                    createImage.transferTo(imageSavePath);
-                } catch (IOException e) {
+                    try {
+                        createImage.transferTo(imageSavePath);
+                    } catch (IOException e) {
+                        attractionRepository.deleteByAttrIdx(tempAttrIdx);
+                    }
+                    // DB에 추가
+                    AttractionImageEntity attractionImage = attrImgDtoToEntity(
+                            imageSavePath,
+                            requestDTO.getThumbnail(),
+                            attraction,
+                            createImage,
+                            Long.valueOf(String.valueOf(region.getRegionIdx()).concat(String.valueOf(attractionOffset).concat(String.valueOf(imageIdx++))))
+                    );
+                    tempAttrImgIdx = attractionImage.getAttrImgIdx();
+                    attractionImageRepository.save(attractionImage);
                 }
-                // DB에 추가
-                AttractionImageEntity attractionImageEntity = attrImgDtoToEntity(
-                        imageSavePath,
-                        requestDTO.getThumbnail(),
-                        attrEntity,
-                        createImage,
-                        Long.valueOf(String.valueOf(regionEntity.getRegionIdx()).concat(String.valueOf(attrIdx).concat(String.valueOf(imageIdx++))))
-                );
-                attractionImageRepository.save(attractionImageEntity);
             }
+        } catch (Exception e) {
+            attractionRepository.deleteByAttrIdx(tempAttrIdx);
+            attractionImageRepository.deleteByAttrImgIdx(tempAttrImgIdx);
+            return "登録に失敗しました。";
         }
-        return "success";
+        return "登録しました。";
     }
 
+
     @Override
-    public String patchAttraction(AttrMngRequestDTO requestDTO) {
+    public String patchAttraction(AdminDTO.attrCreateModifyRequestList requestDTO) {
         // requestDTO로 RegionEntity를 가져온다
         RegionEntity regionEntity = regionRepository.findRegionEntityByAreaAndCity(requestDTO.getArea(), requestDTO.getCity());
         // 기존 데이터와 비교를 위해 기존 정보를 가져온다.
