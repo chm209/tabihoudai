@@ -16,7 +16,10 @@ import java.util.stream.Collectors;
 
 public interface AdminServices {
     AdminDTO.adminPageResponse getAdminManagementList(int item, AdminDTO.adminPageRequestList pageRequestDTO);
+    String deleteAdminItem(int item, long idx);
     String craeteAttraction(AdminDTO.attrCreateModifyRequestList requestDTO);
+    String uploadBannerImage(MultipartFile uploadFile);
+    AdminDTO.attrModifyDataResponse getModifyAttractionData(long attrIdx);
 
     default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
         return AdminDTO.adminBannerList.builder()
@@ -53,6 +56,26 @@ public interface AdminServices {
                         .build();
     }
 
+    default AdminDTO.attrModifyDataResponse attrModiftDataEntityToDto(List<AttractionImageEntity> attraction) {
+        return AdminDTO.attrModifyDataResponse.builder()
+                .attrIdx(attraction.get(0).getAttrEntity().getAttrIdx())
+                .name(attraction.get(0).getAttrEntity().getAttraction())
+                .area(attraction.get(0).getAttrEntity().getRegionEntity().getArea())
+                .city(attraction.get(0).getAttrEntity().getRegionEntity().getCity())
+                .address(attraction.get(0).getAttrEntity().getAddress())
+                .latitude(attraction.get(0).getAttrEntity().getLatitude())
+                .longitude(attraction.get(0).getAttrEntity().getLongitude())
+                .description(attraction.get(0).getAttrEntity().getDescription())
+                .tag(attraction.get(0).getAttrEntity().getTag())
+                .attrImgList(attraction.stream().map(this::attrModifyImgDataEntityToDto).collect(Collectors.toList()))
+                .build();
+    }
+    default AdminDTO.attrModifyImgDataResponse attrModifyImgDataEntityToDto(AttractionImageEntity attractionImage) {
+        return AdminDTO.attrModifyImgDataResponse.builder()
+                .path(attractionImage.getPath())
+                .attrImgIdx(attractionImage.getAttrImgIdx())
+                .build();
+    }
 
 
 
@@ -64,11 +87,11 @@ public interface AdminServices {
 
 
 
-    String uploadBannerImage(MultipartFile uploadFile);
-    AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
+
+
     String patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO);
 
-    String deleteAdminItem(int item, long idx);
+
     AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx);
     String userBlockManager(long id, AdminDTO.userBlockRequestDto userBlockRequestDto);
     AdminDTO.csDetailInfo getCsDetailViewer(long csIdx);
@@ -97,28 +120,7 @@ public interface AdminServices {
                 .build();
     }
 
-    default AdminDTO.attrDetailData attrDetailEntityToDto(List<AttractionImageEntity> attrImageResult) {
-        return AdminDTO.attrDetailData.builder()
-                .attrIdx(attrImageResult.get(0).getAttrEntity().getAttrIdx())
-                .name(attrImageResult.get(0).getAttrEntity().getAttraction())
-                .area(attrImageResult.get(0).getAttrEntity().getRegionEntity().getArea())
-                .city(attrImageResult.get(0).getAttrEntity().getRegionEntity().getCity())
-                .address(attrImageResult.get(0).getAttrEntity().getAddress())
-                .latitude(attrImageResult.get(0).getAttrEntity().getLatitude())
-                .longitude(attrImageResult.get(0).getAttrEntity().getLongitude())
-                .description(attrImageResult.get(0).getAttrEntity().getDescription())
-                .tag(attrImageResult.get(0).getAttrEntity().getTag())
-                .attrDetailImageData(attrImageResult.stream().map(attractionImageEntity -> attrImageDetailEntityToDto(attractionImageEntity)).collect(Collectors.toList()))
-                .build();
-    }
 
-    default AdminDTO.attrDetailImageData attrImageDetailEntityToDto(AttractionImageEntity attrImageResult) {
-        return AdminDTO.attrDetailImageData.builder()
-                .path(attrImageResult.getPath())
-                .type(attrImageResult.getType())
-                .attrImgIdx(attrImageResult.getAttrImgIdx())
-                .build();
-    }
     default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {
         return AdminDTO.csDetailInfo.builder()
                 .userIdx(csEntity.getUsersEntity().getUserIdx())

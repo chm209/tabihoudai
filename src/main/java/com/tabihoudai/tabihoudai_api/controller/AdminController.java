@@ -41,22 +41,9 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.craeteAttraction(attrMngRequestDTO));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    // http://localhost:2094/api/admin/attraction/load?id=1131
     @GetMapping("/attraction/load")
-    public ResponseEntity<AdminDTO.attrDetailData> getAttraction(@RequestParam(value = "id", required = true) long id) {
-        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getAttrDetailData(id));
+    public ResponseEntity<AdminDTO.attrModifyDataResponse> getModifyAttractionData(@RequestParam(value = "id", required = true) long id) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminServices.getModifyAttractionData(id));
     }
 
     // http://localhost:2094/api/admin/attraction/modify
@@ -65,6 +52,22 @@ public class AdminController {
     public ResponseEntity patchAttraction(AdminDTO.attrCreateModifyRequestList attrMngRequestDTO) {
         return ResponseEntity.status(HttpStatus.OK).body(adminServices.patchAttraction(attrMngRequestDTO));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // http://localhost:2094/api/admin/cs/viewer?id=246
     @GetMapping("/cs/viewer")

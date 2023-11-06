@@ -222,6 +222,19 @@ public class AdminServicesImpl implements AdminServices {
         return "登録しました。";
     }
 
+    @Override
+    public AdminDTO.attrModifyDataResponse getModifyAttractionData(long attrIdx) {
+        List<AttractionImageEntity> attraction = attractionImageRepository.findAllByAttrEntityAttrIdx(attrIdx);
+        return attrModiftDataEntityToDto(attraction);
+    }
+
+
+
+
+
+
+
+
 
     @Override
     public String patchAttraction(AdminDTO.attrCreateModifyRequestList requestDTO) {
@@ -301,11 +314,7 @@ public class AdminServicesImpl implements AdminServices {
         return "성공";
     }
 
-    @Override
-    public AdminDTO.attrDetailData getAttrDetailData(long attrIdx) {
-        List<AttractionImageEntity> attrImageResult = attractionImageRepository.findAllByAttrEntityAttrIdx(attrIdx);
-        return attrDetailEntityToDto(attrImageResult);
-    }
+
 
     @Override
     public AdminDTO.blameDetailInfo getBlameDetailViewer(long blameIdx) {
