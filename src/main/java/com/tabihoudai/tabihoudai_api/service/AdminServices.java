@@ -16,7 +16,54 @@ import java.util.stream.Collectors;
 
 public interface AdminServices {
 
-    PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO);
+    AdminDTO.adminPageResponse getAdminManagementList(int item, AdminDTO.adminPageRequestList pageRequestDTO);
+
+    default AdminDTO.adminBannerList bannerPageEntityToDto(Object[] bannerPage) {
+        return AdminDTO.adminBannerList.builder()
+                        .bannerIdx((Long) bannerPage[0])
+                        .path((String) bannerPage[1])
+                        .regDate((LocalDateTime) bannerPage[2])
+                        .build();
+    }
+
+    default AdminDTO.adminAttrList attrPageEntityToDto(Object[] attrPage) {
+        return AdminDTO.adminAttrList.builder()
+                        .attrIdx((Long) attrPage[0])
+                        .area((String) attrPage[1])
+                        .city((String) attrPage[2])
+                        .address((String) attrPage[3])
+                        .name((String) attrPage[4])
+                        .build();
+    }
+
+    default AdminDTO.adminBlameList blamePageEntityToDto(Object[] blamePage) {
+        return AdminDTO.adminBlameList.builder()
+                        .blameIdx((Long) blamePage[0])
+                        .category((byte) blamePage[1])
+                        .content((String) blamePage[2])
+                        .build();
+    }
+
+       default AdminDTO.adminCsList csPageEntityToDto(Object[] csPage) {
+        return AdminDTO.adminCsList.builder()
+                        .csIdx((Long) csPage[0])
+                        .nickname((String) csPage[1])
+                        .type((byte) csPage[2])
+                        .content((String) csPage[3])
+                        .build();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     String uploadBannerImage(MultipartFile uploadFile);
     AdminDTO.attrDetailData getAttrDetailData(long attrIdx);
     String patchAttraction(AttrMngRequestDTO attrMngRequestDTO);
@@ -72,25 +119,7 @@ public interface AdminServices {
                 .attrImgIdx(attrImageResult.getAttrImgIdx())
                 .build();
     }
-
-    // 배너 이미지 관리 리스트
-    default AdminDTO.bannerInfo bannerEntityToDto(Object[] bannerEntity) {
-        return AdminDTO.bannerInfo.builder()
-                        .bannerIdx((Long) bannerEntity[0])
-                        .path((String) bannerEntity[1])
-                        .regDate((LocalDateTime) bannerEntity[2])
-                        .build();
-    }
-
-    default AdminDTO.blameInfo blameEntityToDto(Object[] blameEntity) {
-        return AdminDTO.blameInfo.builder()
-                        .blameIdx((Long) blameEntity[0])
-                        .category((byte) blameEntity[1])
-                        .content((String) blameEntity[2])
-                        .build();
-    }
-
-     default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {
+    default AdminDTO.csDetailInfo csEntityToDto(CsEntity csEntity) {
         return AdminDTO.csDetailInfo.builder()
                 .userIdx(csEntity.getUsersEntity().getUserIdx())
                 .askDate(csEntity.getAskDate())
@@ -101,24 +130,7 @@ public interface AdminServices {
                 .build();
     }
 
-    default AdminDTO.csInfo csEntityToDto(Object[] csEntity) {
-        return AdminDTO.csInfo.builder()
-                        .csIdx((Long) csEntity[0])
-                        .nickname((String) csEntity[1])
-                        .type((byte) csEntity[2])
-                        .content((String) csEntity[3])
-                        .build();
-    }
 
-    default AdminDTO.attrInfo attrEntityToDto(Object[] attrEntity) {
-        return AdminDTO.attrInfo.builder()
-                        .attrIdx((Long) attrEntity[0])
-                        .area((String) attrEntity[1])
-                        .city((String) attrEntity[2])
-                        .address((String) attrEntity[3])
-                        .name((String) attrEntity[4])
-                        .build();
-    }
 
     default AdminDTO.blameDetailInfo blameEntityToDto(BlameEntity blameEntity) {
         return AdminDTO.blameDetailInfo.builder()

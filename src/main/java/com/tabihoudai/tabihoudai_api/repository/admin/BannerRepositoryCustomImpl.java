@@ -28,7 +28,7 @@ public class BannerRepositoryCustomImpl implements BannerRepositoryCustom {
     @Override
     public Page<Object[]> getBannerPage(Pageable pageable) {
 
-        List<BannerEntity> result = jpaQueryFactory
+        List<BannerEntity> bannerEntityList = jpaQueryFactory
                 .select(bannerEntity)
                 .from(bannerEntity)
                 .offset(pageable.getOffset())
@@ -41,7 +41,7 @@ public class BannerRepositoryCustomImpl implements BannerRepositoryCustom {
                 .from(bannerEntity);
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(bannerEntity1 -> new Object[] {bannerEntity1.getBannerIdx(), bannerEntity1.getPath(), bannerEntity1.getRegDate()}).collect(Collectors.toList()),
+                bannerEntityList.stream().map(bannerEntity1 -> new Object[] {bannerEntity1.getBannerIdx(), bannerEntity1.getPath(), bannerEntity1.getRegDate()}).collect(Collectors.toList()),
                 pageable,
                 countQuery::fetchOne
                 );

@@ -16,9 +16,7 @@ import java.util.List;
 
 public interface BannerRepository extends JpaRepository<BannerEntity, Long>, BannerRepositoryCustom {
     List<BannerEntity> findAll();
-
     @Transactional
     void deleteByBannerIdx(@Param("bannerIdx") long bannerIdx);
-
     BannerEntity findByBannerIdx(@Param("bannerIdx") long bannerIdx);
 }

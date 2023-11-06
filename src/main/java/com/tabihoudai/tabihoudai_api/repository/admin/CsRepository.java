@@ -10,11 +10,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface CsRepository extends JpaRepository<CsEntity, Long>, CsRepositoryCustom {
-
     Page<CsEntity> findAllByOrderByAskDateDesc(Pageable pageable);
-
     @Transactional
     void deleteByCsIdx(@Param("csIdx") long csIdx);
-
     CsEntity findByCsIdx(@Param("csIdx") long csIdx);
 }

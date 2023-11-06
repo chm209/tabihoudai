@@ -8,15 +8,11 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RegionRepository extends JpaRepository<RegionEntity, Long> {
-    @Query("SELECT r " +
-            "FROM RegionEntity r " +
-            "WHERE r.regionIdx  = :regionIdx " )
-    RegionEntity findAll(@Param("regionIdx") Long regionIdx);
 
-    @Query("SELECT r.area, r.city " +
-            "FROM RegionEntity r " +
-            "WHERE r.regionIdx = :regionIdx ")
-    String getAreaCity(@Param("regionIdx") Long regionIdx);
+    RegionEntity findByRegionIdx(@Param("regionIdx") Long regionIdx);
+
+
+
 
     @Query("SELECT r " +
             "FROM RegionEntity r " +

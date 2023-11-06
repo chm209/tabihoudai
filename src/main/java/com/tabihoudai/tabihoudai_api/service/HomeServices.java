@@ -9,21 +9,9 @@ import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionImageEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 
-import java.sql.Date;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import static com.tabihoudai.tabihoudai_api.entity.plan.QPlanEntity.planEntity;
-import static com.tabihoudai.tabihoudai_api.entity.plan.QPlanLikeEntity.planLikeEntity;
-import static com.tabihoudai.tabihoudai_api.entity.users.QUsersEntity.usersEntity;
 
 public interface HomeServices {
     AdminDTO.bannerInfoResponse getBanner();

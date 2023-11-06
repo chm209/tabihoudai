@@ -2,8 +2,6 @@ package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.dto.AdminDTO;
 import com.tabihoudai.tabihoudai_api.dto.AttrMngRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.PageRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BannerEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlockEntity;
@@ -41,45 +39,75 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServicesImpl implements AdminServices {
-
+    // user
+    private final UsersRepository usersRepository;
+    // admin
     private final BannerRepository bannerRepository;
-    private final BoardReplyRepository boardReplyRepository;
-    private final BoardLikeRepository boardLikeRepository;
-    private final BoardRepository boardRepository;
-    private final PlanRepository planRepository;
-    private final PlanLikeRepository planLikeRepository;
-    private final PlanReplyRepository planReplyRepository;
     private final BlameRepository blameRepository;
     private final BlockRepository blockRepository;
     private final CsRepository csRepository;
+    // board
+    private final BoardReplyRepository boardReplyRepository;
+    private final BoardLikeRepository boardLikeRepository;
+    private final BoardRepository boardRepository;
+    // plan
+    private final PlanRepository planRepository;
+    private final PlanLikeRepository planLikeRepository;
+    private final PlanReplyRepository planReplyRepository;
+    // attraction
     private final AttractionRepository attractionRepository;
     private final AttractionImageRepository attractionImageRepository;
     private final AttractionReplyRepository attractionReplyRepository;
     private final RegionRepository regionRepository;
-    private final UsersRepository usersRepository;
 
     @Value("${com.tabihoudai.upload.path}")
     private String uploadPath;
 
     @Override
+    public AdminDTO.adminPageResponse getAdminManagementList(int item, AdminDTO.adminPageRequestList pageRequestDTO) {
+        if (item == 1) { // banner manage
+            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("bannerIdx").descending());
+            Page<Object[]> bannerPage = bannerRepository.getBannerPage(pageRequest);
+            Page<AdminDTO.adminBannerList> adminBannerListPage = bannerPage.map(this::bannerPageEntityToDto);
+            return new AdminDTO.adminPageResponse<>(adminBannerListPage);
+        } else if (item == 2) { // attraction manage
+            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("attrIdx").ascending());
+            Long regionIdx = Long.parseLong(pageRequestDTO.getSearchArea()) + Long.parseLong(pageRequestDTO.getSearchCity());
+            RegionEntity region = regionRepository.findByRegionIdx(regionIdx);
+            Page<Object[]> adminAttrListPage = attractionRepository.getAttractionPage(region.getArea(), region.getCity(), pageRequest);
+            Page<AdminDTO.adminAttrList> attrListPage = adminAttrListPage.map(this::attrPageEntityToDto);
+            return new AdminDTO.adminPageResponse<>(attrListPage);
+        } else if (item == 3) { // report manage
+            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("blameIdx").descending());
+            Page<Object[]> blamePage = blameRepository.getBlamePage(pageRequest);
+            Page<AdminDTO.adminBlameList> blameListPage = blamePage.map(this::blamePageEntityToDto);
+            return new AdminDTO.adminPageResponse<>(blameListPage);
+        } else { // 문의 관리
+            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("csIdx").descending());
+            Page<Object[]> csPage = csRepository.getCsPage(pageRequest);
+            Page<AdminDTO.adminCsList> csListPage = csPage.map(this::csPageEntityToDto);
+            return new AdminDTO.adminPageResponse<>(csListPage);
+        }
+    }
+
+    @Override
     public String deleteAdminItem(int item, long idx) {
+        String returnMsg = "";
         if (item == 1) { // 배너 이미지
             BannerEntity banner = bannerRepository.findByBannerIdx(idx);
             // 로컬에서 이미지 삭제
             File file = new File(banner.getPath());
             if (file.exists()) {
-                if (file.delete()) System.out.println("이미지 삭제 성공");
-                else System.out.println("이미지 삭제 실패");
-            } else System.out.println("파일이 존재하지 않습니다.");
+                if (file.delete()) returnMsg = "データを削除しました。";
+                else returnMsg = "データの削除に失敗しました。";
+            } else returnMsg = "データの削除に失敗しました。";
             bannerRepository.deleteByBannerIdx(idx);
         } else if (item == 2) { // 관광 명소 관리
             List<AttractionImageEntity> attrImage = attractionImageRepository.findByAttrEntity_AttrIdx(idx);
@@ -90,34 +118,55 @@ public class AdminServicesImpl implements AdminServices {
                 forderPath = forderPath.concat(str + File.separator);
             }
             File folder = new File(forderPath);
-
             try {
                 while (folder.exists()) {
                     File[] folderList = folder.listFiles();
-
                     for (int offset = 0; offset < folderList.length; offset++) {
                         folderList[offset].delete();
-                        System.out.println("파일 삭제");
+                        returnMsg = "データを削除しました。";
                     }
                     if (folderList.length == 0 && folder.isDirectory()) {
                         folder.delete();
-                        System.out.println("폴더 삭제");
+                        returnMsg = "フォルダを削除しました。";
                     }
                 }
-            } catch (Exception e) {
-                e.getStackTrace();
-            }
-
+            } catch (Exception e) { e.getStackTrace(); }
             attractionImageRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionReplyRepository.deleteByAttrEntity_AttrIdx(idx);
             attractionRepository.deleteByAttrIdx(idx);
         } else if (item == 3) { // 신고 관리
             blameRepository.deleteByBlameIdx(idx);
+            returnMsg = "データを削除しました。";
         } else if (item == 4) { // 문의 관리
             csRepository.deleteByCsIdx(idx);
+            returnMsg = "データを削除しました。";
         }
-        return "";
+        return returnMsg;
     }
+
+    @Override
+    public String uploadBannerImage(MultipartFile uploadFile) {
+        if (!uploadFile.getContentType().startsWith("image")) return "fail";
+        String fileName = uploadFile.getOriginalFilename();
+        String folderPath = makeForder("banner");
+        String saveName = uploadPath + File.separator + folderPath + File.separator + fileName;
+        Path path = Paths.get(saveName);
+        try {
+            uploadFile.transferTo(path);
+            bannerRepository.save(BannerEntity.builder().path(saveName).build());
+        } catch (IOException e) {
+        }
+        return "success";
+    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public String craeteAttraction(AttrMngRequestDTO requestDTO) {
@@ -253,33 +302,6 @@ public class AdminServicesImpl implements AdminServices {
     }
 
     @Override
-    public PageResultDTO getAdminManagementList(int item, PageRequestDTO pageRequestDTO) {
-        if (item == 1) { // 배너 이미지
-            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("bannerIdx").descending());
-            Page<Object[]> list = bannerRepository.getBannerPage(pageRequest);
-            Page<AdminDTO.bannerInfo> result = list.map(objects -> bannerEntityToDto(objects));
-            return new PageResultDTO<>(result);
-        } else if (item == 2) { // 관광 명소 관리
-            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("attrIdx").ascending());
-            Long regionIdx = Long.parseLong(pageRequestDTO.getSearchArea()) + Long.parseLong(pageRequestDTO.getSearchCity());
-            String[] region = (regionRepository.getAreaCity(regionIdx)).split(",");
-            Page<Object[]> list = attractionRepository.getAttractionPage(region[0], region[1], pageRequest);
-            Page<AdminDTO.attrInfo> result = list.map(objects -> attrEntityToDto(objects));
-            return new PageResultDTO<>(result);
-        } else if (item == 3) { // 신고 관리
-            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("blameIdx").descending());
-            Page<Object[]> list = blameRepository.getBlamePage(pageRequest);
-            Page<AdminDTO.blameInfo> result = list.map(objects -> blameEntityToDto(objects));
-            return new PageResultDTO<>(result);
-        } else { // 문의 관리
-            PageRequest pageRequest = PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), Sort.by("csIdx").descending());
-            Page<Object[]> list = csRepository.getCsPage(pageRequest);
-            Page<AdminDTO.csInfo> result = list.map(objects -> csEntityToDto(objects));
-            return new PageResultDTO<>(result);
-        }
-    }
-
-    @Override
     public AdminDTO.attrDetailData getAttrDetailData(long attrIdx) {
         List<AttractionImageEntity> attrImageResult = attractionImageRepository.findAllByAttrEntityAttrIdx(attrIdx);
         return attrDetailEntityToDto(attrImageResult);
@@ -395,23 +417,6 @@ public class AdminServicesImpl implements AdminServices {
             }
             return "차단 해제";
         }
-    }
-
-    @Override
-    public String uploadBannerImage(MultipartFile uploadFile) {
-        if (uploadFile.getContentType().startsWith("image") == false) {
-            return "fail";
-        }
-        String fileName = uploadFile.getOriginalFilename();
-        String folderPath = makeForder("banner");
-        String saveName = uploadPath + File.separator + folderPath + File.separator + fileName;
-        Path path = Paths.get(saveName);
-        try {
-            uploadFile.transferTo(path);
-            bannerRepository.save(BannerEntity.builder().path(saveName).build());
-        } catch (IOException e) {
-        }
-        return "success";
     }
 
     private void blockAndDelete(BlameEntity blame, AdminDTO.userBlockRequestDto userBlockRequestDto) {
