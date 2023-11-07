@@ -1,6 +1,6 @@
 package com.tabihoudai.tabihoudai_api.config;
 
-import com.tabihoudai.tabihoudai_api.domain.Role;
+import com.tabihoudai.tabihoudai_api.entity.Role;
 import com.tabihoudai.tabihoudai_api.repository.RoleRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

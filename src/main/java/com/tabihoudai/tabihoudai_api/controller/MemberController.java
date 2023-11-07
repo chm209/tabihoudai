@@ -1,8 +1,8 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
-import com.tabihoudai.tabihoudai_api.domain.Member;
-import com.tabihoudai.tabihoudai_api.domain.RefreshToken;
-import com.tabihoudai.tabihoudai_api.domain.Role;
+import com.tabihoudai.tabihoudai_api.entity.Member;
+import com.tabihoudai.tabihoudai_api.entity.RefreshToken;
+import com.tabihoudai.tabihoudai_api.entity.Role;
 import com.tabihoudai.tabihoudai_api.dto.*;
 import com.tabihoudai.tabihoudai_api.repository.MemberRepository;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.IfLogin;

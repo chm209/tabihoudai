@@ -1,6 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service;
 
-import com.tabihoudai.tabihoudai_api.domain.RefreshToken;
+import com.tabihoudai.tabihoudai_api.entity.RefreshToken;
 import com.tabihoudai.tabihoudai_api.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

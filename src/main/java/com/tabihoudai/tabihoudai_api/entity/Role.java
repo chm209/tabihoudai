@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.domain;
+package com.tabihoudai.tabihoudai_api.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

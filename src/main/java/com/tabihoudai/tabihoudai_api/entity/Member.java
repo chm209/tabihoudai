@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.domain;
+package com.tabihoudai.tabihoudai_api.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
