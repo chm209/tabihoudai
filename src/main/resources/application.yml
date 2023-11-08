@@ -14,7 +14,10 @@ spring:
     show-sql: true
     database: oracle
 
-org:
-  postImage:
-    upload:
-      path: E:\upload
+server:
+  port: 8081
+
+#org:
+#  postImage:
+#    upload:
+#      path: E:\upload
