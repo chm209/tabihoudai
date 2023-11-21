@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
-
 import java.io.File;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +21,7 @@ public class ImageController {
     @PostMapping("/upload")
     public Map<String, Object> uploadImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
         MultipartFile uploadFile = request.getFile("upload");
-        String uploadDir = "C:\\tabihoudai\\tabi_front\\src\\assets\\images\\";
+        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\";
         uploadDir.replace("\\", "/");
         String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
         uploadFile.transferTo(new File(uploadDir + uploadId));

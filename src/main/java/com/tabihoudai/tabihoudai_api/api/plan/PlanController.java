@@ -2,9 +2,7 @@ package com.tabihoudai.tabihoudai_api.api.plan;
 
 import com.tabihoudai.tabihoudai_api.application.plan.PlanService;
 import com.tabihoudai.tabihoudai_api.dao.plan.PlanRepository;
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttractionListDTO;
 import com.tabihoudai.tabihoudai_api.dto.plan.PlanDTO;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
