@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
@@ -37,5 +38,7 @@ public class MemberSignupDto {
     @Pattern(regexp = "\\d{8}",
             message = "생년월일은 8자리로 입력해주세요 (ex.19990101)")
     private String birthday;
+
+    private MultipartFile profileImage;
 
 }

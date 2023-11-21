@@ -42,6 +42,9 @@ public class Member {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
+    @Column
+    private byte[] profileImage;
+
     @ManyToMany
     @JoinTable(name = "member_role",
             joinColumns = @JoinColumn(name = "member_id"),

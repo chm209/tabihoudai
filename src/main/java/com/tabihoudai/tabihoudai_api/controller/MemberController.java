@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -61,6 +62,10 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/upload")
+    public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file) {
+        return ResponseEntity.ok("File uploaded successfully");
+    }
 
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
@@ -95,6 +100,8 @@ public class MemberController {
         member.setBirthday(birthday);
 
         try {
+            byte[] profileImageBytes = memberSignupDto.getProfileImage().getBytes();
+
             Member saveMember = memberService.addMember(member);
 
             MemberSignupResponseDto memberSignupResponse = new MemberSignupResponseDto();
