@@ -14,13 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
-
-//    @GetMapping("/{boardIdx}")
-//    public List<BoardDTO.BoardViewDTO> viewBoard(@PathVariable long boardIdx){
-//        log.info("boardIdx = " + boardIdx);
-//        List<BoardDTO.BoardViewDTO> dto = boardService.get(boardIdx);
-//        return dto;
-//    }
+    
 
     @GetMapping("/{boardIdx}")
     public ResponseEntity viewBoard(@PathVariable long boardIdx){

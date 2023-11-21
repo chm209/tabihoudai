@@ -36,16 +36,6 @@ public interface BoardService {
                 .build();
     }
 
-//    default BoardListDTO entityToListDTO(BoardEntity board, UsersEntity users){
-//        return BoardListDTO.builder().
-//                boardIdx(board.getBoardIdx())
-//                .title(board.getTitle())
-//                .regDate(board.getRegDate())
-//                .visitCount(board.getVisitCount())
-//                .nickname(users.getNickname())
-//                .build();
-//    }
-
     default BoardEntity dtoToEntityRegister(BoardDTO.BoardRegisterDTO dto){
         UsersEntity users = UsersEntity.builder().userIdx(dto.getUsersIdx()).build();
         return BoardEntity.builder()
