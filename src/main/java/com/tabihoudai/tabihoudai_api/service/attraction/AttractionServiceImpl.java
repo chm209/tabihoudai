@@ -78,7 +78,9 @@ public class AttractionServiceImpl implements AttractionService{
         String word= attrRequestDTO.getKeyword();
         int sort = attrRequestDTO.getSort();
         String so = "";
-        String tp = "";
+        String area = null;
+        String city = null;
+        String attr = null;
         if(sort==0){
             so="grade";
         } else if (sort==1) {
@@ -87,14 +89,14 @@ public class AttractionServiceImpl implements AttractionService{
             so="commentCount";
         }
         if(type==0){
-            tp="area";
+            area="area";
         } else if (type==1) {
-            tp="city";
+            city="city";
         } else if (type==2) {
-            tp="attraction";
+            attr="attraction";
         }
         Pageable pageable = attrRequestDTO.getPageable(Sort.by(so).ascending());
-        Page<Object[]> result = attractionRepository.getAttractionList(pageable,tp,word);
+        Page<Object[]> result = attractionRepository.getAttractionList(pageable,area,city,attr,word);
 
         Function<Object[],AttrListDTO> fn;
         fn=(arr -> entityToDTO(

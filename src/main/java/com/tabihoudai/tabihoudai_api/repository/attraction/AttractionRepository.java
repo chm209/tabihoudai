@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface AttractionRepository {
 
-    Page<Object[]> getAttractionList(Pageable pageable,String area,String word);
+    Page<Object[]> getAttractionList(Pageable pageable,String area,String city, String attr,String word);
 
     List<AttractionEntity> getAttractionDetail(Long attrIdx);
 
