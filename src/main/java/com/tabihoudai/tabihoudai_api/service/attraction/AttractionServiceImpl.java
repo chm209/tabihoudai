@@ -6,22 +6,38 @@ import com.tabihoudai.tabihoudai_api.dto.attraction.*;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttrImgEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
+import com.tabihoudai.tabihoudai_api.repository.attraction.AttrReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.attractionEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttrReplyEntity.attrReplyEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttrImgEntity.attrImgEntity;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +45,32 @@ import java.util.function.Function;
 public class AttractionServiceImpl implements AttractionService{
 
     private final AttractionRepository attractionRepository;
+
+    private final AttrReplyRepository attrReplyRepository;
+
+    @Override
+    public List<String> getAreaList() {
+        List<String> list = new ArrayList<>();
+        List<RegionEntity> region = attractionRepository.getRegion();
+        region.forEach(arr -> {
+            list.add(arr.getArea());
+        });
+        List<String> collect = list.stream().distinct().collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
+    public List<String> getCityList(String area) {
+        List<String> list = new ArrayList<>();
+        List<RegionEntity> region = attractionRepository.getRegion();
+        region.forEach(arr -> {
+            if (arr.getArea().equals(area)){
+                list.add(arr.getCity());
+            }
+        });
+        return list;
+    }
+
 
     @Override
     public AttrResultDTO<AttrListDTO, Object[]> getAttrList(AttrRequestDTO attrRequestDTO) {
@@ -51,7 +93,7 @@ public class AttractionServiceImpl implements AttractionService{
         } else if (type==2) {
             tp="attraction";
         }
-        Pageable pageable = attrRequestDTO.getPageable(Sort.by(so).descending());
+        Pageable pageable = attrRequestDTO.getPageable(Sort.by(so).ascending());
         Page<Object[]> result = attractionRepository.getAttractionList(pageable,tp,word);
 
         Function<Object[],AttrListDTO> fn;
@@ -98,4 +140,49 @@ public class AttractionServiceImpl implements AttractionService{
 
         return detailDTO;
     }
+
+    @Override
+    @Transactional
+    public String register(AttrReplyDto attrReplyDto,MultipartFile multipartFile) {
+        String str = "C:\\Users\\dhses\\tabihoudai\\tabi_front\\src\\assets\\images\\attrReply";
+        String folderPath = str.replace("\\", File.separator);
+        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
+        if(multipartFile!=null) {
+            String originalFilename = multipartFile.getOriginalFilename();
+            String fileName = date + "_" +
+                    originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
+            String saveName = folderPath + File.separator + fileName;
+            Path path = Paths.get(saveName);
+            try {
+                multipartFile.transferTo(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            attrReplyDto.setPath(fileName);
+        }
+        String result = "";
+        AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
+
+        try {
+            AttrReplyEntity save = attrReplyRepository.save(entity);
+            return result = "success";
+        } catch (Exception e){
+            return result = "failure";
+        }
+
+    }
+
+    @Override
+    public String delete(AttrReplyDto attrReplyDto) {
+        String result ="";
+        try {
+            attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
+            result = "success";
+        } catch (Exception e){
+            result ="failure";
+        }
+        return result;
+    }
+
+
 }

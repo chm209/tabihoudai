@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.entity.attraction;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;

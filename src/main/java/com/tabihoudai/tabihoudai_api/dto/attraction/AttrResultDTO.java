@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 public class AttrResultDTO<DTO, EN> {
 
     //DTO리스트
-    private List<DTO> dtoList;
+    private List<DTO> attrList;
 
     //총 페이지 번호
     private int totalPage;
@@ -34,7 +34,7 @@ public class AttrResultDTO<DTO, EN> {
 
     public AttrResultDTO(Page<EN> result, Function<EN,DTO> fn ){
 
-        dtoList = result.stream().map(fn).collect(Collectors.toList());
+        attrList = result.stream().map(fn).collect(Collectors.toList());
 
         totalPage = result.getTotalPages();
 

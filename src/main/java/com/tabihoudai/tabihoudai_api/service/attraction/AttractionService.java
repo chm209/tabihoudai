@@ -2,17 +2,26 @@ package com.tabihoudai.tabihoudai_api.service.attraction;
 
 
 import com.tabihoudai.tabihoudai_api.dto.attraction.*;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrImgEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
 public interface AttractionService {
+
+    List<String> getAreaList();
+    List<String> getCityList(String area);
     AttrResultDTO<AttrListDTO,Object[]> getAttrList(AttrRequestDTO attrRequestDTO);
     AttrDetailDTO getAttrDetail(Long attrIdx);
+
+    String register (AttrReplyDto attrReplyDto, MultipartFile multipartFile);
+
+    String delete (AttrReplyDto attrReplyDto);
 
 
     default AttrListDTO entityToDTO(AttractionEntity attractionEntity, AttrImgEntity attrImgEntity, double avg, Long count ){
@@ -49,6 +58,23 @@ public interface AttractionService {
                 .type(attrImgEntity.getType())
                 .build();
 
-        return null;
+        return attrImgDto;
     }
+
+    default AttrReplyEntity dtoToEntityReply(AttrReplyDto attrReplyDto){
+        AttractionEntity attractionEntity = AttractionEntity.builder().attrIdx(attrReplyDto.getAttrIdx()).build();
+        UserEntity userEntity = UserEntity.builder().userIdx(attrReplyDto.getUserIdx()).build();
+        AttrReplyEntity entity = AttrReplyEntity.builder()
+                .attrReplyIdx(attrReplyDto.getAttrReplyIdx())
+                .attrIdx(attractionEntity)
+                .userIdx(userEntity)
+                .content(attrReplyDto.getContent())
+                .score(attrReplyDto.getScore())
+                .path(attrReplyDto.getPath())
+                .build();
+
+        return entity;
+    }
+
+
 }

@@ -10,10 +10,8 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrDetailDTO;
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrImgDto;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrImgEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.QAttrReplyEntity;
+import com.tabihoudai.tabihoudai_api.dto.attraction.RegionDto;
+import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -166,6 +164,17 @@ public class AttractionRepositoryImpl implements AttractionRepository{
                 .from(attrImgEntity)
                 .where(attrImgEntity.attrIdx.eq(attraction))
                 .fetch();
+
+        return result;
+    }
+
+    @Override
+    public List<RegionEntity> getRegion() {
+
+         List<RegionEntity> result = queryFactory.select(regionEntity)
+                 .from(regionEntity)
+                 .fetch();
+
 
         return result;
     }
