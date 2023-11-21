@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,10 +55,10 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(PageRequestDTO pageRequestDTO, int category) {
+    public PageResultDTO getList(PageRequestDTO pageRequestDTO, int category) {
         Page<Object[]> boardList = boardRepository.getBoardList(pageRequestDTO.getPageable(), category);
-        Page<BoardDTO.BoardListDTO> map = boardList.map(this::boardListEntityToDTO);
-        return (PageResultDTO<BoardDTO.BoardListDTO, Object[]>) map;
+        Function<Object[], BoardDTO.BoardListDTO> fn = objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
+        return new PageResultDTO(boardList, fn);
     }
 
     @Transactional(rollbackFor = Exception.class)

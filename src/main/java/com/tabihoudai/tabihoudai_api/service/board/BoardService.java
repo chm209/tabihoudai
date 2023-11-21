@@ -6,7 +6,6 @@ import com.tabihoudai.tabihoudai_api.dto.board.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BoardService {
@@ -46,13 +45,13 @@ public interface BoardService {
                 .build();
     }
 
-    default BoardDTO.BoardListDTO boardListEntityToDTO(Object[] boardList){
+    default BoardDTO.BoardListDTO boardListEntityToDTO(BoardEntity board, UsersEntity users){
         return BoardDTO.BoardListDTO.builder()
-                .boardIdx((Long) boardList[0])
-                .title((String) boardList[1])
-                .regDate((LocalDateTime) boardList[2])
-                .visitCount((Integer) boardList[3])
-                .nickname((String) boardList[4])
+                .boardIdx(board.getBoardIdx())
+                .title(board.getTitle())
+                .regDate(board.getRegDate())
+                .visitCount(board.getVisitCount())
+                .nickname(users.getNickname())
                 .build();
     }
 }
