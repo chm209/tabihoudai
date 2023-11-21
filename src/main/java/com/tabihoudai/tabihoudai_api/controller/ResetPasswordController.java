@@ -31,7 +31,7 @@ public class ResetPasswordController {
         }
 
         // 이메일이 존재하면 임의로 랜덤한 초기화 링크를 생성합니다.
-        String resetLink = "http://localhost:5173/resetpw/reset-password?token=randomtoken";
+        String resetLink = "http://localhost:5173/resetpw";
 
         resetPasswordEmailService.sendResetPasswordEmail(email, resetLink);
 
