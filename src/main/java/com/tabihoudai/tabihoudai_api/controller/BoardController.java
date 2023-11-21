@@ -21,9 +21,8 @@ public class BoardController {
     @ResponseStatus(HttpStatus.OK)
     public PageResultDTO getBoardList(
             @RequestParam int category,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = "10") int size){
-        PageRequestDTO requestDTO = PageRequestDTO.builder().page(pageNo).size(size).build();
+            @RequestParam(defaultValue = "1") int pageNo){
+        PageRequestDTO requestDTO = PageRequestDTO.builder().page(pageNo).size(10).build();
         return boardService.getList(requestDTO, category);
     }
 

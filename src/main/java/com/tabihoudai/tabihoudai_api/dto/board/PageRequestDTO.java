@@ -17,7 +17,7 @@ public class PageRequestDTO {
     //@Schema(description = "페이지 번호",requiredMode = Schema.RequiredMode.REQUIRED)
     private int page;
     //@Schema(description = "페이지 사이즈",requiredMode = Schema.RequiredMode.REQUIRED)
-    private int size;
+    private int size = 10;
     //@Schema(description = "검색 타입")
     private String type;
     //@Schema(description = "검색 키워드")

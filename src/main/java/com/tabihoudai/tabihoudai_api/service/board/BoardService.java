@@ -16,7 +16,9 @@ public interface BoardService {
 
     Long registerBoard(BoardDTO.BoardRegisterDTO dto);
 
-    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(PageRequestDTO pageRequestDTO, int category);
+    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(PageRequestDTO pageRequestDTO, Integer category);
+
+    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getListNullCategory(PageRequestDTO pageRequestDTO);
 
     void removeBoard(Long boardIdx);
 

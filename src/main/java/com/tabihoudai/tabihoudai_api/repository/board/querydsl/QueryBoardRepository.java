@@ -11,5 +11,7 @@ public interface QueryBoardRepository {
 
     List<Object[]> getBoardByCategory(int category);
 
-    Page<Object[]> getBoardList(Pageable pageable, int category);
+    Page<Object[]> getBoardList(Pageable pageable, Integer category);
+
+    Page<Object[]> getListNullCategory(Pageable pageable);
 }

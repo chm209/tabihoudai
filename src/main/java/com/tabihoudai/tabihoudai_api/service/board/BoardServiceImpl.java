@@ -37,15 +37,6 @@ public class BoardServiceImpl implements BoardService{
         return collect;
     }
 
-//    @Transactional
-//    @Override
-//    public List<BoardListDTO> getList(int categoryNo) {
-//        List<Object[]> result = boardRepository.getBoardByCategory(categoryNo);
-//        List<BoardListDTO> collect = result.stream().map(objects -> entityToListDTO((BoardEntity) objects[0], (UsersEntity) objects[1]))
-//                .collect(Collectors.toList());
-//        return collect;
-//    }
-
     @Override
     public Long registerBoard(BoardDTO.BoardRegisterDTO dto) {
         log.info("dto : {}", dto);
@@ -55,8 +46,15 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public PageResultDTO getList(PageRequestDTO pageRequestDTO, int category) {
+    public PageResultDTO getList(PageRequestDTO pageRequestDTO, Integer category) {
         Page<Object[]> boardList = boardRepository.getBoardList(pageRequestDTO.getPageable(), category);
+        Function<Object[], BoardDTO.BoardListDTO> fn = objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
+        return new PageResultDTO(boardList, fn);
+    }
+
+    @Override
+    public PageResultDTO getListNullCategory(PageRequestDTO pageRequestDTO) {
+        Page<Object[]> boardList = boardRepository.getListNullCategory(pageRequestDTO.getPageable());
         Function<Object[], BoardDTO.BoardListDTO> fn = objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
         return new PageResultDTO(boardList, fn);
     }
