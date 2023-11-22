@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.dto.plan;
+package com.tabihoudai.tabihoudai_api.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;

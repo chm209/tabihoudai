@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.dto.attraction;
+package com.tabihoudai.tabihoudai_api.dto;
 
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;

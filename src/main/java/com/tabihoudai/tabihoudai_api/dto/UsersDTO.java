@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.dto.users;
+package com.tabihoudai.tabihoudai_api.dto;
 
 import lombok.Builder;
 import lombok.Setter;

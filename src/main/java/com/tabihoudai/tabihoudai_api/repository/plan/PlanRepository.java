@@ -1,6 +1,6 @@
-package com.tabihoudai.tabihoudai_api.dao.plan;
+package com.tabihoudai.tabihoudai_api.repository.plan;
 
-import com.tabihoudai.tabihoudai_api.dto.plan.PlanDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

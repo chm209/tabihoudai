@@ -1,7 +1,7 @@
 package com.tabihoudai.tabihoudai_api.application.plan;
 
-import com.tabihoudai.tabihoudai_api.dao.plan.PlanRepository;
-import com.tabihoudai.tabihoudai_api.dto.plan.PlanDTO;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
+import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.users.UsersRepository;

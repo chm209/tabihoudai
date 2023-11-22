@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.api.plan;
+package com.tabihoudai.tabihoudai_api.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

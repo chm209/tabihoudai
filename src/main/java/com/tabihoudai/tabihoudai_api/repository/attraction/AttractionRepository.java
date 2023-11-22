@@ -1,6 +1,5 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttractionListDTO;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

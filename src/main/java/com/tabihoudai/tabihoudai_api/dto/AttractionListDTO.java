@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.dto.attraction;
+package com.tabihoudai.tabihoudai_api.dto;
 
 import lombok.*;
 

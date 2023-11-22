@@ -1,14 +1,11 @@
 package com.tabihoudai.tabihoudai_api.repository.attraction;
 
-import com.tabihoudai.tabihoudai_api.dto.attraction.AreaDTO;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 
 public interface RegionRepository extends JpaRepository<RegionEntity, Long> {

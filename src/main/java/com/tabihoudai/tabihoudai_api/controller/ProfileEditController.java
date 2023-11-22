@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.api.users;
+package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.users.UsersRepository;

@@ -1,6 +1,6 @@
-package com.tabihoudai.tabihoudai_api.api.users;
+package com.tabihoudai.tabihoudai_api.controller;
 
-import com.tabihoudai.tabihoudai_api.dao.plan.PlanRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import com.tabihoudai.tabihoudai_api.repository.admin.CsRepository;
 
 import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
