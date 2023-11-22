@@ -58,6 +58,7 @@ public class QueryBoardRepositoryImpl implements QueryBoardRepository{
         return result.stream().map(tuple -> tuple.toArray()).collect(Collectors.toList());
     }
 
+    //카테고리별 게시글 리스트 조회, 전체 게시글 조회 가능
     @Override
     public Page<Object[]> getBoardList(Pageable pageable, Integer category) {
         List<Tuple> result = queryFactory.select(
@@ -82,22 +83,35 @@ public class QueryBoardRepositoryImpl implements QueryBoardRepository{
         return boardEntity.category.eq(category);
     }
 
+    //검색한 게시글 리스트
     @Override
-    public Page<Object[]> getListNullCategory(Pageable pageable) {
+    public Page<Object[]> searchBoard(Pageable pageable, String keyword, String type) {
         List<Tuple> result = queryFactory.select(
                         boardEntity, boardEntity.usersEntity
                 )
                 .from(boardEntity)
+                .where(containsBoard(keyword, type))
                 .leftJoin(boardEntity.usersEntity)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         JPAQuery<Long> countQuery = queryFactory.select(boardEntity.count())
-                .from(boardEntity);
+                .from(boardEntity)
+                .where(containsBoard(keyword, type));
 
         return PageableExecutionUtils.getPage(
-                result.stream().map(tuple -> tuple.toArray()).collect(Collectors.toList()), pageable,countQuery::fetchOne);
+                result.stream().map(tuple -> tuple.toArray()).collect(Collectors.toList()), pageable, countQuery::fetchOne
+        );
+    }
+
+    private BooleanExpression containsBoard(String keyword, String type){
+        if(type.equals("0")) {//제목 기준으로 검색
+            return boardEntity.title.contains(keyword);
+        } else if (type.equals("1")) {//작성자 명으로 검색
+            return boardEntity.usersEntity.nickname.contains(keyword);
+        }
+        return null;
     }
 
 }
