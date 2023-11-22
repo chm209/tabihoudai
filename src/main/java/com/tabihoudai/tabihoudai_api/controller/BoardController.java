@@ -39,9 +39,17 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.CREATED).body(boardIdx.toString());
     }
 
-    @DeleteMapping("/{boardIdx}")
+    @DeleteMapping("/delete/{boardIdx}")
     public String remove(@PathVariable("boardIdx")Long boardIdx){
         log.info("boardIdx : {}",boardIdx);
         return "success";
     }
+
+    @PatchMapping("/modify")
+    public ResponseEntity modifyBoard(
+            @RequestBody BoardDTO.BoardRegisterDTO dto){
+        boardService.modifyBoard(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(dto.getBoardIdx());
+    }
+
 }

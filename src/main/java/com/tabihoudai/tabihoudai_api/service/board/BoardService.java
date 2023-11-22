@@ -22,6 +22,8 @@ public interface BoardService {
 
     void removeBoard(Long boardIdx);
 
+    void modifyBoard(BoardDTO.BoardRegisterDTO dto);
+
     default BoardDTO.BoardViewDTO entityToViewDTO(BoardEntity board, UsersEntity users, Long replyCount, Long likeCount, Long unLikeCount){
         return BoardDTO.BoardViewDTO.builder()
                 .boardIdx(board.getBoardIdx())

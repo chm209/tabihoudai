@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,4 +67,15 @@ public class BoardServiceImpl implements BoardService{
         boardRepository.deleteById(boardIdx);
     }
 
+    @Override
+    public void modifyBoard(BoardDTO.BoardRegisterDTO dto) {
+        Optional<BoardEntity> result = boardRepository.findById(dto.getBoardIdx());
+        if (result.isPresent()){
+            BoardEntity board = result.get();
+            board.changeTitle(dto.getTitle());
+            board.changeContent(dto.getContent());
+            board.changeCategory(dto.getCategory());
+            boardRepository.save(board);
+        }
+    }
 }
