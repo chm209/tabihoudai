@@ -8,7 +8,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-// Spring MVC 에 대한 설정파일. 웹에대한 설정파일
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
