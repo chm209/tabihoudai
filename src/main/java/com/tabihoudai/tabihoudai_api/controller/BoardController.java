@@ -26,6 +26,16 @@ public class BoardController {
         return boardService.getList(requestDTO, category);
     }
 
+    @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
+    public PageResultDTO getSearchBoardList(
+            @RequestParam String keyword,
+            @RequestParam String type,
+            @RequestParam(defaultValue = "1") int pageNo){
+        PageRequestDTO requestDTO = PageRequestDTO.builder().page(pageNo).size(10).build();
+        return boardService.getSearchList(requestDTO, keyword, type);
+    }
+
     @GetMapping("/{boardIdx}")
     public ResponseEntity viewBoard(@PathVariable long boardIdx){
         log.info("boardIdx = " + boardIdx);

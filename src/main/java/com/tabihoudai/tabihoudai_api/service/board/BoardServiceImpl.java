@@ -49,15 +49,19 @@ public class BoardServiceImpl implements BoardService{
     @Override
     public PageResultDTO getList(PageRequestDTO pageRequestDTO, Integer category) {
         Page<Object[]> boardList = boardRepository.getBoardList(pageRequestDTO.getPageable(), category);
-        Function<Object[], BoardDTO.BoardListDTO> fn = objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
+        Function<Object[], BoardDTO.BoardListDTO> fn =
+                objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
         return new PageResultDTO(boardList, fn);
     }
 
     @Override
-    public PageResultDTO getListNullCategory(PageRequestDTO pageRequestDTO) {
-        Page<Object[]> boardList = boardRepository.getListNullCategory(pageRequestDTO.getPageable());
-        Function<Object[], BoardDTO.BoardListDTO> fn = objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
-        return new PageResultDTO(boardList, fn);
+    public PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(
+            PageRequestDTO pageRequestDTO, String keyword, String type
+    ) {
+        Page<Object[]> searched = boardRepository.searchBoard(pageRequestDTO.getPageable(), keyword, type);
+        Function<Object[], BoardDTO.BoardListDTO> fn =
+                objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
+        return new PageResultDTO(searched, fn);
     }
 
     @Transactional(rollbackFor = Exception.class)

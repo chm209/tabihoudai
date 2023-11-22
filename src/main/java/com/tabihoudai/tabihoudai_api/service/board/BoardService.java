@@ -12,13 +12,11 @@ public interface BoardService {
 
     List<BoardDTO.BoardViewDTO> get(long boardIdx);
 
-    //List<BoardListDTO> getList(int category);
-
     Long registerBoard(BoardDTO.BoardRegisterDTO dto);
 
     PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(PageRequestDTO pageRequestDTO, Integer category);
 
-    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getListNullCategory(PageRequestDTO pageRequestDTO);
+    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(PageRequestDTO pageRequestDTO, String keyword, String type);
 
     void removeBoard(Long boardIdx);
 
