@@ -22,6 +22,7 @@ import java.util.Optional;
 public class PlanController {
 
     private final PlanService planService;
+    private final PlanReplyService planReplyService;
     private final PlanRepository planRepository;
     private final PlanReplyRepository planReplyRepository;
     private final RegionRepository regionRepository;
@@ -37,11 +38,6 @@ public class PlanController {
         planReplyRepository.deleteByPlanReplyIdx(planReplyIdx);
     }
 
-    @GetMapping("/planview")
-    public Optional<PlanEntity> viewPlan(@RequestParam Long planIdx) {
-        return planRepository.findById(planIdx);
-    }
-
     @PostMapping("/write/plan")
     public Long writePlan(@RequestBody PlanDTO planDTO){
         return planService.create(planDTO);
@@ -49,9 +45,13 @@ public class PlanController {
 
     @PostMapping("/write/reply")
     public Long writeReply(@RequestBody PlanReplyDTO planReplyDTO) {
-
+        return planReplyService.create(planReplyDTO);
     }
 
+    @PutMapping("/edit/reply")
+    public void editPlanReply(@RequestBody PlanReplyEditDTO planReplyEditDTO) {
+        planReplyService.edit(planReplyEditDTO);
+    }
 
     @GetMapping("/getarea")
     public List<String> getArea() {
@@ -65,7 +65,6 @@ public class PlanController {
 
     @GetMapping("/getattr")
     public List<Object[]> getAttr(@RequestParam String city) {
-        log.info(regionRepository.findRegionIdx(city).toString());
         Long regionIdx = regionRepository.findRegionIdx(city);
 
         return attractionRepository.getAttractionListByRegionIdx(regionIdx);
@@ -74,6 +73,11 @@ public class PlanController {
     @GetMapping("")
     public PlanDTO getPlan(@RequestParam Long planIdx){
         return planService.planView(planIdx);
+    }
+
+    @GetMapping("/view/reply")
+    public PlanReplyDTO getReply(@RequestParam Long planIdx) {
+        return planReplyService.planReplyView(planIdx);
     }
 
     @GetMapping("/image")
