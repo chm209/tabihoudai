@@ -1,11 +1,13 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
+import com.tabihoudai.tabihoudai_api.dto.PlanEditDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanReplyEditDTO;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
+import com.tabihoudai.tabihoudai_api.service.PlanReplyService;
 import com.tabihoudai.tabihoudai_api.service.PlanService;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
-import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -29,7 +30,7 @@ public class PlanController {
     private final AttractionRepository attractionRepository;
 
     @DeleteMapping("/delete/plan")
-    public void delete(@RequestParam("planIdx") Long planIdx){
+    public void deletePlan(@RequestParam("planIdx") Long planIdx){
         planRepository.deleteById(planIdx);
     }
 
@@ -46,6 +47,11 @@ public class PlanController {
     @PostMapping("/write/reply")
     public Long writeReply(@RequestBody PlanReplyDTO planReplyDTO) {
         return planReplyService.create(planReplyDTO);
+    }
+
+    @PutMapping("/edit/plan")
+    public Long editPlan(@RequestBody PlanEditDTO planEditDTO){
+        return planService.edit(planEditDTO);
     }
 
     @PutMapping("/edit/reply")
@@ -70,7 +76,7 @@ public class PlanController {
         return attractionRepository.getAttractionListByRegionIdx(regionIdx);
     }
 
-    @GetMapping("")
+    @GetMapping("/view/plan")
     public PlanDTO getPlan(@RequestParam Long planIdx){
         return planService.planView(planIdx);
     }

@@ -1,6 +1,5 @@
 package com.tabihoudai.tabihoudai_api.service;
 
-import com.tabihoudai.tabihoudai_api.dto.PlanEditDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanReplyEditDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;

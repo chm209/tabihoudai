@@ -1,5 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service;
 
+import com.tabihoudai.tabihoudai_api.dto.PlanEditDTO;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
@@ -34,6 +35,13 @@ public class PlanService {
         PlanEntity planEntity = plan.get(0);
         UsersEntity usersEntity = planEntity.getUsersEntity();
         return planRepository.planEntityToDTO(planEntity, usersEntity);
+    }
+
+    @Transactional
+    public Long edit(PlanEditDTO planEditDTO) {
+        PlanEntity planEntity = planEditDTO.planEditDtoToEntity();
+        planRepository.editPlan(planEntity);
+        return planEditDTO.getPlanIdx();
     }
 
 }
