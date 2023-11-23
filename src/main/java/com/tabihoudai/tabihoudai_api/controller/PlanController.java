@@ -1,6 +1,8 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
-import com.tabihoudai.tabihoudai_api.application.plan.PlanService;
+import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
+import com.tabihoudai.tabihoudai_api.service.PlanService;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
@@ -21,25 +23,35 @@ public class PlanController {
 
     private final PlanService planService;
     private final PlanRepository planRepository;
+    private final PlanReplyRepository planReplyRepository;
     private final RegionRepository regionRepository;
     private final AttractionRepository attractionRepository;
 
-    @DeleteMapping("/delete/{planIdx}")
-    public void delete(@PathVariable("planIdx") Long planIdx){
+    @DeleteMapping("/delete/plan")
+    public void delete(@RequestParam("planIdx") Long planIdx){
         planRepository.deleteById(planIdx);
     }
 
-    @GetMapping("/viewplan/{planIdx}")
-    public Optional<PlanEntity> viewPlan(@PathVariable Long planIdx) {
-        log.info(String.valueOf(planRepository.findById(planIdx)));
+    @DeleteMapping("/delete/reply")
+    public void deleteReply(@RequestParam Long planReplyIdx) {
+        planReplyRepository.deleteByPlanReplyIdx(planReplyIdx);
+    }
+
+    @GetMapping("/planview")
+    public Optional<PlanEntity> viewPlan(@RequestParam Long planIdx) {
         return planRepository.findById(planIdx);
     }
 
-    @PostMapping("/write")
+    @PostMapping("/write/plan")
     public Long writePlan(@RequestBody PlanDTO planDTO){
-        log.info(planDTO.toString());
         return planService.create(planDTO);
     }
+
+    @PostMapping("/write/reply")
+    public Long writeReply(@RequestBody PlanReplyDTO planReplyDTO) {
+
+    }
+
 
     @GetMapping("/getarea")
     public List<String> getArea() {

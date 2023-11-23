@@ -1,4 +1,4 @@
-package com.tabihoudai.tabihoudai_api.application.plan;
+package com.tabihoudai.tabihoudai_api.service;
 
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;

@@ -13,4 +13,7 @@ public interface PlanReplyRepository extends JpaRepository<PlanReplyEntity, Long
 
     @Query("SELECT new map(p.regDate as regDate, p.content as content, p.planReplyIdx as id) FROM PlanReplyEntity p WHERE p.usersEntity.userIdx = :userIdx AND ROWNUM <= 4 ORDER BY id DESC")
     List<Map<String, Object>> findByUserIdx(@Param("userIdx") UUID userIdx);
+
+    @Query("DELETE FROM PlanReplyEntity p WHERE p.planReplyIdx = :planIdx")
+    void deleteByPlanReplyIdx(@Param("planIdx")long planIdx);
 }
