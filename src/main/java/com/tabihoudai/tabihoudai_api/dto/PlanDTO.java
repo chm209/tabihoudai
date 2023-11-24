@@ -3,7 +3,6 @@ package com.tabihoudai.tabihoudai_api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.uuid.UUIDDeserializer;
