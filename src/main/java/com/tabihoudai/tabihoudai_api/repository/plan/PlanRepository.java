@@ -17,7 +17,6 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
     @Query("SELECT p FROM PlanEntity p WHERE p.planIdx = :planIdx")
     List<PlanEntity> planView(@Param("planIdx") Long planIdx);
 
-    //명소이미지 레포지토리로 옮기기, 네이티브 쿼리 떼기
     @Query(value = "SELECT PATH FROM ATTR_IMG WHERE ATTR_IDX = :attrIdx AND ROWNUM = 1", nativeQuery = true)
     String planAttrImage(@Param("attrIdx") Long attrIdx);
 
@@ -31,6 +30,10 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
             "p.attrList = :#{#pe.attrList}, p.budget = :#{#pe.budget}, p.child = :#{#pe.child}, " +
             "p.dateFrom = :#{#pe.dateFrom}, p.dateTo = :#{#pe.dateTo} WHERE p.planIdx = :#{#pe.planIdx}")
     void editPlan(@Param("pe")PlanEntity planEntity);
+
+    @Modifying
+    @Query("UPDATE PlanEntity p SET p.visitCount = p.visitCount + 1 WHERE p.planIdx = :planIdx")
+    void addVisitCount(@Param("planIdx") Long planIdx);
 
 
 

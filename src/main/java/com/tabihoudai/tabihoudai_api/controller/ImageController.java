@@ -18,10 +18,10 @@ import java.util.UUID;
 public class ImageController {
 
     @ResponseBody
-    @PostMapping("/upload")
-    public Map<String, Object> uploadImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
+    @PostMapping("/upload/plan")
+    public Map<String, Object> uploadPlanImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
         MultipartFile uploadFile = request.getFile("upload");
-        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\";
+        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\plan";
         uploadDir.replace("\\", "/");
         String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
         uploadFile.transferTo(new File(uploadDir + uploadId));
@@ -29,6 +29,20 @@ public class ImageController {
         log.info(paramMap.toString());
         return paramMap;
     }
+
+    @ResponseBody
+    @PostMapping("/upload/profile")
+    public Map<String, Object> uploadProfileImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
+        MultipartFile uploadFile = request.getFile("upload");
+        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\profile";
+        uploadDir.replace("\\", "/");
+        String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
+        uploadFile.transferTo(new File(uploadDir + uploadId));
+        paramMap.put("url", "/src/assets/images/" + uploadId);
+        log.info(paramMap.toString());
+        return paramMap;
+    }
+
     public Optional<String> getExtensionByStringHandling(String filename) {
         return Optional.ofNullable(filename)
                 .filter(f -> f.contains("."))

@@ -30,10 +30,12 @@ public class PlanService {
         return planRepository.save(planEntity).getPlanIdx();
     }
 
+    @Transactional
     public PlanDTO planView(Long planIdx) {
         List<PlanEntity> plan = planRepository.planView(planIdx);
         PlanEntity planEntity = plan.get(0);
         UsersEntity usersEntity = planEntity.getUsersEntity();
+        planRepository.addVisitCount(planIdx);
         return planRepository.planEntityToDTO(planEntity, usersEntity);
     }
 

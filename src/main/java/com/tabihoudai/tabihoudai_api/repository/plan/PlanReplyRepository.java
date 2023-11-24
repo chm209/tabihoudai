@@ -24,7 +24,7 @@ public interface PlanReplyRepository extends JpaRepository<PlanReplyEntity, Long
 
     @Modifying
     @Query("UPDATE PlanReplyEntity p SET p.content = :#{#planReplyEntity.content} WHERE p.planReplyIdx = :#{#planReplyEntity.planReplyIdx}")
-    void replyEdit(@Param("content") PlanReplyEntity planReplyEntity);
+    void replyEdit(@Param("planReplyEntity") PlanReplyEntity planReplyEntity);
 
 
     @Query("DELETE FROM PlanReplyEntity p WHERE p.planReplyIdx = :planIdx")
