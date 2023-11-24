@@ -1,5 +1,41 @@
 [POST MAN Document](https://documenter.getpostman.com/view/21641910/2s9YXfahxL)
 
+## CORS 에러 해결 과정
+
+```text
+1. Webconfig 파일을 추가해서 전역 설정으로 해결함
+2. Nginx를 사용하고 있는데 전역 설정을 하는게 마음에 안 들어서, Webconfig 제거
+3. nginx.conf 에서 tabihoudai-api proxy 설정을 해줌
+4. tenki-api도 돌아가야 하기 때문에 conf.d 폴더를 만들어서 설정을 추가해줌
+5. proxy 설정만 해줬을때는 Get 요청은 잘 처리함
+6. post man으로 테스트 할때는 post 요청을 바로 처리했는데, 브라우저에서 요청할때는 OPTIONS로 먼저 요청해서 임시로 테스트 해본뒤 실제 요청을 하는것을 알게됨
+7. 그래서 location / { } 부분을 아래처럼 수정함
+8. OPTIONS 요청도 허용해줘서 CORS 에러를 해결함
+```
+
+```shell
+location / {
+ 45             if ($request_method = 'OPTIONS') {
+ 46             add_header 'Access-Control-Allow-Origin' '*';
+ 47             add_header 'Access-Control-Allow-Methods' 'GET, POST, DELETE, PATCH, OPTIONS';
+ 48             add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization';
+ 49             add_header 'Access-Control-Max-Age' 86400;
+ 50             return 204;
+ 51             }
+ 52             root   html;
+ 53             index  index.html index.htm;
+ 54             add_header 'Access-Control-Allow-Origin' '*';
+ 55             add_header 'Access-Control-Allow-Methods' 'GET, POST, DELETE';
+ 56             add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modifie    d-Since,Cache-Control,Content-Type,Range,Authorization';
+ 57             add_header 'Access-Control-Allow-Credentials' 'true';
+ 58             add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+ 59             proxy_pass http://localhost:2094;
+ 60             proxy_set_header X-Real-IP $remote_addr;
+ 61             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ 62             proxy_set_header Host $http_host;
+ 63         }
+```
+
 # tabihoudai_API
 おすすめの観光地を紹介し、旅行の計画を作成し、コミュニティで意見を口合えるサービスのAPI
 
