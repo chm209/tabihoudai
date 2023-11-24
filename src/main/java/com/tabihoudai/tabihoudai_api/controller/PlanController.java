@@ -1,13 +1,11 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
-import com.tabihoudai.tabihoudai_api.dto.PlanEditDTO;
-import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
-import com.tabihoudai.tabihoudai_api.dto.PlanReplyEditDTO;
+import com.tabihoudai.tabihoudai_api.dto.*;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
+import com.tabihoudai.tabihoudai_api.service.PlanLikeService;
 import com.tabihoudai.tabihoudai_api.service.PlanReplyService;
 import com.tabihoudai.tabihoudai_api.service.PlanService;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanRepository;
-import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +22,7 @@ public class PlanController {
 
     private final PlanService planService;
     private final PlanReplyService planReplyService;
+    private final PlanLikeService planLikeService;
     private final PlanRepository planRepository;
     private final PlanReplyRepository planReplyRepository;
     private final RegionRepository regionRepository;
@@ -52,6 +51,21 @@ public class PlanController {
     @PutMapping("/edit/plan")
     public Long editPlan(@RequestBody PlanEditDTO planEditDTO){
         return planService.edit(planEditDTO);
+    }
+
+    @GetMapping("/chklike")
+    public Long chkLike(@RequestBody PlanLikeDTO planLikeDTO){
+        return planLikeService.chkLike(planLikeDTO);
+    }
+
+    @PostMapping("/addlike")
+    public void addLike(@RequestBody PlanLikeDTO planLikeDTO) {
+        planLikeService.addLike(planLikeDTO);
+    }
+
+    @DeleteMapping("/dislike")
+    public void dislike(@RequestBody PlanLikeDTO planLikeDTO) {
+        planLikeService.disLike(planLikeDTO);
     }
 
     @PutMapping("/edit/reply")

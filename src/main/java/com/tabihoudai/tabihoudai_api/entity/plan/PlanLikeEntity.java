@@ -12,6 +12,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @ToString
 public class PlanLikeEntity {
     @Id
