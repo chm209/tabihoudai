@@ -1,8 +1,6 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,20 +17,20 @@ public class BoardController {
 
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public PageResultDTO getBoardList(
+    public BoardDTO.PageResultDTO getBoardList(
             @RequestParam int category,
             @RequestParam(defaultValue = "1") int pageNo){
-        PageRequestDTO requestDTO = PageRequestDTO.builder().page(pageNo).size(10).build();
+        BoardDTO.PageRequestDTO requestDTO = BoardDTO.PageRequestDTO.builder().page(pageNo).size(10).build();
         return boardService.getList(requestDTO, category);
     }
 
     @GetMapping("/search")
     @ResponseStatus(HttpStatus.OK)
-    public PageResultDTO getSearchBoardList(
+    public BoardDTO.PageResultDTO getSearchBoardList(
             @RequestParam String keyword,
             @RequestParam String type,
             @RequestParam(defaultValue = "1") int pageNo){
-        PageRequestDTO requestDTO = PageRequestDTO.builder().page(pageNo).size(10).build();
+        BoardDTO.PageRequestDTO requestDTO = BoardDTO.PageRequestDTO.builder().page(pageNo).size(10).build();
         return boardService.getSearchList(requestDTO, keyword, type);
     }
 

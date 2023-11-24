@@ -1,8 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service.board;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 
@@ -14,9 +12,9 @@ public interface BoardService {
 
     Long registerBoard(BoardDTO.BoardRegisterDTO dto);
 
-    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(PageRequestDTO pageRequestDTO, Integer category);
+    BoardDTO.PageResultDTO<BoardDTO.BoardListDTO, Object[]> getList(BoardDTO.PageRequestDTO pageRequestDTO, Integer category);
 
-    PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(PageRequestDTO pageRequestDTO, String keyword, String type);
+    BoardDTO.PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(BoardDTO.PageRequestDTO pageRequestDTO, String keyword, String type);
 
     void removeBoard(Long boardIdx);
 

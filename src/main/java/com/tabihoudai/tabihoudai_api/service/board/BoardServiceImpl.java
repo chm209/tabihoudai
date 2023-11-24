@@ -1,8 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service.board;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.board.PageResultDTO;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
@@ -47,21 +45,21 @@ public class BoardServiceImpl implements BoardService{
     }
 
     @Override
-    public PageResultDTO getList(PageRequestDTO pageRequestDTO, Integer category) {
+    public BoardDTO.PageResultDTO getList(BoardDTO.PageRequestDTO pageRequestDTO, Integer category) {
         Page<Object[]> boardList = boardRepository.getBoardList(pageRequestDTO.getPageable(), category);
         Function<Object[], BoardDTO.BoardListDTO> fn =
                 objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
-        return new PageResultDTO(boardList, fn);
+        return new BoardDTO.PageResultDTO(boardList, fn);
     }
 
     @Override
-    public PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(
-            PageRequestDTO pageRequestDTO, String keyword, String type
+    public BoardDTO.PageResultDTO<BoardDTO.BoardListDTO, Object[]> getSearchList(
+            BoardDTO.PageRequestDTO pageRequestDTO, String keyword, String type
     ) {
         Page<Object[]> searched = boardRepository.searchBoard(pageRequestDTO.getPageable(), keyword, type);
         Function<Object[], BoardDTO.BoardListDTO> fn =
                 objects -> boardListEntityToDTO((BoardEntity) objects[0], (UsersEntity) objects[1]);
-        return new PageResultDTO(searched, fn);
+        return new BoardDTO.PageResultDTO(searched, fn);
     }
 
     @Transactional(rollbackFor = Exception.class)
