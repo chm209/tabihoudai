@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/main").permitAll()
+                                .requestMatchers("/api/main/**").permitAll()
                                 .requestMatchers("/api/admin").hasRole("ADMIN") // 처음에 'admin/**' 로 경로를 줬는데 401 에러가 발생, admin으로 하는게 맞음
                                 .anyRequest().authenticated()
                 )
