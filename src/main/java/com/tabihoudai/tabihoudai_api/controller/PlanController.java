@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.dto.*;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanLikeRepository;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
 import com.tabihoudai.tabihoudai_api.service.PlanLikeService;
 import com.tabihoudai.tabihoudai_api.service.PlanReplyService;
@@ -86,7 +87,6 @@ public class PlanController {
     @GetMapping("/getattr")
     public List<Object[]> getAttr(@RequestParam String city) {
         Long regionIdx = regionRepository.findRegionIdx(city);
-
         return attractionRepository.getAttractionListByRegionIdx(regionIdx);
     }
 
