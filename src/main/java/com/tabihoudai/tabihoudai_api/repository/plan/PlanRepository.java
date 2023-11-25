@@ -35,8 +35,6 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
     @Query("UPDATE PlanEntity p SET p.visitCount = p.visitCount + 1 WHERE p.planIdx = :planIdx")
     void addVisitCount(@Param("planIdx") Long planIdx);
 
-
-
     default PlanDTO planEntityToDTO(PlanEntity plan, UsersEntity user) {
         return PlanDTO.builder()
                 .planIdx(plan.getPlanIdx())

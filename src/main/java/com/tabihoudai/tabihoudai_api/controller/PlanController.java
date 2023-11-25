@@ -11,6 +11,8 @@ import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.RegionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -107,6 +109,13 @@ public class PlanController {
             imageArr[i] = planRepository.planAttrImage(attrList.get(i));
         }
         return imageArr;
+    }
+
+    @GetMapping("/paging")
+    public Page<PlanPagingDTO> planPaging(@RequestParam("page") int page, @RequestParam("size") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        return planService.findAll(pageRequest);
     }
 }
 
