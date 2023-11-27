@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.dto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -13,4 +14,7 @@ public class MemberSignupResponseDto {
     private String nickname;
     private LocalDate birthday;
     private LocalDateTime regdate;
+
+    public void setProfileImageUrl(MultipartFile profileImage) {
+    }
 }

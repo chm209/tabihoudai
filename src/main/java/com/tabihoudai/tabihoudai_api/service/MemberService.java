@@ -34,23 +34,6 @@ public class MemberService {
         return saveMember;
     }
 
-    private String saveProfileImage(MultipartFile profileImage) {
-        try {
-            String uploadDir = "C:\\Users\\cksdu\\Desktop\\폴더\\프로젝트\\tabi_back\\profile";
-            Files.createDirectories(Path.of(uploadDir));
-
-            String fileName = System.currentTimeMillis() + "-" + profileImage.getOriginalFilename();
-            Path filePath = Path.of(uploadDir, fileName);
-
-            Files.copy(profileImage.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            return filePath.toString();
-        } catch (IOException e) {
-            throw new RuntimeException("프로필 이미지 저장 실패", e);
-        }
-    }
-
-
     @Transactional(readOnly = true)
     public Optional<Member> getMember(Long userIdx){
         return memberRepository.findById(userIdx);

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,7 +44,7 @@ public class Member {
     private LocalDate birthday;
 
     @Column
-    private byte[] profileImage;
+    private String profileImageUrl;
 
     @ManyToMany
     @JoinTable(name = "member_role",

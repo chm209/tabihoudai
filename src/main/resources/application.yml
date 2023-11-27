@@ -25,21 +25,14 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
     show-sql: true
     database: oracle
 
-    servlet:
-      multipart:
-        enabled: true
-        location: C:\Users\cksdu\Desktop\폴더\프로젝트\tabi_back\profile
-        max-request-size: 30MB
-        max-file-size: 10MB
-
-    org:
-      zerock:
-        upload:
-          path: C:\Users\cksdu\Desktop\폴더\프로젝트\tabi_back\profile
+profile-image:
+  upload-dir: C:\Users\cksdu\Desktop\프로젝트 코드\profile
+  max-file-size: 5MB
+  allowed-file-types: jpg, jpeg, png

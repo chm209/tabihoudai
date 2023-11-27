@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -64,11 +65,12 @@ public class MemberController {
 
     @PostMapping("/upload")
     public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file) {
-        return ResponseEntity.ok("File uploaded successfully");
+        return ResponseEntity.ok("업로드가 성공 되었습니다.");
     }
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+    public ResponseEntity signup( @RequestPart("profileImage") MultipartFile profileImage,
+            @RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
@@ -100,7 +102,12 @@ public class MemberController {
         member.setBirthday(birthday);
 
         try {
-            byte[] profileImageBytes = memberSignupDto.getProfileImage().getBytes();
+            String uploadDirectory = "C:\\Users\\cksdu\\Desktop\\프로젝트 코드\\profile";
+            String fileName = nickname + "_" + profileImage.getOriginalFilename();
+            String filePath = uploadDirectory + fileName;
+
+            // 이미지 저장
+            profileImage.transferTo(new File(filePath));
 
             Member saveMember = memberService.addMember(member);
 
@@ -110,6 +117,8 @@ public class MemberController {
             memberSignupResponse.setRegdate(saveMember.getRegdate());
             memberSignupResponse.setEmail(saveMember.getEmail());
             memberSignupResponse.setBirthday(saveMember.getBirthday());
+
+            memberSignupResponse.setProfileImageUrl(memberSignupDto.getProfileImage());
 
             // 회원가입
             return new ResponseEntity(memberSignupResponse, HttpStatus.CREATED);
