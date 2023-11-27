@@ -55,6 +55,14 @@ public class PlanService {
         return planEntity.map(this::planPagingEntityToDto);
     }
 
+    public Page<Object[]> orderByLikeCountDesc(Pageable pageable) {
+        return planRepository.orderByLikeCountDesc(pageable);
+    }
+
+    public Page<Object[]> orderByRegDateDesc(Pageable pageable) {
+        return planRepository.orderByRegDateDesc(pageable);
+    }
+
     public PlanPagingDTO planPagingEntityToDto(PlanEntity planEntity){
         PlanPagingDTO planPagingDTO = new PlanPagingDTO();
         planPagingDTO.setPlanIdx(planEntity.getPlanIdx());

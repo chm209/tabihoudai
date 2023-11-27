@@ -28,6 +28,8 @@ public class PlanPagingDTO {
     @JsonDeserialize(using = UUIDDeserializer.class)
     private UUID userIdx;
 
+    private Long likeCount;
+
     public PlanEntity planPagingDtoToEntity(){
         UsersEntity usersEntity = UsersEntity.builder()
                 .userIdx(userIdx)

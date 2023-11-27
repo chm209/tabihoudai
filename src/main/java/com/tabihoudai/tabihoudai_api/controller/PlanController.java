@@ -1,7 +1,6 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.dto.*;
-import com.tabihoudai.tabihoudai_api.repository.plan.PlanLikeRepository;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
 import com.tabihoudai.tabihoudai_api.service.PlanLikeService;
 import com.tabihoudai.tabihoudai_api.service.PlanReplyService;
@@ -114,8 +113,21 @@ public class PlanController {
     @GetMapping("/paging")
     public Page<PlanPagingDTO> planPaging(@RequestParam("page") int page, @RequestParam("size") int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-
         return planService.findAll(pageRequest);
+    }
+
+    @GetMapping("/paging/sort")
+    public Page<Object[]> planPagingSort(@RequestParam("page") int page, @RequestParam("size") int size,
+                                          @RequestParam("sortBy") String sortBy) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        if(sortBy.equals("like")) {
+            return planService.orderByLikeCountDesc(pageRequest);
+        } else if(sortBy.equals("date")) {
+            return planService.orderByRegDateDesc(pageRequest);
+        }
+        else {
+            return null;
+        }
     }
 }
 

@@ -1,8 +1,12 @@
 package com.tabihoudai.tabihoudai_api.repository.plan;
 
 import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
+import com.tabihoudai.tabihoudai_api.dto.PlanPagingDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +20,17 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
 
     @Query("SELECT p FROM PlanEntity p WHERE p.planIdx = :planIdx")
     List<PlanEntity> planView(@Param("planIdx") Long planIdx);
+
+    //계획 번호, 제목, 조회수, 작성자, 작성일, 추천수 순
+    @Query("SELECT p.planIdx, p.title, p.visitCount, p.usersEntity.userIdx, p.regDate, " +
+            "(SELECT COUNT(pl.planLikeIdx) FROM PlanLikeEntity pl WHERE pl.planEntity = p) AS likeCount " +
+            "FROM PlanEntity p ORDER BY likeCount DESC")
+    Page<Object[]> orderByLikeCountDesc(Pageable pageable);
+
+    //계획 번호, 제목, 조회수, 작성자, 작성일 순
+    @Query("SELECT p.planIdx, p.title, p.visitCount, p.usersEntity.userIdx, p.regDate FROM PlanEntity p " +
+            "ORDER BY p.regDate DESC")
+    Page<Object[]> orderByRegDateDesc(Pageable pageable);
 
     @Query(value = "SELECT PATH FROM ATTR_IMG WHERE ATTR_IDX = :attrIdx AND ROWNUM = 1", nativeQuery = true)
     String planAttrImage(@Param("attrIdx") Long attrIdx);
