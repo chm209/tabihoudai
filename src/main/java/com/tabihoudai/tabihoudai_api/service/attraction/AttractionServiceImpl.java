@@ -115,7 +115,7 @@ public class AttractionServiceImpl implements AttractionService{
         List<AttractionEntity> list = attractionRepository.getAttractionDetail(attrIdx);
         List<AttrReplyEntity> replyEntityList = attrReplyRepository.getAttractionReply(attrIdx);
         List<AttrImgEntity> imgList = attractionRepository.getAttractionImg(attrIdx);
-        List<Double> attractionAvg = attrReplyRepository.getAttractionAvg(attrIdx);
+        Double attractionAvg = attrReplyRepository.getAttractionAvg(attrIdx);
 
         AttractionEntity attraction = list.get(0);
         AttrDetailDTO detailDTO = new AttrDetailDTO();
@@ -127,7 +127,7 @@ public class AttractionServiceImpl implements AttractionService{
         detailDTO.setAddress(attraction.getAddress());
         detailDTO.setTag(attraction.getTag());
         detailDTO.setDescription(attraction.getDescription());
-        detailDTO.setGrade(attractionAvg.get(0));
+        detailDTO.setGrade(attractionAvg);
         replyEntityList.forEach(arr -> {
             replyList.add(entityToDTOReply(arr));
         });
