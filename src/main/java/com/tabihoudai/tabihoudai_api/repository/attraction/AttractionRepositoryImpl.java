@@ -2,6 +2,9 @@ package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -9,8 +12,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.el.util.ExceptionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
@@ -49,6 +54,8 @@ public class AttractionRepositoryImpl implements AttractionRepository {
                 .where(cityEq(city,word),areaEq(area,word),attrEq(attr,word))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .orderBy()
+                .orderBy(attrSort(pageable))
                 .fetch();
 
         count = queryFactory
@@ -58,7 +65,7 @@ public class AttractionRepositoryImpl implements AttractionRepository {
 
 
         return PageableExecutionUtils.getPage(result.stream().map(t -> t.toArray()).collect(Collectors.toList()),
-                pageable, count::fetchCount);
+                pageable, count::fetchOne);
     }
 
     private BooleanExpression cityEq(String city, String word) {
@@ -71,6 +78,30 @@ public class AttractionRepositoryImpl implements AttractionRepository {
 
     private BooleanExpression attrEq(String attr, String word) {
         return attr != null ? attractionEntity.attraction.eq(word) : null;
+    }
+
+    private OrderSpecifier<?> attrSort(Pageable page) {
+        if (!page.getSort().isEmpty()) {
+            for (Sort.Order order : page.getSort()) {
+                log.info(order.getProperty());
+                switch (order.getProperty()) {
+                    case "grade" -> {
+                        return new OrderSpecifier(Order.ASC, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))
+                                .from(attrReplyEntity)
+                                .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
+                    }
+                    case "attraction" -> {
+                        return new OrderSpecifier(Order.ASC, attractionEntity.attraction);
+                    }
+                    case "commentCount" -> {
+                        return new OrderSpecifier(Order.ASC, JPAExpressions.select(attrReplyEntity.count())
+                                .from(attrReplyEntity)
+                                .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override

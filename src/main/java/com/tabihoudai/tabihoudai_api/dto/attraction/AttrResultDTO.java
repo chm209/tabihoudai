@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,30 +13,22 @@ import java.util.stream.IntStream;
 @Data
 public class AttrResultDTO<DTO, EN> {
 
-    //DTO리스트
     private List<DTO> attrList;
 
-    //총 페이지 번호
     private int totalPage;
 
-    //현재 페이지 번호
     private int page;
-    //목록 사이즈
     private int size;
 
-    //시작 페이지 번호, 끝 페이지 번호
     private int start, end;
 
-    //이전, 다음
     private boolean prev, next;
 
-    //페이지 번호  목록
     private List<Integer> pageList;
 
-    public AttrResultDTO(Page<EN> result, Function<EN,DTO> fn ){
+    public AttrResultDTO(Page<EN> result, Function<EN,DTO> fn){
 
         attrList = result.stream().map(fn).collect(Collectors.toList());
-
         totalPage = result.getTotalPages();
 
         makePageList(result.getPageable());
@@ -44,7 +37,7 @@ public class AttrResultDTO<DTO, EN> {
 
     private void makePageList(Pageable pageable){
 
-        this.page = pageable.getPageNumber() + 1; // 0부터 시작하므로 1을 추가
+        this.page = pageable.getPageNumber() + 1;
         this.size = pageable.getPageSize();
 
         //temp end page

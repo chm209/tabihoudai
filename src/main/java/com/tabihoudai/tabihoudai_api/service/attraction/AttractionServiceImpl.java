@@ -88,7 +88,6 @@ public class AttractionServiceImpl implements AttractionService{
         } else if (sort==2) {
             so="commentCount";
         }
-        log.info(so);
         if(type==0){
             area="area";
         } else if (type==1) {
