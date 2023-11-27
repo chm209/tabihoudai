@@ -117,13 +117,14 @@ public class PlanController {
     }
 
     @GetMapping("/paging/sort")
-    public Page<Object[]> planPagingSort(@RequestParam("page") int page, @RequestParam("size") int size,
+    public Page<PlanPagingDTO> planPagingSort(@RequestParam("page") int page, @RequestParam("size") int size,
                                           @RequestParam("sortBy") String sortBy) {
         PageRequest pageRequest = PageRequest.of(page, size);
         if(sortBy.equals("like")) {
             return planService.orderByLikeCountDesc(pageRequest);
         } else if(sortBy.equals("date")) {
-            return planService.orderByRegDateDesc(pageRequest);
+//            return planService.orderByRegDateDesc(pageRequest);
+            return null;
         }
         else {
             return null;
