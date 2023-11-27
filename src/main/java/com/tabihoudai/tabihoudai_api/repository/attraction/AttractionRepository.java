@@ -19,9 +19,6 @@ public interface AttractionRepository {
 
     List<AttractionEntity> getAttractionDetail(Long attrIdx);
 
-    public List<Double> getAttractionAvg(Long attrIdx);
-
-    List<AttrReplyEntity> getAttractionReply(Long attrIdx);
 
     List<AttrImgEntity> getAttractionImg(Long attrIdx);
 

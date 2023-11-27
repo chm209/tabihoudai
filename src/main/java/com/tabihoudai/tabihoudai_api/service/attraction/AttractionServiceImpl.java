@@ -88,6 +88,7 @@ public class AttractionServiceImpl implements AttractionService{
         } else if (sort==2) {
             so="commentCount";
         }
+        log.info(so);
         if(type==0){
             area="area";
         } else if (type==1) {
@@ -112,9 +113,9 @@ public class AttractionServiceImpl implements AttractionService{
     @Override
     public AttrDetailDTO getAttrDetail(Long attrIdx) {
         List<AttractionEntity> list = attractionRepository.getAttractionDetail(attrIdx);
-        List<AttrReplyEntity> replyEntityList = attractionRepository.getAttractionReply(attrIdx);
+        List<AttrReplyEntity> replyEntityList = attrReplyRepository.getAttractionReply(attrIdx);
         List<AttrImgEntity> imgList = attractionRepository.getAttractionImg(attrIdx);
-        List<Double> attractionAvg = attractionRepository.getAttractionAvg(attrIdx);
+        List<Double> attractionAvg = attrReplyRepository.getAttractionAvg(attrIdx);
 
         AttractionEntity attraction = list.get(0);
         AttrDetailDTO detailDTO = new AttrDetailDTO();

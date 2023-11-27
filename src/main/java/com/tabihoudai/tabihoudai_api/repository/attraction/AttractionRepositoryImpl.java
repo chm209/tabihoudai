@@ -2,31 +2,21 @@ package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.ExpressionUtils;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrDetailDTO;
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrImgDto;
-import com.tabihoudai.tabihoudai_api.dto.attraction.RegionDto;
 import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.querydsl.jpa.JPAExpressions.avg;
-import static com.querydsl.jpa.JPAExpressions.select;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttractionEntity.attractionEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttrReplyEntity.attrReplyEntity;
 import static com.tabihoudai.tabihoudai_api.entity.attraction.QAttrImgEntity.attrImgEntity;
@@ -68,7 +58,7 @@ public class AttractionRepositoryImpl implements AttractionRepository {
 
 
         return PageableExecutionUtils.getPage(result.stream().map(t -> t.toArray()).collect(Collectors.toList()),
-                pageable, count::fetchOne);
+                pageable, count::fetchCount);
     }
 
     private BooleanExpression cityEq(String city, String word) {
@@ -86,36 +76,10 @@ public class AttractionRepositoryImpl implements AttractionRepository {
     @Override
     public List<AttractionEntity> getAttractionDetail(Long attrIdx) {
 
-        List<AttractionEntity> result = queryFactory.select(attractionEntity
-                )
+        List<AttractionEntity> result = queryFactory.select(attractionEntity)
                 .from(attractionEntity)
                 .where(attractionEntity.attrIdx.eq(attrIdx))
                 .fetch();
-
-        return result;
-    }
-
-    @Override
-    public List<AttrReplyEntity> getAttractionReply(Long attrIdx) {
-
-        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
-
-        List<AttrReplyEntity> result = queryFactory.select(attrReplyEntity)
-                .from(attrReplyEntity)
-                .where(attrReplyEntity.attrIdx.eq(attraction))
-                .fetch();
-
-        return result;
-    }
-
-    @Override
-    public List<Double> getAttractionAvg(Long attrIdx) {
-        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
-        List<Double> result =
-                queryFactory.select(attrReplyEntity.score.avg().coalesce(0.0))
-                        .from(attrReplyEntity)
-                        .where(attrReplyEntity.attrIdx.eq(attraction))
-                        .fetch();
 
         return result;
     }
@@ -138,7 +102,6 @@ public class AttractionRepositoryImpl implements AttractionRepository {
         List<RegionEntity> result = queryFactory.select(regionEntity)
                 .from(regionEntity)
                 .fetch();
-
 
         return result;
     }
