@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.controller;
 
 import com.tabihoudai.tabihoudai_api.entity.Member;
+import com.tabihoudai.tabihoudai_api.entity.Profile;
 import com.tabihoudai.tabihoudai_api.entity.RefreshToken;
 import com.tabihoudai.tabihoudai_api.entity.Role;
 import com.tabihoudai.tabihoudai_api.dto.*;
@@ -9,10 +10,14 @@ import com.tabihoudai.tabihoudai_api.security.jwt.util.IfLogin;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.JwtTokenizer;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.LoginUserDto;
 import com.tabihoudai.tabihoudai_api.service.MemberService;
+import com.tabihoudai.tabihoudai_api.service.ProfileService;
 import com.tabihoudai.tabihoudai_api.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnailator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,14 +27,22 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @RestController
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 @RequestMapping("/members")
 public class MemberController {
 
@@ -38,6 +51,10 @@ public class MemberController {
     private final RefreshTokenService refreshTokenService;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final ProfileService profileService;
+
+    @Value("${com.tabihoudai.upload.path}")
+    private String uploadPath;
 
     @GetMapping("/check-email/{email}")
     public ResponseEntity<String> checkEmailExistence(@PathVariable String email) {
@@ -62,7 +79,6 @@ public class MemberController {
             return ResponseEntity.ok("사용 가능한 닉네임입니다.");
         }
     }
-
 
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
@@ -106,11 +122,72 @@ public class MemberController {
             memberSignupResponse.setEmail(saveMember.getEmail());
             memberSignupResponse.setBirthday(saveMember.getBirthday());
 
+            Profile profile = createProfile(saveMember);
+            profileService.saveProfile(profile);
+
             // 회원가입
             return new ResponseEntity(memberSignupResponse, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/upload")
+    public ResponseEntity<List<UploadResultDTO>> uploadFile(
+            MultipartFile[] file
+    ) {
+
+         List<UploadResultDTO> resultDTOList
+                = new ArrayList<>();
+
+        for (MultipartFile uploadFile :
+                file) {
+
+            if (uploadFile.getContentType().startsWith("image") == false) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            String originalFilename = uploadFile.getOriginalFilename();
+            String fileName = originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
+            log.info("filename : {}", fileName);
+
+            String folderPath = makeFolder();
+            String uuid = UUID.randomUUID().toString();
+
+            String saveName =
+                    uploadPath + File.separator +
+                            folderPath + File.separator +
+                            uuid + "_" + fileName;
+
+            Path path = Paths.get(saveName);
+            try {
+
+                uploadFile.transferTo(path);
+
+                String thumbnailSaveName =
+                        uploadPath + File.separator + folderPath + File.separator + "s_" + uuid + "_" + fileName;
+                File thumbnailFile = new File(thumbnailSaveName);
+                Thumbnailator.createThumbnail(path.toFile(), thumbnailFile, 250, 210);
+
+                resultDTOList.add(
+                        new UploadResultDTO(fileName, uuid, folderPath)
+                );
+            } catch (IOException e) {
+            }
+        }
+        return ResponseEntity.ok(resultDTOList);
+    }
+
+    private String makeFolder() {
+        String str = LocalDate.now().format(
+                DateTimeFormatter.ofPattern("yyyy/MM/dd")
+        );
+        String folderPath = str.replace("//", File.separator);
+        File uploadPathFolder = new File(uploadPath, folderPath);
+        if (uploadPathFolder.exists() == false) {
+            uploadPathFolder.mkdirs();
+        }
+        return folderPath;
     }
 
     @PostMapping("/login")
@@ -178,6 +255,22 @@ public class MemberController {
     public ResponseEntity userinfo(@IfLogin LoginUserDto loginUserDto) {
         Member member = memberService.findByEmail(loginUserDto.getEmail());
         return new ResponseEntity(member, HttpStatus.OK);
+    }
+
+    private Profile createProfile(Member member) {
+        // 여기에서 프로필 이미지 정보를 생성하고 반환
+        String uuid = UUID.randomUUID().toString();
+        String imgName = "default_profile_image.jpg";
+        String path = "/images/default/";
+
+        Profile profile = Profile.builder()
+                .uuid(uuid)
+                .imgName(imgName)
+                .path(path)
+                .member(member)
+                .build();
+
+        return profile;
     }
 
 }
