@@ -49,13 +49,13 @@ public class PlanService {
         return planEditDTO.getPlanIdx();
     }
 
-    public Page<PlanPagingDTO> orderedPlanList(Pageable pageable, int sortBy) {
-        Page<Object[]> page = planRepository.orderedPlanList(pageable, sortBy);
+    public Page<PlanPagingDTO> orderedPlanList(Pageable pageable) {
+        Page<Object[]> page = planRepository.orderedPlanList(pageable);
         return page.map(data -> PlanPagingDTO.arrayToDTO(data));
     }
 
-    public Page<PlanPagingDTO> searchPlan(Pageable pageable, int sortBy, String keyword){
-        Page<Object[]> page = planRepository.planSearch(pageable, sortBy, keyword);
+    public Page<PlanPagingDTO> searchPlan(Pageable pageable, String keyword){
+        Page<Object[]> page = planRepository.planSearch(pageable, keyword);
         return page.map(data -> PlanPagingDTO.arrayToDTO(data));
     }
 

@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -113,32 +114,15 @@ public class PlanController {
     @GetMapping("/paging/sort")
     public Page<PlanPagingDTO> planPagingSort(@RequestParam("page") int page, @RequestParam("size") int size,
                                           @RequestParam("sortBy") String sortBy) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        
-        //5 = 작성일순, 6 = 좋아요순
-        if(sortBy.equals("like")) {
-            return planService.orderedPlanList(pageRequest, 6);
-        } else if(sortBy.equals("date")) {
-            return planService.orderedPlanList(pageRequest, 5);
-        }
-        else {
-            return null;
-        }
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        return planService.orderedPlanList(pageRequest);
     }
 
     @GetMapping("/search")
     public Page<PlanPagingDTO> planSearch(@RequestParam("page") int page, @RequestParam("size") int size,
                                           @RequestParam("sortBy") String sortBy, @RequestParam("keyword") String keyword) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-
-        //5 = 작성일순, 6 = 좋아요순
-        if(sortBy.equals("like")) {
-            return planService.searchPlan(pageRequest, 6, keyword);
-        } else if(sortBy.equals("date")) {
-            return planService.searchPlan(pageRequest, 5, keyword);
-        } else {
-            return null;
-        }
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(sortBy).descending());
+        return planService.searchPlan(pageRequest, keyword);
     }
 }
 
