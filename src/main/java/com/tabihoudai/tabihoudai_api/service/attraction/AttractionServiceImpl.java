@@ -168,8 +168,8 @@ public class AttractionServiceImpl implements AttractionService{
         try {
             AttrReplyEntity save = attrReplyRepository.save(entity);
             List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-            for (AttrReplyEntity re: replyEntity
-                 ) {result.add(entityToDTOReply(re));
+            for (AttrReplyEntity re: replyEntity) {
+                result.add(entityToDTOReply(re));
             }
             return result;
         } catch (Exception e){
@@ -179,15 +179,19 @@ public class AttractionServiceImpl implements AttractionService{
     }
 
     @Override
-    public String delete(AttrReplyDto attrReplyDto) {
-        String result ="";
+    public List<AttrReplyDto> delete(AttrReplyDto attrReplyDto) {
+        List<AttrReplyDto> result = new ArrayList<>();
         try {
             attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-            result = "success";
+            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
+            for (AttrReplyEntity re: replyEntity) {
+                result.add(entityToDTOReply(re));
+            }
+            return result;
         } catch (Exception e){
-            result ="failure";
+            return result;
         }
-        return result;
+
     }
 
 
