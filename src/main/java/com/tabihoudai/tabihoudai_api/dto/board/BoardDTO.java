@@ -125,4 +125,15 @@ public class BoardDTO {
 
         }
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @ToString
+    public static class reportBoardDTO{
+        private long boardIdx;
+        private String content;
+    }
 }

@@ -18,4 +18,15 @@ public class BoardReplyDTO {
         private String profile;
         private LocalDateTime regDate;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    @ToString
+    public static class reportReplyDTO{
+        private long boardIdx;
+        private String content;
+    }
 }
