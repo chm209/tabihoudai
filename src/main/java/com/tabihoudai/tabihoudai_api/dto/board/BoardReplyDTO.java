@@ -26,7 +26,7 @@ public class BoardReplyDTO {
     @Setter
     @ToString
     public static class reportReplyDTO{
-        private long boardIdx;
+        private long replyIdx;
         private String content;
     }
 }
