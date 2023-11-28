@@ -12,8 +12,7 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/password-reset")
-public class ResetPasswordController {
+public class MailController {
 
     private final ResetPasswordEmailService resetPasswordEmailService;
     private final MemberRepository memberRepository;

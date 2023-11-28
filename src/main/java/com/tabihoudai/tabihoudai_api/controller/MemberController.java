@@ -9,9 +9,7 @@ import com.tabihoudai.tabihoudai_api.repository.MemberRepository;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.IfLogin;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.JwtTokenizer;
 import com.tabihoudai.tabihoudai_api.security.jwt.util.LoginUserDto;
-import com.tabihoudai.tabihoudai_api.service.MemberService;
-import com.tabihoudai.tabihoudai_api.service.ProfileService;
-import com.tabihoudai.tabihoudai_api.service.RefreshTokenService;
+import com.tabihoudai.tabihoudai_api.service.*;
 import io.jsonwebtoken.Claims;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +32,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -52,6 +51,7 @@ public class MemberController {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final ProfileService profileService;
+    private final PasswordService passwordService;
 
     @Value("${com.tabihoudai.upload.path}")
     private String uploadPath;
@@ -188,6 +188,21 @@ public class MemberController {
             uploadPathFolder.mkdirs();
         }
         return folderPath;
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        String email = request.get("email"); // 이메일 주소를 받아옵니다.
+        String newPassword = request.get("newPassword"); // 새로운 비밀번호를 받아옵니다.
+
+        try {
+            passwordService.resetPassword(email, newPassword); // 비밀번호 초기화 및 변경 서비스 호출
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (EmailNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("비밀번호 변경 중 오류가 발생했습니다.");
+        }
     }
 
     @PostMapping("/login")
