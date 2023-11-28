@@ -60,4 +60,11 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(dto.getBoardIdx());
     }
 
+    @PostMapping("/report")
+    public String reportBoard(
+            @RequestBody BoardDTO.reportBoardDTO dto
+    ){
+        boardService.reportBoard(dto);
+        return "신고가 완료되었습니다.";
+    }
 }

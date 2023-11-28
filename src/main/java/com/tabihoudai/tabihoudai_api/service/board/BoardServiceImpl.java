@@ -1,8 +1,10 @@
 package com.tabihoudai.tabihoudai_api.service.board;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardDTO;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
+import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,8 @@ public class BoardServiceImpl implements BoardService{
 
     private final BoardReplyRepository boardReplyRepository;
 
+    private final BlameRepository blameRepository;
+
     @Transactional
     @Override
     public List<BoardDTO.BoardViewDTO> get(long boardIdx) {
@@ -38,7 +42,6 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public Long registerBoard(BoardDTO.BoardRegisterDTO dto) {
-        log.info("dto : {}", dto);
         BoardEntity boardEntity = dtoToEntityRegister(dto);
         boardRepository.save(boardEntity);
         return boardEntity.getBoardIdx();
@@ -79,5 +82,14 @@ public class BoardServiceImpl implements BoardService{
             board.changeCategory(dto.getCategory());
             boardRepository.save(board);
         }
+    }
+
+    @Override
+    public void reportBoard(BoardDTO.reportBoardDTO dto) {
+
+        BoardEntity board = boardRepository.findByBoardIdx(dto.getBoardIdx());
+        UsersEntity users = board.getUsersEntity();
+        BlameEntity blameEntity = dtoToEntityReport(board, users, dto.getContent());
+        blameRepository.save(blameEntity);
     }
 }

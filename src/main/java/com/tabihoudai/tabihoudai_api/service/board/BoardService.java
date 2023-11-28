@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.service.board;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardDTO;
+import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 
@@ -19,6 +20,8 @@ public interface BoardService {
     void removeBoard(Long boardIdx);
 
     void modifyBoard(BoardDTO.BoardRegisterDTO dto);
+
+    void reportBoard(BoardDTO.reportBoardDTO dto);
 
     default BoardDTO.BoardViewDTO entityToViewDTO(BoardEntity board, UsersEntity users, Long replyCount, Long likeCount, Long unLikeCount){
         return BoardDTO.BoardViewDTO.builder()
@@ -52,6 +55,15 @@ public interface BoardService {
                 .regDate(board.getRegDate())
                 .visitCount(board.getVisitCount())
                 .nickname(users.getNickname())
+                .build();
+    }
+
+    default BlameEntity dtoToEntityReport(BoardEntity board, UsersEntity users, String contents){
+        return BlameEntity.builder()
+                .usersEntity(users)
+                .boardEntity(board)
+                .category((byte)1)
+                .content(contents)
                 .build();
     }
 }
