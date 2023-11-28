@@ -18,6 +18,7 @@ public class AttrResultDTO<DTO, EN> {
     private int totalPage;
 
     private int page;
+
     private int size;
 
     private int start, end;

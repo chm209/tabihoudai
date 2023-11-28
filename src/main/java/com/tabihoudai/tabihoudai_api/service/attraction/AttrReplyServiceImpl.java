@@ -1,10 +1,15 @@
 package com.tabihoudai.tabihoudai_api.service.attraction;
 
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrReplyDto;
+import com.tabihoudai.tabihoudai_api.dto.attraction.AttrRequestDTO;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttrReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,4 +80,14 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         }
 
     }
+
+    @Override
+    public Slice<AttrReplyEntity> getReply(Long attrIdx, int page, int size) {
+        PageRequest request = PageRequest.of(page,size);
+        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
+        Slice<AttrReplyEntity> attrReplyEntitySlice = attrReplyRepository.findByAttrIdx(attraction, request);
+        return attrReplyEntitySlice;
+    }
+
+
 }

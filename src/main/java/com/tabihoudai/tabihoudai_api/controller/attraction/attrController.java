@@ -51,4 +51,11 @@ public class attrController {
     public ResponseEntity cityList(@PathVariable("area") String area){
         return ResponseEntity.ok(attractionService.getCityList(area));
     }
+
+    @GetMapping("/detail/find")
+    public ResponseEntity getReply(@RequestParam("attrIdx") Long attrIdx,
+                                   @RequestParam("page") int page,
+                                   @RequestParam("size") int size){
+        return ResponseEntity.ok(attrReplyService.getReply(attrIdx,page,size));
+    }
 }
