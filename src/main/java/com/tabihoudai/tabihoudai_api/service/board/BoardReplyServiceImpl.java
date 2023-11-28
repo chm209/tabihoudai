@@ -2,6 +2,7 @@ package com.tabihoudai.tabihoudai_api.service.board;
 
 import com.tabihoudai.tabihoudai_api.dto.board.BoardReplyDTO;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
+import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
@@ -27,6 +28,14 @@ public class BoardReplyServiceImpl implements BoardReplyService{
         List<BoardReplyDTO.getReplyDTO> collect = result.stream().map(objects -> entityToGetDTO((BoardReplyEntity) objects[0], (UsersEntity) objects[1]))
                 .collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public void registerReply(BoardReplyDTO.replyRegisterDTO dto) {
+        BoardEntity board = BoardEntity.builder().boardIdx(dto.getBoardIdx()).build();
+        UsersEntity users = UsersEntity.builder().userIdx(dto.getUsersIdx()).build();
+        BoardReplyEntity reply = dtoToEntityReply(board, users, dto.getContent());
+        boardReplyRepository.save(reply);
     }
 
     @Override

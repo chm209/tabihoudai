@@ -22,6 +22,14 @@ public class BoardReplyController {
         return ResponseEntity.status(HttpStatus.OK).body(boardReplyService.getReply(boardIdx));
     }
 
+    @PostMapping("/write")
+    public String registReply(
+            @RequestBody BoardReplyDTO.replyRegisterDTO dto
+    ){
+        boardReplyService.registerReply(dto);
+        return "댓글이 작성되었습니다.";
+    }
+
     @PostMapping("/report")
     public String reportBoard(
             @RequestBody BoardReplyDTO.reportReplyDTO dto

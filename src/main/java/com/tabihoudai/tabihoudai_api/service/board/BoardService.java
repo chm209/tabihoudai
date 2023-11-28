@@ -62,7 +62,7 @@ public interface BoardService {
         return BlameEntity.builder()
                 .usersEntity(users)
                 .boardEntity(board)
-                .category((byte)1)
+                .category((byte)0)
                 .content(contents)
                 .build();
     }
