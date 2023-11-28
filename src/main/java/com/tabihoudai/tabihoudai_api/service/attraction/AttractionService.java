@@ -19,9 +19,9 @@ public interface AttractionService {
     AttrResultDTO<AttrListDTO,Object[]> getAttrList(AttrRequestDTO attrRequestDTO);
     AttrDetailDTO getAttrDetail(Long attrIdx);
 
-    String register (AttrReplyDto attrReplyDto, MultipartFile multipartFile);
+    List<AttrReplyDto> register (AttrReplyDto attrReplyDto, MultipartFile multipartFile);
 
-    String delete (AttrReplyDto attrReplyDto);
+    List<AttrReplyDto> delete (AttrReplyDto attrReplyDto);
 
 
     default AttrListDTO entityToDTO(AttractionEntity attractionEntity, AttrImgEntity attrImgEntity, double avg, Long count ){

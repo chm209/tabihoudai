@@ -145,7 +145,7 @@ public class AttractionServiceImpl implements AttractionService{
 
     @Override
     @Transactional
-    public String register(AttrReplyDto attrReplyDto,MultipartFile multipartFile) {
+    public List<AttrReplyDto> register(AttrReplyDto attrReplyDto,MultipartFile multipartFile) {
         String str = "C:\\Users\\dhses\\tabihoudai\\tabi_front\\src\\assets\\images\\attrReply";
         String folderPath = str.replace("\\", File.separator);
         String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
@@ -162,14 +162,18 @@ public class AttractionServiceImpl implements AttractionService{
             }
             attrReplyDto.setPath(fileName);
         }
-        String result = "";
         AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
 
+        List<AttrReplyDto> result = new ArrayList<>();
         try {
             AttrReplyEntity save = attrReplyRepository.save(entity);
-            return result = "success";
+            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
+            for (AttrReplyEntity re: replyEntity
+                 ) {result.add(entityToDTOReply(re));
+            }
+            return result;
         } catch (Exception e){
-            return result = "failure";
+            return result;
         }
 
     }
