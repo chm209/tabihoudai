@@ -2,6 +2,7 @@ package com.tabihoudai.tabihoudai_api.controller.attraction;
 
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrReplyDto;
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrRequestDTO;
+import com.tabihoudai.tabihoudai_api.service.attraction.AttrReplyService;
 import com.tabihoudai.tabihoudai_api.service.attraction.AttractionService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,8 @@ public class attrController {
 
     private final AttractionService attractionService;
 
+    private final AttrReplyService attrReplyService;
+
     @PostMapping("/area")
     public ResponseEntity list(@RequestBody AttrRequestDTO attrRequestDTO){
         return ResponseEntity.ok(attractionService.getAttrList(attrRequestDTO));
@@ -32,12 +35,12 @@ public class attrController {
     @PostMapping("/detail")
     public ResponseEntity replyRegist(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
                                       @RequestPart(value = "file",required = false)MultipartFile multipartFile){
-        return ResponseEntity.ok(attractionService.register(attrReplyDto,multipartFile));
+        return ResponseEntity.ok(attrReplyService.register(attrReplyDto,multipartFile));
     }
 
     @DeleteMapping("/detail")
     public ResponseEntity replyRemove(@RequestBody AttrReplyDto attrReplyDto){
-        return ResponseEntity.ok(attractionService.delete(attrReplyDto));
+        return ResponseEntity.ok(attrReplyService.delete(attrReplyDto));
     }
 
     @GetMapping("/area-list")

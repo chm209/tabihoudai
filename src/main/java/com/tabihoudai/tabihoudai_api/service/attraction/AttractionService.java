@@ -19,9 +19,6 @@ public interface AttractionService {
     AttrResultDTO<AttrListDTO,Object[]> getAttrList(AttrRequestDTO attrRequestDTO);
     AttrDetailDTO getAttrDetail(Long attrIdx);
 
-    List<AttrReplyDto> register (AttrReplyDto attrReplyDto, MultipartFile multipartFile);
-
-    List<AttrReplyDto> delete (AttrReplyDto attrReplyDto);
 
 
     default AttrListDTO entityToDTO(AttractionEntity attractionEntity, AttrImgEntity attrImgEntity, double avg, Long count ){
@@ -48,32 +45,6 @@ public interface AttractionService {
                 .path(attrReplyEntity.getPath())
                 .build();
         return attrReplyDto;
-    }
-
-    default AttrImgDto entityToDTOImg(AttrImgEntity attrImgEntity){
-        AttrImgDto attrImgDto = AttrImgDto.builder()
-                .attrImgIdx(attrImgEntity.getAttrImgIdx())
-                .attrIdx(attrImgEntity.getAttrIdx().getAttrIdx())
-                .path(attrImgEntity.getPath())
-                .type(attrImgEntity.getType())
-                .build();
-
-        return attrImgDto;
-    }
-
-    default AttrReplyEntity dtoToEntityReply(AttrReplyDto attrReplyDto){
-        AttractionEntity attractionEntity = AttractionEntity.builder().attrIdx(attrReplyDto.getAttrIdx()).build();
-        UserEntity userEntity = UserEntity.builder().userIdx(attrReplyDto.getUserIdx()).build();
-        AttrReplyEntity entity = AttrReplyEntity.builder()
-                .attrReplyIdx(attrReplyDto.getAttrReplyIdx())
-                .attrIdx(attractionEntity)
-                .userIdx(userEntity)
-                .content(attrReplyDto.getContent())
-                .score(attrReplyDto.getScore())
-                .path(attrReplyDto.getPath())
-                .build();
-
-        return entity;
     }
 
 

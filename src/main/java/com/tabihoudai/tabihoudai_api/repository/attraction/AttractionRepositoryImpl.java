@@ -2,7 +2,6 @@ package com.tabihoudai.tabihoudai_api.repository.attraction;
 
 
 import com.querydsl.core.Tuple;
-import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -12,7 +11,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.el.util.ExceptionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -82,7 +80,6 @@ public class AttractionRepositoryImpl implements AttractionRepository {
     private OrderSpecifier<?> attrSort(Pageable page) {
         if (!page.getSort().isEmpty()) {
             for (Sort.Order order : page.getSort()) {
-                log.info(order.getProperty());
                 switch (order.getProperty()) {
                     case "grade" -> {
                         return new OrderSpecifier(Order.DESC, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))

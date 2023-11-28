@@ -143,56 +143,6 @@ public class AttractionServiceImpl implements AttractionService{
         return detailDTO;
     }
 
-    @Override
-    @Transactional
-    public List<AttrReplyDto> register(AttrReplyDto attrReplyDto,MultipartFile multipartFile) {
-        String str = "C:\\Users\\dhses\\tabihoudai\\tabi_front\\src\\assets\\images\\attrReply";
-        String folderPath = str.replace("\\", File.separator);
-        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
-        if(multipartFile!=null) {
-            String originalFilename = multipartFile.getOriginalFilename();
-            String fileName = date + "_" +
-                    originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
-            String saveName = folderPath + File.separator + fileName;
-            Path path = Paths.get(saveName);
-            try {
-                multipartFile.transferTo(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            attrReplyDto.setPath(fileName);
-        }
-        AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
-
-        List<AttrReplyDto> result = new ArrayList<>();
-        try {
-            AttrReplyEntity save = attrReplyRepository.save(entity);
-            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-            for (AttrReplyEntity re: replyEntity) {
-                result.add(entityToDTOReply(re));
-            }
-            return result;
-        } catch (Exception e){
-            return result;
-        }
-
-    }
-
-    @Override
-    public List<AttrReplyDto> delete(AttrReplyDto attrReplyDto) {
-        List<AttrReplyDto> result = new ArrayList<>();
-        try {
-            attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-            for (AttrReplyEntity re: replyEntity) {
-                result.add(entityToDTOReply(re));
-            }
-            return result;
-        } catch (Exception e){
-            return result;
-        }
-
-    }
 
 
 }
