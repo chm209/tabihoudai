@@ -49,30 +49,14 @@ public class PlanService {
         return planEditDTO.getPlanIdx();
     }
 
-    public Page<PlanPagingDTO> findAll(Pageable pageable){
-        Page<PlanEntity> planEntity = planRepository.findAll(pageable);
-
-        return planEntity.map(this::planPagingEntityToDto);
-    }
-
-    public Page<PlanPagingDTO> orderByLikeCountDesc(Pageable pageable) {
-        Page<Object[]> page = planRepository.orderByLikeCountDesc(pageable);
+    public Page<PlanPagingDTO> orderedPlanList(Pageable pageable, int sortBy) {
+        Page<Object[]> page = planRepository.orderedPlanList(pageable, sortBy);
         return page.map(data -> PlanPagingDTO.arrayToDTO(data));
     }
 
-    public Page<PlanPagingDTO> orderByRegDateDesc(Pageable pageable) {
-        Page<Object[]> page = planRepository.orderByRegDateDesc(pageable);
+    public Page<PlanPagingDTO> searchPlan(Pageable pageable, int sortBy, String keyword){
+        Page<Object[]> page = planRepository.planSearch(pageable, sortBy, keyword);
         return page.map(data -> PlanPagingDTO.arrayToDTO(data));
-    }
-
-    public PlanPagingDTO planPagingEntityToDto(PlanEntity planEntity){
-        PlanPagingDTO planPagingDTO = new PlanPagingDTO();
-        planPagingDTO.setPlanIdx(planEntity.getPlanIdx());
-        planPagingDTO.setTitle(planEntity.getTitle());
-        planPagingDTO.setUserIdx(planEntity.getUsersEntity().getUserIdx());
-        planPagingDTO.setRegDate(planEntity.getRegDate());
-        planPagingDTO.setVisitCount(planEntity.getVisitCount());
-        return planPagingDTO;
     }
 
 }

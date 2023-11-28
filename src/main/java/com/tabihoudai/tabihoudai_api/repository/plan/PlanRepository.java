@@ -22,15 +22,18 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
     List<PlanEntity> planView(@Param("planIdx") Long planIdx);
 
     //계획 번호, 제목, 조회수, 작성자, 작성일, 추천수 순
+    //5 = 작성일, 6 = 좋아요
     @Query("SELECT p.planIdx, p.title, p.visitCount, p.usersEntity.userIdx, p.regDate, " +
             "(SELECT COUNT(pl.planLikeIdx) FROM PlanLikeEntity pl WHERE pl.planEntity = p) AS likeCount " +
-            "FROM PlanEntity p ORDER BY likeCount DESC")
-    Page<Object[]> orderByLikeCountDesc(Pageable pageable);
+            "FROM PlanEntity p ORDER BY :sortBy DESC")
+    Page<Object[]> orderedPlanList(Pageable pageable, @Param("sortBy") int sortBy);
 
-    //계획 번호, 제목, 조회수, 작성자, 작성일 순
-    @Query("SELECT p.planIdx, p.title, p.visitCount, p.usersEntity.userIdx, p.regDate FROM PlanEntity p " +
-            "ORDER BY p.regDate DESC")
-    Page<Object[]> orderByRegDateDesc(Pageable pageable);
+    @Query("SELECT p.planIdx, p.title, p.visitCount, p.usersEntity.userIdx, p.regDate, " +
+            "(SELECT COUNT(pl.planLikeIdx) FROM PlanLikeEntity pl WHERE pl.planEntity = p) AS likeCount " +
+            "FROM PlanEntity p " +
+            "WHERE p.title LIKE CONCAT('%',:keyword,'%') OR p.content LIKE CONCAT('%',:keyword,'%') " +
+            "ORDER BY :sortBy DESC")
+    Page<Object[]> planSearch(Pageable pageable, @Param("sortBy") int sortBy , @Param("keyword") String keyword);
 
     @Query(value = "SELECT PATH FROM ATTR_IMG WHERE ATTR_IDX = :attrIdx AND ROWNUM = 1", nativeQuery = true)
     String planAttrImage(@Param("attrIdx") Long attrIdx);

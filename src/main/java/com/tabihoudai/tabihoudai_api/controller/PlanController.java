@@ -110,23 +110,33 @@ public class PlanController {
         return imageArr;
     }
 
-    @GetMapping("/paging")
-    public Page<PlanPagingDTO> planPaging(@RequestParam("page") int page, @RequestParam("size") int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return planService.findAll(pageRequest);
-    }
-
     @GetMapping("/paging/sort")
     public Page<PlanPagingDTO> planPagingSort(@RequestParam("page") int page, @RequestParam("size") int size,
                                           @RequestParam("sortBy") String sortBy) {
         PageRequest pageRequest = PageRequest.of(page, size);
+        
+        //5 = 작성일순, 6 = 좋아요순
         if(sortBy.equals("like")) {
-            return planService.orderByLikeCountDesc(pageRequest);
+            return planService.orderedPlanList(pageRequest, 6);
         } else if(sortBy.equals("date")) {
-//            return planService.orderByRegDateDesc(pageRequest);
-            return null;
+            return planService.orderedPlanList(pageRequest, 5);
         }
         else {
+            return null;
+        }
+    }
+
+    @GetMapping("/search")
+    public Page<PlanPagingDTO> planSearch(@RequestParam("page") int page, @RequestParam("size") int size,
+                                          @RequestParam("sortBy") String sortBy, @RequestParam("keyword") String keyword) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        //5 = 작성일순, 6 = 좋아요순
+        if(sortBy.equals("like")) {
+            return planService.searchPlan(pageRequest, 6, keyword);
+        } else if(sortBy.equals("date")) {
+            return planService.searchPlan(pageRequest, 5, keyword);
+        } else {
             return null;
         }
     }
