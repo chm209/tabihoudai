@@ -29,13 +29,13 @@ public class attrController {
         return ResponseEntity.ok(attractionService.getAttrDetail(idx));
     }
 
-    @PostMapping("/detail/registration")
+    @PostMapping("/detail")
     public ResponseEntity replyRegist(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
                                       @RequestPart(value = "file",required = false)MultipartFile multipartFile){
         return ResponseEntity.ok(attractionService.register(attrReplyDto,multipartFile));
     }
 
-    @DeleteMapping("/detail/remove")
+    @DeleteMapping("/detail")
     public ResponseEntity replyRemove(@RequestBody AttrReplyDto attrReplyDto){
         return ResponseEntity.ok(attractionService.delete(attrReplyDto));
     }

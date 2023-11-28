@@ -77,7 +77,7 @@ public class AttractionServiceImpl implements AttractionService{
         int type = attrRequestDTO.getType();
         String word= attrRequestDTO.getKeyword();
         int sort = attrRequestDTO.getSort();
-        String so = "";
+        String so = "grade";
         String area = null;
         String city = null;
         String attr = null;

@@ -54,7 +54,6 @@ public class AttractionRepositoryImpl implements AttractionRepository {
                 .where(cityEq(city,word),areaEq(area,word),attrEq(attr,word))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy()
                 .orderBy(attrSort(pageable))
                 .fetch();
 
@@ -86,7 +85,7 @@ public class AttractionRepositoryImpl implements AttractionRepository {
                 log.info(order.getProperty());
                 switch (order.getProperty()) {
                     case "grade" -> {
-                        return new OrderSpecifier(Order.ASC, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))
+                        return new OrderSpecifier(Order.DESC, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))
                                 .from(attrReplyEntity)
                                 .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
                     }
@@ -94,7 +93,7 @@ public class AttractionRepositoryImpl implements AttractionRepository {
                         return new OrderSpecifier(Order.ASC, attractionEntity.attraction);
                     }
                     case "commentCount" -> {
-                        return new OrderSpecifier(Order.ASC, JPAExpressions.select(attrReplyEntity.count())
+                        return new OrderSpecifier(Order.DESC, JPAExpressions.select(attrReplyEntity.count())
                                 .from(attrReplyEntity)
                                 .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
                     }

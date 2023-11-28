@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface AttrReplyRepository extends JpaRepository<AttrReplyEntity,Long>{
 
-    @Query(value = "SELECT avg(nvl(ar.score,0.0)) FROM tbl_attr_reply ar WHERE ar.attr_Idx = :attrIdx", nativeQuery = true)
+    @Query(value = "SELECT nvl(avg(ar.score),0.0) FROM tbl_attr_reply ar WHERE ar.attr_Idx = :attrIdx", nativeQuery = true)
     Double getAttractionAvg(@Param("attrIdx") Long attrIdx);
 
     @Query("SELECT ar FROM AttrReplyEntity ar WHERE ar.attrIdx.attrIdx = :attrIdx")
