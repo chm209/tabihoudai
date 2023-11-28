@@ -98,8 +98,9 @@ public class PlanController {
     }
 
     @GetMapping("/view/reply")
-    public PlanReplyDTO getReply(@RequestParam Long planIdx) {
-        return planReplyService.planReplyView(planIdx);
+    public Page<PlanReplyDTO> getReply(@RequestParam("page") int page, @RequestParam("size") int size, @RequestParam Long planIdx) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return planReplyService.planReplyView(pageRequest, planIdx);
     }
 
     @GetMapping("/image")

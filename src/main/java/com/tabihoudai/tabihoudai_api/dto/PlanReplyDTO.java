@@ -6,6 +6,7 @@ import com.tabihoudai.tabihoudai_api.entity.plan.PlanReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.uuid.UUIDDeserializer;
 import lombok.*;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -28,6 +29,18 @@ public class PlanReplyDTO {
     private UUID userIdx;
 
     private Long planIdx;
+
+    public static Page<PlanReplyDTO> arrayToDTO(Page<PlanReplyEntity> replyList) {
+        Page<PlanReplyDTO> planReplyDto = replyList.map(data ->
+                PlanReplyDTO.builder()
+                        .planIdx(data.getPlanEntity().getPlanIdx())
+                        .content(data.getContent())
+                        .regDate(data.getRegDate())
+                        .userIdx(data.getUsersEntity().getUserIdx())
+                        .planReplyIdx(data.getPlanReplyIdx())
+                        .build());
+        return planReplyDto;
+    }
 
     public PlanReplyEntity planReplyDtoToEntity(){
         UsersEntity usersEntity = UsersEntity.builder()

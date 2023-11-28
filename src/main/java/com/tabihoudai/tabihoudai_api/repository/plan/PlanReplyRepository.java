@@ -4,6 +4,8 @@ import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +22,7 @@ public interface PlanReplyRepository extends JpaRepository<PlanReplyEntity, Long
     List<Map<String, Object>> findByUserIdx(@Param("userIdx") UUID userIdx);
 
     @Query("SELECT p FROM PlanReplyEntity p WHERE p.planEntity.planIdx = :planIdx")
-    List<PlanReplyEntity> replyView(@Param("planIdx") Long planIdx);
+    Page<PlanReplyEntity> replyView(Pageable pageable, @Param("planIdx") Long planIdx);
 
     @Modifying
     @Query("UPDATE PlanReplyEntity p SET p.content = :#{#planReplyEntity.content} WHERE p.planReplyIdx = :#{#planReplyEntity.planReplyIdx}")

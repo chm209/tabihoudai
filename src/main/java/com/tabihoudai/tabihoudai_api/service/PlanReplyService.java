@@ -1,5 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service;
 
+import com.tabihoudai.tabihoudai_api.dto.PlanPagingDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanReplyDTO;
 import com.tabihoudai.tabihoudai_api.dto.PlanReplyEditDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
@@ -8,6 +9,8 @@ import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.users.UsersRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +31,8 @@ public class PlanReplyService {
         return planReplyRepository.save(planReplyEntity).getPlanReplyIdx();
     }
 
-    public PlanReplyDTO planReplyView(Long planIdx) {
-        List<PlanReplyEntity> planReply = planReplyRepository.replyView(planIdx);
-        PlanReplyEntity planReplyEntity = planReply.get(0);
-        UsersEntity usersEntity = planReplyEntity.getUsersEntity();
-        PlanEntity planEntity = planReplyEntity.getPlanEntity();
-        return planReplyRepository.planReplyEntityToDTO(planReplyEntity, usersEntity, planEntity);
+    public Page<PlanReplyDTO> planReplyView(Pageable pageable, Long planIdx) {
+        return PlanReplyDTO.arrayToDTO(planReplyRepository.replyView(pageable, planIdx));
     }
 
     @Transactional
