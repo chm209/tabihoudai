@@ -4,20 +4,26 @@ import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardReplyEntity;
+import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
+import com.tabihoudai.tabihoudai_api.entity.plan.PlanReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "blame")
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @ToString
 public class BlameEntity {
     @Id
@@ -25,8 +31,9 @@ public class BlameEntity {
     @SequenceGenerator(name = "SEQ_BLAME", sequenceName = "SEQUENCE_BLAME", allocationSize = 1)
     private long blameIdx;
 
+    @CreatedDate
     @Column(nullable = false)
-    private LocalDate blameDate;
+    private LocalDateTime blameDate;
 
     @Column(nullable = false)
     private byte category;
@@ -54,4 +61,12 @@ public class BlameEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "boardReplyIdx", nullable = true)
     private BoardReplyEntity boardReplyEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "planIdx", nullable = true)
+    private PlanEntity planEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "planReplyIdx", nullable = true)
+    private PlanReplyEntity planReplyEntity;
 }
