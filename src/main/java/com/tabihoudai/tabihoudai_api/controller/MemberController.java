@@ -63,14 +63,9 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<String> handleFileUpload(@RequestPart("file") MultipartFile file) {
-        return ResponseEntity.ok("업로드가 성공 되었습니다.");
-    }
 
     @PostMapping("/signup")
-    public ResponseEntity signup( @RequestPart("profileImage") MultipartFile profileImage,
-            @RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
+    public ResponseEntity signup(@RequestBody @Valid MemberSignupDto memberSignupDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
@@ -102,13 +97,6 @@ public class MemberController {
         member.setBirthday(birthday);
 
         try {
-            String uploadDirectory = "C:\\Users\\cksdu\\Desktop\\프로젝트 코드\\profile";
-            String fileName = nickname + "_" + profileImage.getOriginalFilename();
-            String filePath = uploadDirectory + fileName;
-
-            // 이미지 저장
-            profileImage.transferTo(new File(filePath));
-
             Member saveMember = memberService.addMember(member);
 
             MemberSignupResponseDto memberSignupResponse = new MemberSignupResponseDto();
@@ -117,8 +105,6 @@ public class MemberController {
             memberSignupResponse.setRegdate(saveMember.getRegdate());
             memberSignupResponse.setEmail(saveMember.getEmail());
             memberSignupResponse.setBirthday(saveMember.getBirthday());
-
-            memberSignupResponse.setProfileImageUrl(memberSignupDto.getProfileImage());
 
             // 회원가입
             return new ResponseEntity(memberSignupResponse, HttpStatus.CREATED);

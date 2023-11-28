@@ -32,7 +32,14 @@ spring:
     show-sql: true
     database: oracle
 
-profile-image:
-  upload-dir: C:\Users\cksdu\Desktop\프로젝트 코드\profile
-  max-file-size: 5MB
-  allowed-file-types: jpg, jpeg, png
+    servlet:
+      multipart:
+        enabled: true
+        location: C:\Users\cksdu\Desktop\프로젝트 코드\profile
+        max-request-size: 30MB
+        max-file-size: 10MB
+
+com:
+  tabihoudai:
+       upload:
+          path: C:\Users\cksdu\Desktop\프로젝트 코드\profile

@@ -5,15 +5,15 @@ import com.tabihoudai.tabihoudai_api.entity.Role;
 import com.tabihoudai.tabihoudai_api.repository.MemberRepository;
 import com.tabihoudai.tabihoudai_api.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +30,10 @@ public class MemberService {
     public Member addMember(Member member) {
         Optional<Role> userRole = roleRepository.findByName("ROLE_USER");
         member.addRole(userRole.get());
-        Member saveMember = memberRepository.save(member);
-        return saveMember;
+
+        Member savedMember = memberRepository.save(member);
+
+        return savedMember;
     }
 
     @Transactional(readOnly = true)
