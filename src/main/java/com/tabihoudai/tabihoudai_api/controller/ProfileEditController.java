@@ -31,7 +31,7 @@ public class ProfileEditController {
     }
 
     @PutMapping("")
-    public void editProfile(@RequestBody UsersDTO usersDTO){
+    public void editProfile(@ModelAttribute UsersDTO usersDTO) throws Exception {
         usersService.editProfile(usersDTO);
     }
 

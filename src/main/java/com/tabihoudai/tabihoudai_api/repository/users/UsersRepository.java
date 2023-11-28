@@ -18,6 +18,7 @@ public interface UsersRepository extends JpaRepository<UsersEntity, UUID> {
     @Modifying
     @Query("UPDATE UsersEntity u " +
             "SET u.email = :#{#usersEntity.email}, u.birthday = :#{#usersEntity.birthday}, " +
-            "u.pw = :#{#usersEntity.pw}, u.nickname = :#{#usersEntity.nickname}, u.profile = :#{#usersEntity.profile}")
+            "u.pw = :#{#usersEntity.pw}, u.nickname = :#{#usersEntity.nickname}, u.profile = :#{#usersEntity.profile} " +
+            "WHERE u.userIdx = :#{#usersEntity.userIdx}")
     void editUsersInfo(@Param("usersEntity") UsersEntity usersEntity);
 }

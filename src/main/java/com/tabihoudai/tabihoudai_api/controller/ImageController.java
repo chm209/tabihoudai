@@ -26,20 +26,6 @@ public class ImageController {
         String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
         uploadFile.transferTo(new File(uploadDir + uploadId));
         paramMap.put("url", "/src/assets/images/" + uploadId);
-        log.info(paramMap.toString());
-        return paramMap;
-    }
-
-    @ResponseBody
-    @PostMapping("/upload/profile")
-    public Map<String, Object> uploadProfileImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
-        MultipartFile uploadFile = request.getFile("upload");
-        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\profile";
-        uploadDir.replace("\\", "/");
-        String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
-        uploadFile.transferTo(new File(uploadDir + uploadId));
-        paramMap.put("url", "/src/assets/images/" + uploadId);
-        log.info(paramMap.toString());
         return paramMap;
     }
 
