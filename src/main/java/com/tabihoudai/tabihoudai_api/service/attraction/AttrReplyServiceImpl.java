@@ -39,10 +39,12 @@ public class AttrReplyServiceImpl implements AttrReplyService{
 
     private final UserRepository userRepository;
 
+    private final String PATH="C:\\Users\\dhses\\tabihoudai\\tabi_front\\src\\assets\\images\\attrReply";
+
     @Override
     @Transactional
-    public List<AttrReplyDto> register(AttrReplyDto attrReplyDto, MultipartFile multipartFile) {
-        String str = "C:\\Users\\dhses\\tabihoudai\\tabi_front\\src\\assets\\images\\attrReply";
+    public List<ReplySearchDTO> register(AttrReplyDto attrReplyDto, MultipartFile multipartFile) {
+        String str = PATH;
         String folderPath = str.replace("\\", File.separator);
         String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
         if(multipartFile!=null) {
@@ -60,12 +62,14 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         }
         AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
 
-        List<AttrReplyDto> result = new ArrayList<>();
+        List<ReplySearchDTO> result = new ArrayList<>();
         try {
             AttrReplyEntity save = attrReplyRepository.save(entity);
             List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
             for (AttrReplyEntity re: replyEntity) {
-                result.add(entityToDTOReply(re));
+                String userEmail = userRepository.findAllByUserIdx(re.getUserIdx().getUserIdx()).getEmail();
+                String[] userRename = userEmail.split("@");
+                result.add(reEntityToReplyDto(re,userRename[0]));
             }
             return result;
         } catch (Exception e){
@@ -75,13 +79,23 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     }
 
     @Override
-    public List<AttrReplyDto> delete(AttrReplyDto attrReplyDto) {
-        List<AttrReplyDto> result = new ArrayList<>();
+    public List<ReplySearchDTO> delete(AttrReplyDto attrReplyDto) {
+        List<ReplySearchDTO> result = new ArrayList<>();
         try {
-            attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-            for (AttrReplyEntity re: replyEntity) {
-                result.add(entityToDTOReply(re));
+            String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
+            String folderPath = PATH.replace("\\", File.separator);
+            File file = new File(folderPath+File.separator+path);
+            if (file.exists()) {
+                boolean delete = file.delete();
+                if (delete == true) {
+                    attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
+                    List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
+                    for (AttrReplyEntity re : replyEntity) {
+                        String userEmail = userRepository.findAllByUserIdx(re.getUserIdx().getUserIdx()).getEmail();
+                        String[] userRename = userEmail.split("@");
+                        result.add(reEntityToReplyDto(re,userRename[0]));
+                    }
+                }
             }
             return result;
         } catch (Exception e){
@@ -102,12 +116,7 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         attrReplyEntitySlice.getContent().forEach(reply -> {
             String userEmail = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx()).getEmail();
             String[] userRename = userEmail.split("@");
-            replyList.add(ReplySearchDTO.builder().
-                        content(reply.getContent()).
-                        email(userRename[0]).
-                        regDate(reply.getRegDate()).
-                        score(reply.getScore()).
-                        path(reply.getPath()).build());
+            replyList.add(reEntityToReplyDto(reply,userRename[0]));
         });
         ReplyListDTO replyListDto = ReplyListDTO.builder().list(replyList).next(attrReplyEntitySlice.hasNext()).build();
         return replyListDto;

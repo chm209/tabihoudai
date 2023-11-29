@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 public class ReplySearchDTO {
 
+    private Long attrReplyIdx;
+    private byte[] userIdx;
     private String email;
     private String content;
     private LocalDateTime regDate;

@@ -20,5 +20,7 @@ public interface AttrReplyRepository extends JpaRepository<AttrReplyEntity,Long>
 
     Slice<AttrReplyEntity> findAllByAttrIdx(AttractionEntity attrIdx, Pageable pageable);
 
+    AttrReplyEntity findByAttrReplyIdx(Long attrReplyIdx);
+
 
 }
