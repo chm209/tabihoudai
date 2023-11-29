@@ -46,6 +46,8 @@ public class PlanDTO {
     @JsonDeserialize(using = UUIDDeserializer.class)
     private UUID userIdx;
 
+    private Long likeCount;
+
     public PlanEntity planDtoToEntity(){
         UsersEntity usersEntity = UsersEntity.builder()
                 .userIdx(userIdx)
@@ -65,5 +67,21 @@ public class PlanDTO {
                 .build();
     }
 
+    public static PlanDTO planEntityToDTO(PlanEntity plan, UsersEntity user) {
+        return PlanDTO.builder()
+                .planIdx(plan.getPlanIdx())
+                .dateFrom(plan.getDateFrom())
+                .dateTo(plan.getDateTo())
+                .attrList(plan.getAttrList())
+                .adult(plan.getAdult())
+                .child(plan.getChild())
+                .budget(plan.getBudget())
+                .title(plan.getTitle())
+                .content(plan.getContent())
+                .regDate(plan.getRegDate())
+                .userIdx(user.getUserIdx())
+                .visitCount(plan.getVisitCount())
+                .build();
+    }
 
 }

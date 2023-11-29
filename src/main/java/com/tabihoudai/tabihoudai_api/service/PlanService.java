@@ -39,7 +39,7 @@ public class PlanService {
         PlanEntity planEntity = plan.get(0);
         UsersEntity usersEntity = planEntity.getUsersEntity();
         planRepository.addVisitCount(planIdx);
-        return planRepository.planEntityToDTO(planEntity, usersEntity);
+        return PlanDTO.planEntityToDTO(planEntity, usersEntity);
     }
 
     @Transactional

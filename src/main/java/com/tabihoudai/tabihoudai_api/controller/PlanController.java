@@ -3,6 +3,7 @@ package com.tabihoudai.tabihoudai_api.controller;
 import com.tabihoudai.tabihoudai_api.dto.*;
 import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
+import com.tabihoudai.tabihoudai_api.repository.plan.PlanLikeRepository;
 import com.tabihoudai.tabihoudai_api.repository.plan.PlanReplyRepository;
 import com.tabihoudai.tabihoudai_api.service.PlanLikeService;
 import com.tabihoudai.tabihoudai_api.service.PlanReplyService;
@@ -32,6 +33,7 @@ public class PlanController {
     private final PlanReplyRepository planReplyRepository;
     private final RegionRepository regionRepository;
     private final AttractionRepository attractionRepository;
+    private final PlanLikeRepository planLikeRepository;
     private final BlameRepository blameRepository;
 
     @DeleteMapping("/delete/plan")
@@ -57,11 +59,6 @@ public class PlanController {
     @PutMapping("/edit/plan")
     public Long editPlan(@RequestBody PlanEditDTO planEditDTO){
         return planService.edit(planEditDTO);
-    }
-
-    @GetMapping("/chklike")
-    public Long chkLike(@RequestBody PlanLikeDTO planLikeDTO){
-        return planLikeService.chkLike(planLikeDTO);
     }
 
     @PostMapping("/addlike")
@@ -97,7 +94,9 @@ public class PlanController {
 
     @GetMapping("/view/plan")
     public PlanDTO getPlan(@RequestParam Long planIdx){
-        return planService.planView(planIdx);
+        PlanDTO planDTO = planService.planView(planIdx);
+        planDTO.setLikeCount(planLikeRepository.countLike(planIdx));
+        return planDTO;
     }
 
     @GetMapping("/view/reply")

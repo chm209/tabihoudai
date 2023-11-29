@@ -17,12 +17,6 @@ public class PlanLikeService {
     private final PlanLikeRepository planLikeRepository;
     private final UsersRepository usersRepository;
 
-
-    public Long chkLike(PlanLikeDTO planLikeDTO) {
-        PlanLikeEntity planLikeEntity = planLikeDTO.planLikeDtoToEntity();
-        return planLikeRepository.addLike(planLikeEntity);
-    }
-
     public void addLike(PlanLikeDTO planLikeDTO) {
         UsersEntity usersEntity = usersRepository.findByUserIdx(planLikeDTO.getUserIdx());
         PlanLikeEntity planLikeEntity = planLikeDTO.planLikeDtoToEntity();
@@ -33,7 +27,6 @@ public class PlanLikeService {
             } else {
                 throw new Exception();
             }
-
         } catch(Exception e) {
 
         }
@@ -45,5 +38,4 @@ public class PlanLikeService {
         PlanLikeEntity planLikeEntity = planLikeDTO.planLikeDtoToEntity();
         planLikeRepository.disLike(planLikeEntity);
     }
-
 }

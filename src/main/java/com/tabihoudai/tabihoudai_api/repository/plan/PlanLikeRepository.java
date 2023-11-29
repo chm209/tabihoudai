@@ -11,8 +11,10 @@ import java.util.UUID;
 
 public interface PlanLikeRepository extends JpaRepository<PlanLikeEntity, Long> {
 
-    @Query("SELECT COUNT(*) FROM PlanLikeEntity p WHERE p.planEntity = :#{#planLikeEntity.planEntity}")
-    Long addLike(@Param("planLikeEntity") PlanLikeEntity planLikeEntity);
+    @Query("SELECT COUNT(*) " +
+            "FROM PlanLikeEntity p " +
+            "WHERE p.planEntity.planIdx = :planIdx")
+    Long countLike(@Param("planIdx")Long planIdx);
 
     @Query("SELECT p.usersEntity.userIdx " +
             "FROM PlanLikeEntity p " +

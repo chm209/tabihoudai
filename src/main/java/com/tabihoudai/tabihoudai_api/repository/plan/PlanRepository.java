@@ -1,9 +1,6 @@
 package com.tabihoudai.tabihoudai_api.repository.plan;
 
-import com.tabihoudai.tabihoudai_api.dto.PlanDTO;
-import com.tabihoudai.tabihoudai_api.dto.PlanPagingDTO;
 import com.tabihoudai.tabihoudai_api.entity.plan.PlanEntity;
-import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -54,22 +51,5 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
     @Modifying
     @Query("UPDATE PlanEntity p SET p.visitCount = p.visitCount + 1 WHERE p.planIdx = :planIdx")
     void addVisitCount(@Param("planIdx") Long planIdx);
-
-    default PlanDTO planEntityToDTO(PlanEntity plan, UsersEntity user) {
-        return PlanDTO.builder()
-                .planIdx(plan.getPlanIdx())
-                .dateFrom(plan.getDateFrom())
-                .dateTo(plan.getDateTo())
-                .attrList(plan.getAttrList())
-                .adult(plan.getAdult())
-                .child(plan.getChild())
-                .budget(plan.getBudget())
-                .title(plan.getTitle())
-                .content(plan.getContent())
-                .regDate(plan.getRegDate())
-                .userIdx(user.getUserIdx())
-                .visitCount(plan.getVisitCount())
-                .build();
-    }
 
 }
