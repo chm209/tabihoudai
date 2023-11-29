@@ -50,7 +50,7 @@ public class BoardReplyServiceImpl implements BoardReplyService{
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removeReply(Long replyIdx) {
-
+        blameRepository.deleteReplyBlame(replyIdx);
         boardReplyRepository.deleteById(replyIdx);
     }
 }
