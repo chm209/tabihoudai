@@ -15,6 +15,8 @@ public interface BoardReplyService {
 
     void reportReply(BoardReplyDTO.reportReplyDTO dto);
 
+    void removeReply(Long replyIdx);
+
     default BoardReplyDTO.getReplyDTO entityToGetDTO(BoardReplyEntity boardReply, UsersEntity users){
         return BoardReplyDTO.getReplyDTO.builder()
                 .nickname(users.getNickname())

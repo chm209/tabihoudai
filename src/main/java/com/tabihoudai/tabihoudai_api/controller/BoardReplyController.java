@@ -30,6 +30,14 @@ public class BoardReplyController {
         return "댓글이 작성되었습니다.";
     }
 
+    @DeleteMapping("/delete/{replyIdx}")
+    public String removeReply(
+            @PathVariable("replyIdx") Long replyIdx
+    ){
+        boardReplyService.removeReply(replyIdx);
+        return "댓글이 삭제되었습니다.";
+    }
+
     @PostMapping("/report")
     public String reportBoard(
             @RequestBody BoardReplyDTO.reportReplyDTO dto

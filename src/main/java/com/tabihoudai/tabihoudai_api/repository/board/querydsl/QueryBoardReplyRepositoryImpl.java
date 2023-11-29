@@ -26,4 +26,13 @@ public class QueryBoardReplyRepositoryImpl implements QueryBoardReplyRepository{
                 .fetch();
         return result.stream().map(tuple -> tuple.toArray()).collect(Collectors.toList());
     }
+
+    @Override
+    public void removeReplyByBoardIdx(Long BoardIdx) {
+        queryFactory.delete(boardReplyEntity)
+                .where(boardReplyEntity.boardEntity.boardIdx.eq(BoardIdx))
+                .execute();
+    }
+
+
 }

@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface QueryBoardReplyRepository {
     List<Object[]> getReplyByBoardIdx(Long BoardIdx);
+
+    void removeReplyByBoardIdx(Long BoardIdx);
 }

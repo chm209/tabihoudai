@@ -10,6 +10,7 @@ import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,5 +45,12 @@ public class BoardReplyServiceImpl implements BoardReplyService{
         UsersEntity users = reply.getUsersEntity();
         BlameEntity blameEntity = dtoToEntityReport(reply, users, dto.getContent());
         blameRepository.save(blameEntity);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void removeReply(Long replyIdx) {
+
+        boardReplyRepository.deleteById(replyIdx);
     }
 }
