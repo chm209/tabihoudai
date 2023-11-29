@@ -1,6 +1,7 @@
 package com.tabihoudai.tabihoudai_api.entity.attraction;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,10 +22,12 @@ public class AttrReplyEntity extends BaseEntity{
     private Long attrReplyIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "attr_idx")
     private AttractionEntity attrIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name="user_idx")
     private UserEntity userIdx;
 

@@ -1,5 +1,6 @@
 package com.tabihoudai.tabihoudai_api.entity.attraction;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class AttractionEntity {
     private Long attrIdx;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "region_idx")
     private RegionEntity regionIdx;
 

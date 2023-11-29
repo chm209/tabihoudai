@@ -18,10 +18,7 @@ public interface AttrReplyRepository extends JpaRepository<AttrReplyEntity,Long>
     @Query("SELECT ar FROM AttrReplyEntity ar WHERE ar.attrIdx.attrIdx = :attrIdx")
     List<AttrReplyEntity> getAttractionReply(@Param("attrIdx") Long attrIdx);
 
-
-    Slice<AttrReplyEntity> findByAttrIdx(AttractionEntity attrIdx, Pageable pageable);
-
-
+    Slice<AttrReplyEntity> findAllByAttrIdx(AttractionEntity attrIdx, Pageable pageable);
 
 
 }

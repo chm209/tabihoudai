@@ -18,4 +18,5 @@ public class AttrListDTO {
     private double grade;
     private Long commentCount;
 
+
 }

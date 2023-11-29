@@ -19,7 +19,6 @@ public interface AttractionRepository {
 
     List<AttractionEntity> getAttractionDetail(Long attrIdx);
 
-
     List<AttrImgEntity> getAttractionImg(Long attrIdx);
 
     List<RegionEntity> getRegion();
