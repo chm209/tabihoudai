@@ -19,4 +19,15 @@ public class QueryBlameRepositoryImpl implements QueryBlameRepository{
                 .where(blameEntity.boardReplyEntity.boardReplyIdx.eq(replyIdx))
                 .execute();
     }
+
+    @Override
+    public void deleteBoardBlame(Long boardIdx) {
+        queryFactory.delete(blameEntity)
+                .where(blameEntity.boardEntity.boardIdx.eq(boardIdx))
+                .execute();
+
+        queryFactory.delete(blameEntity)
+                .where(blameEntity.boardReplyEntity.boardEntity.boardIdx.eq(boardIdx))
+                .execute();
+    }
 }

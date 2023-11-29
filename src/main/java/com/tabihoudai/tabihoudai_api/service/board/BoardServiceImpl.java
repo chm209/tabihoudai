@@ -5,6 +5,7 @@ import com.tabihoudai.tabihoudai_api.entity.admin.BlameEntity;
 import com.tabihoudai.tabihoudai_api.entity.board.BoardEntity;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import com.tabihoudai.tabihoudai_api.repository.admin.BlameRepository;
+import com.tabihoudai.tabihoudai_api.repository.board.BoardLikeRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.board.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,8 @@ public class BoardServiceImpl implements BoardService{
     private final BoardReplyRepository boardReplyRepository;
 
     private final BlameRepository blameRepository;
+
+    private final BoardLikeRepository boardLikeRepository;
 
     @Transactional
     @Override
@@ -68,7 +71,9 @@ public class BoardServiceImpl implements BoardService{
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void removeBoard(Long boardIdx) {
-        boardReplyRepository.deleteById(boardIdx);
+        blameRepository.deleteBoardBlame(boardIdx);
+        boardReplyRepository.removeReplyByBoardIdx(boardIdx);
+        boardLikeRepository.deleteLikeByBoardIdx(boardIdx);
         boardRepository.deleteById(boardIdx);
     }
 
@@ -86,7 +91,6 @@ public class BoardServiceImpl implements BoardService{
 
     @Override
     public void reportBoard(BoardDTO.reportBoardDTO dto) {
-
         BoardEntity board = boardRepository.findByBoardIdx(dto.getBoardIdx());
         UsersEntity users = board.getUsersEntity();
         BlameEntity blameEntity = dtoToEntityReport(board, users, dto.getContent());

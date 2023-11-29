@@ -49,7 +49,7 @@ public class BoardController {
 
     @DeleteMapping("/delete/{boardIdx}")
     public String remove(@PathVariable("boardIdx")Long boardIdx){
-        log.info("boardIdx : {}",boardIdx);
+        boardService.removeBoard(boardIdx);
         return "success";
     }
 
