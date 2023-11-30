@@ -34,6 +34,12 @@ public interface PlanRepository extends JpaRepository<PlanEntity, Long> {
             "WHERE p.title LIKE CONCAT('%',:keyword,'%') OR p.content LIKE CONCAT('%',:keyword,'%') ")
     Page<Object[]> planSearch(Pageable pageable, @Param("keyword") String keyword);
 
+    @Query("SELECT new map(p.title AS title, p.attrList as attrList, (SELECT COUNT(pl.planLikeIdx) FROM PlanLikeEntity pl WHERE pl.planEntity = p) AS likeCount) " +
+            "FROM PlanEntity p " +
+            "WHERE p.usersEntity.userIdx = :userIdx AND ROWNUM = 1 " +
+            "ORDER BY likeCount DESC")
+    List<Map<String, Object>> bestPlan(@Param("userIdx") UUID userIdx);
+
     @Query(value = "SELECT PATH FROM ATTR_IMG WHERE ATTR_IDX = :attrIdx AND ROWNUM = 1", nativeQuery = true)
     String planAttrImage(@Param("attrIdx") Long attrIdx);
 

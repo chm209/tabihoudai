@@ -38,7 +38,7 @@ public class ProfileViewController {
     private final PlanRepository planRepository;
 
     @GetMapping("/{userIdx}")
-    public ResponseEntity<Map<String, Object>> getUserData(@PathVariable UUID userIdx) {
+    public Map<String, Object> getUserData(@PathVariable UUID userIdx) {
         Map<String, Object> userData = new HashMap<>();
 
         List<Map<String, Object>> cs = csRepository.findByUserIdx(userIdx);
@@ -56,7 +56,11 @@ public class ProfileViewController {
         List<Map<String, Object>> planReply = planReplyRepository.findByUserIdx(userIdx);
         userData.put("planReply", planReply);
 
-        return ResponseEntity.ok(userData);
+        List<Map<String, Object>> bestPlan = planRepository.bestPlan(userIdx);
+        System.out.println(planRepository.bestPlan(userIdx));
+        userData.put("bestPlan", bestPlan);
+
+        return userData;
     }
 
 

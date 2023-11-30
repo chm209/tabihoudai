@@ -21,11 +21,11 @@ public class ImageController {
     @PostMapping("/upload/plan")
     public Map<String, Object> uploadPlanImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
         MultipartFile uploadFile = request.getFile("upload");
-        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\plan";
+        String uploadDir = "C:\\tabi_front\\tabihoudai_front\\src\\assets\\images\\plan\\";
         uploadDir.replace("\\", "/");
         String uploadId = UUID.randomUUID().toString() + "." + getExtensionByStringHandling(uploadFile.getOriginalFilename()).get();
         uploadFile.transferTo(new File(uploadDir + uploadId));
-        paramMap.put("url", "/src/assets/images/" + uploadId);
+        paramMap.put("url", "/src/assets/images/plan/" + uploadId);
         return paramMap;
     }
 
