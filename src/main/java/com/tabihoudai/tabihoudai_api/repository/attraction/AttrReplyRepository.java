@@ -5,6 +5,7 @@ import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,6 +22,10 @@ public interface AttrReplyRepository extends JpaRepository<AttrReplyEntity,Long>
     Slice<AttrReplyEntity> findAllByAttrIdx(AttractionEntity attrIdx, Pageable pageable);
 
     AttrReplyEntity findByAttrReplyIdx(Long attrReplyIdx);
+
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE AttrReplyEntity ar SET ar.content = :content, ar.path = :path WHERE ar.attrReplyIdx = :attrReplyIdx")
+    AttrReplyEntity updateReply(@Param("content") String content, @Param("path") String path, @Param("attrReplyIdx") Long attrReplyIdx);
 
 
 }

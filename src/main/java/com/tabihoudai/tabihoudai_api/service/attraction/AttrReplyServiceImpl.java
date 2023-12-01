@@ -58,11 +58,9 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         }
         AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
 
-        ReplyListDTO replyListDto = new ReplyListDTO();
         try {
             AttrReplyEntity save = attrReplyRepository.save(entity);
             replyRequestDTO.setAttrIdx(save.getAttrIdx().getAttrIdx());
-
             return getReply(replyRequestDTO);
         } catch (Exception e){
             return null;
@@ -115,5 +113,35 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         return replyListDto;
     }
 
+    @Override
+    public ReplyListDTO replyUpdate(AttrReplyDto attrReplyDto, MultipartFile multipartFile, ReplyRequestDTO replyRequestDTO) {
+        ReplyListDTO result = new ReplyListDTO();
+        try {
+            if (multipartFile!=null) {
+                String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
+                String folderPath = PATH.replace("\\", File.separator);
+                File file = new File(folderPath + File.separator + path);
+                if (file.exists()) {
+                    boolean delete = file.delete();
+                    if (delete) {
+
+                        attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
+                        replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
+                        result = getReply(replyRequestDTO);
+                    }
+                }
+            }
+            return result;
+
+        } catch (Exception e){
+            return result;
+        }
+
+    }
+
+    private String pathSet(){
+
+        return null;
+    }
 
 }

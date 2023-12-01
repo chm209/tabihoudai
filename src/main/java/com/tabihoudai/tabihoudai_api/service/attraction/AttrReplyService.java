@@ -17,7 +17,7 @@ public interface AttrReplyService {
 
     ReplyListDTO getReply(ReplyRequestDTO replyRequestDTO);
 
-
+    ReplyListDTO replyUpdate(AttrReplyDto attrReplyDto, MultipartFile multipartFile,ReplyRequestDTO replyRequestDTO);
 
     default AttrReplyEntity dtoToEntityReply(AttrReplyDto attrReplyDto) {
         AttractionEntity attractionEntity = AttractionEntity.builder().attrIdx(attrReplyDto.getAttrIdx()).build();

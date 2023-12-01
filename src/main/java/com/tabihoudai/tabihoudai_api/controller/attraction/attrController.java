@@ -62,4 +62,12 @@ public class attrController {
                 ReplyRequestDTO.builder().attrIdx(attrIdx).page(page).sort(sort).asc(asc).build()));
     }
 
+    @PutMapping("/detail")
+    public ResponseEntity replyUpdate(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
+                                      @RequestPart(value = "file",required = false)MultipartFile multipartFile,
+                                      @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){
+
+        return ResponseEntity.ok(replyUpdate(attrReplyDto,multipartFile,replyRequestDTO));
+    }
+
 }
