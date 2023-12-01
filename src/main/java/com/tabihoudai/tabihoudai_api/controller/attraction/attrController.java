@@ -2,15 +2,14 @@ package com.tabihoudai.tabihoudai_api.controller.attraction;
 
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrReplyDto;
 import com.tabihoudai.tabihoudai_api.dto.attraction.AttrRequestDTO;
+import com.tabihoudai.tabihoudai_api.dto.attraction.ReplyRequestDTO;
 import com.tabihoudai.tabihoudai_api.service.attraction.AttrReplyService;
 import com.tabihoudai.tabihoudai_api.service.attraction.AttractionService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.Attr;
 
 @RestController
 @RequestMapping("/map")
@@ -33,14 +32,16 @@ public class attrController {
     }
 
     @PostMapping("/detail")
-    public ResponseEntity replyRegist(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
-                                      @RequestPart(value = "file",required = false)MultipartFile multipartFile){
-        return ResponseEntity.ok(attrReplyService.register(attrReplyDto,multipartFile));
+    public ResponseEntity replyRegister(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
+                                        @RequestPart(value = "file",required = false)MultipartFile multipartFile,
+                                        @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){
+        return ResponseEntity.ok(attrReplyService.replyRegister(attrReplyDto,multipartFile,replyRequestDTO));
     }
 
     @DeleteMapping("/detail")
-    public ResponseEntity replyRemove(@RequestBody AttrReplyDto attrReplyDto){
-        return ResponseEntity.ok(attrReplyService.delete(attrReplyDto));
+    public ResponseEntity replyRemove(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
+                                      @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){
+        return ResponseEntity.ok(attrReplyService.replyDelete(attrReplyDto,replyRequestDTO));
     }
 
     @GetMapping("/area-list")
@@ -55,7 +56,10 @@ public class attrController {
     @GetMapping("/detail/find")
     public ResponseEntity getReply(@RequestParam("attrIdx") Long attrIdx,
                                    @RequestParam("page") int page,
-                                   @RequestParam("size") int size){
-        return ResponseEntity.ok(attrReplyService.getReply(attrIdx,page,size));
+                                   @RequestParam("sort") String sort,
+                                   @RequestParam("asc") boolean asc){
+        return ResponseEntity.ok(attrReplyService.getReply(
+                ReplyRequestDTO.builder().attrIdx(attrIdx).page(page).sort(sort).asc(asc).build()));
     }
+
 }

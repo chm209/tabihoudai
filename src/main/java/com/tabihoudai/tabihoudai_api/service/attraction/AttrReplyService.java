@@ -1,9 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service.attraction;
 
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrReplyDto;
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.attraction.ReplyListDTO;
-import com.tabihoudai.tabihoudai_api.dto.attraction.ReplySearchDTO;
+import com.tabihoudai.tabihoudai_api.dto.attraction.*;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.UserEntity;
@@ -14,11 +11,12 @@ import java.util.List;
 
 public interface AttrReplyService {
 
-    List<ReplySearchDTO> register(AttrReplyDto attrReplyDto, MultipartFile multipartFile);
+    ReplyListDTO replyRegister(AttrReplyDto attrReplyDto, MultipartFile multipartFile,ReplyRequestDTO replyRequestDTO);
 
-    List<ReplySearchDTO> delete(AttrReplyDto attrReplyDto);
+    ReplyListDTO replyDelete(AttrReplyDto attrReplyDto,ReplyRequestDTO replyRequestDTO);
 
-    ReplyListDTO getReply(Long attrIdx, int page, int size);
+    ReplyListDTO getReply(ReplyRequestDTO replyRequestDTO);
+
 
 
     default AttrReplyEntity dtoToEntityReply(AttrReplyDto attrReplyDto) {

@@ -1,9 +1,6 @@
 package com.tabihoudai.tabihoudai_api.service.attraction;
 
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrReplyDto;
-import com.tabihoudai.tabihoudai_api.dto.attraction.AttrRequestDTO;
-import com.tabihoudai.tabihoudai_api.dto.attraction.ReplyListDTO;
-import com.tabihoudai.tabihoudai_api.dto.attraction.ReplySearchDTO;
+import com.tabihoudai.tabihoudai_api.dto.attraction.*;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
@@ -12,10 +9,9 @@ import com.tabihoudai.tabihoudai_api.repository.attraction.AttrReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.Sort;
+import org.apache.coyote.Response;
+import org.springframework.data.domain.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,11 +39,11 @@ public class AttrReplyServiceImpl implements AttrReplyService{
 
     @Override
     @Transactional
-    public List<ReplySearchDTO> register(AttrReplyDto attrReplyDto, MultipartFile multipartFile) {
-        String str = PATH;
-        String folderPath = str.replace("\\", File.separator);
-        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
+    public ReplyListDTO replyRegister(AttrReplyDto attrReplyDto, MultipartFile multipartFile,ReplyRequestDTO replyRequestDTO) {
         if(multipartFile!=null) {
+            String str = PATH;
+            String folderPath = str.replace("\\", File.separator);
+            String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
             String originalFilename = multipartFile.getOriginalFilename();
             String fileName = date + "_" +
                     originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
@@ -62,39 +58,31 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         }
         AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
 
-        List<ReplySearchDTO> result = new ArrayList<>();
+        ReplyListDTO replyListDto = new ReplyListDTO();
         try {
             AttrReplyEntity save = attrReplyRepository.save(entity);
-            List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-            for (AttrReplyEntity re: replyEntity) {
-                String userEmail = userRepository.findAllByUserIdx(re.getUserIdx().getUserIdx()).getEmail();
-                String[] userRename = userEmail.split("@");
-                result.add(reEntityToReplyDto(re,userRename[0]));
-            }
-            return result;
+            replyRequestDTO.setAttrIdx(save.getAttrIdx().getAttrIdx());
+
+            return getReply(replyRequestDTO);
         } catch (Exception e){
-            return result;
+            return null;
         }
 
     }
 
     @Override
-    public List<ReplySearchDTO> delete(AttrReplyDto attrReplyDto) {
-        List<ReplySearchDTO> result = new ArrayList<>();
+    public ReplyListDTO replyDelete(AttrReplyDto attrReplyDto,ReplyRequestDTO replyRequestDTO) {
+        ReplyListDTO result = new ReplyListDTO();
         try {
             String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
             String folderPath = PATH.replace("\\", File.separator);
             File file = new File(folderPath+File.separator+path);
             if (file.exists()) {
                 boolean delete = file.delete();
-                if (delete == true) {
+                if (delete) {
                     attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-                    List<AttrReplyEntity> replyEntity = attrReplyRepository.getAttractionReply(attrReplyDto.getAttrIdx());
-                    for (AttrReplyEntity re : replyEntity) {
-                        String userEmail = userRepository.findAllByUserIdx(re.getUserIdx().getUserIdx()).getEmail();
-                        String[] userRename = userEmail.split("@");
-                        result.add(reEntityToReplyDto(re,userRename[0]));
-                    }
+                    replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
+                    result = getReply(replyRequestDTO);
                 }
             }
             return result;
@@ -105,13 +93,18 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     }
 
     @Override
-    public ReplyListDTO getReply(Long attrIdx, int page, int size) {
-        PageRequest request = PageRequest.of(page,size, Sort.by("attrReplyIdx"));
+    public ReplyListDTO getReply(ReplyRequestDTO replyRequestDTO) {
+        Sort sort;
+        if (replyRequestDTO.isAsc()){
+            sort = Sort.by(replyRequestDTO.getSort()).ascending();
+        } else {
+            sort = Sort.by(replyRequestDTO.getSort()).descending();
+        }
+        Pageable request = replyRequestDTO.getPageable(sort);
 
-        AttractionEntity attraction = AttractionEntity.builder().attrIdx(attrIdx).build();
+        AttractionEntity attraction = AttractionEntity.builder().attrIdx(replyRequestDTO.getAttrIdx()).build();
         Slice<AttrReplyEntity> attrReplyEntitySlice = attrReplyRepository.findAllByAttrIdx(attraction, request);
         List<ReplySearchDTO> replyList = new ArrayList<>();
-
 
         attrReplyEntitySlice.getContent().forEach(reply -> {
             String userEmail = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx()).getEmail();
