@@ -33,6 +33,4 @@ public class QueryBoardReplyRepositoryImpl implements QueryBoardReplyRepository{
                 .where(boardReplyEntity.boardEntity.boardIdx.eq(BoardIdx))
                 .execute();
     }
-
-
 }
