@@ -41,7 +41,7 @@ public class SecurityConfig {
                                   "/members/refreshToken", "/members/check-email/{email}",
                                   "/members/check-nickname/{nickname}",
                                   "/members/reset-password", "/send-email",
-                                  "/members/upload").permitAll()
+                                  "/members/upload", "exchange/rate").permitAll()
                         .requestMatchers(GET, "/categories/**", "/products/**").permitAll()
                         .requestMatchers(GET,"/**").hasAnyRole( "USER")
                         .requestMatchers(POST,"/**").hasAnyRole("USER", "ADMIN")

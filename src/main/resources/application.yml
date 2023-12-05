@@ -23,6 +23,7 @@ spring:
             enable: true
             required: true
 
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -41,5 +42,12 @@ spring:
 
 com:
   tabihoudai:
-       upload:
-          path: C:\Users\cksdu\Desktop\프로젝트 코드\profile
+    upload:
+      path: C:\Users\cksdu\Desktop\프로젝트 코드\profile
+
+exchange:
+  api:
+    url: https://www.koreaexim.go.kr/site/program/financial/exchangeJSON
+    key: fHYdsH7k0BLIjnVidfS6YTldWI0fMDcy
+    data: AP01
+

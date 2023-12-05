@@ -54,6 +54,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     implementation 'net.coobird:thumbnailator:0.4.20'
+
+    //jsoup
+    implementation 'org.jsoup:jsoup:1.15.3'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 tasks.named('test') {

@@ -53,6 +53,8 @@ public class MemberController {
     private final ProfileService profileService;
     private final PasswordService passwordService;
 
+    
+    //사진 저장 경로
     @Value("${com.tabihoudai.upload.path}")
     private String uploadPath;
 
