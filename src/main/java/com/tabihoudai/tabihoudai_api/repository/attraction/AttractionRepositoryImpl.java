@@ -80,17 +80,18 @@ public class AttractionRepositoryImpl implements AttractionRepository {
     private OrderSpecifier<?> attrSort(Pageable page) {
         if (!page.getSort().isEmpty()) {
             for (Sort.Order order : page.getSort()) {
+                Order direction = order.getDirection().isAscending() ? Order.ASC : Order.DESC;
                 switch (order.getProperty()) {
                     case "grade" -> {
-                        return new OrderSpecifier(Order.DESC, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))
+                        return new OrderSpecifier(direction, JPAExpressions.select(attrReplyEntity.score.avg().coalesce(0.0))
                                 .from(attrReplyEntity)
                                 .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
                     }
                     case "attraction" -> {
-                        return new OrderSpecifier(Order.ASC, attractionEntity.attraction);
+                        return new OrderSpecifier(direction, attractionEntity.attraction);
                     }
                     case "commentCount" -> {
-                        return new OrderSpecifier(Order.DESC, JPAExpressions.select(attrReplyEntity.count())
+                        return new OrderSpecifier(direction, JPAExpressions.select(attrReplyEntity.count())
                                 .from(attrReplyEntity)
                                 .where(attrReplyEntity.attrIdx.eq(attractionEntity)));
                     }

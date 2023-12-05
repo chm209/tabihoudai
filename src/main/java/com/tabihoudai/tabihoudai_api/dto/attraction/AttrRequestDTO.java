@@ -18,6 +18,7 @@ public class AttrRequestDTO {
     private int sort;
     private int page;
     private int type;
+    private boolean asc;
 
     public String getKeyword(){
         return this.keyword;

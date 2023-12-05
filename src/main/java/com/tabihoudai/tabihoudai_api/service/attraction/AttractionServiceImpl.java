@@ -79,6 +79,7 @@ public class AttractionServiceImpl implements AttractionService{
         String area = null;
         String city = null;
         String attr = null;
+        Pageable pageable;
         if(sort==0){
             so="grade";
         } else if (sort==1) {
@@ -93,7 +94,11 @@ public class AttractionServiceImpl implements AttractionService{
         } else if (type==2) {
             attr="attraction";
         }
-        Pageable pageable = attrRequestDTO.getPageable(Sort.by(so).ascending());
+        if(attrRequestDTO.isAsc()){
+            pageable = attrRequestDTO.getPageable(Sort.by(so).ascending());
+        } else {
+            pageable = attrRequestDTO.getPageable(Sort.by(so).descending());
+        }
         Page<Object[]> result = attractionRepository.getAttractionList(pageable,area,city,attr,word);
 
         Function<Object[],AttrListDTO> fn;
