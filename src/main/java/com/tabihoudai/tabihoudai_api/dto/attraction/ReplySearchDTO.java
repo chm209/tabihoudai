@@ -13,9 +13,11 @@ public class ReplySearchDTO {
 
     private Long attrReplyIdx;
     private byte[] userIdx;
+    private String userImage;
     private String email;
     private String content;
     private LocalDateTime regDate;
     private double score;
     private String path;
+
 }

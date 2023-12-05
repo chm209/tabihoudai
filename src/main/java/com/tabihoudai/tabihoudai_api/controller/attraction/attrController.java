@@ -70,4 +70,9 @@ public class attrController {
         return ResponseEntity.ok(replyUpdate(attrReplyDto,multipartFile,replyRequestDTO));
     }
 
+    @GetMapping("/detail/reply/{idx}")
+    public ResponseEntity replySearchOne(@PathVariable("idx") Long attrReplyIdx){
+        return ResponseEntity.ok(replySearchOne(attrReplyIdx));
+    }
+
 }

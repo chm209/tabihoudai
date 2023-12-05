@@ -19,5 +19,6 @@ public class AttrReplyDto {
     private LocalDateTime regDate;
     private double score;
     private String path;
+    private boolean imageRecycle;
 
 }

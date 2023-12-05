@@ -19,6 +19,8 @@ public interface AttrReplyService {
 
     ReplyListDTO replyUpdate(AttrReplyDto attrReplyDto, MultipartFile multipartFile,ReplyRequestDTO replyRequestDTO);
 
+    ReplySearchDTO getReplyOne(Long attrReplyIdx);
+
     default AttrReplyEntity dtoToEntityReply(AttrReplyDto attrReplyDto) {
         AttractionEntity attractionEntity = AttractionEntity.builder().attrIdx(attrReplyDto.getAttrIdx()).build();
         UserEntity userEntity = UserEntity.builder().userIdx(attrReplyDto.getUserIdx()).build();
@@ -48,10 +50,11 @@ public interface AttrReplyService {
         return attrReplyDto;
     }
 
-    default ReplySearchDTO reEntityToReplyDto(AttrReplyEntity attrReplyEntity,String email){
+    default ReplySearchDTO reEntityToReplyDto(AttrReplyEntity attrReplyEntity,String email,String userImage){
         ReplySearchDTO replySearchDTO= ReplySearchDTO.builder()
                 .attrReplyIdx(attrReplyEntity.getAttrReplyIdx())
                 .userIdx(attrReplyEntity.getUserIdx().getUserIdx())
+                .userImage(userImage)
                 .email(email)
                 .content(attrReplyEntity.getContent())
                 .regDate(attrReplyEntity.getRegDate())

@@ -41,19 +41,8 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     @Transactional
     public ReplyListDTO replyRegister(AttrReplyDto attrReplyDto, MultipartFile multipartFile,ReplyRequestDTO replyRequestDTO) {
         if(multipartFile!=null) {
-            String str = PATH;
-            String folderPath = str.replace("\\", File.separator);
-            String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
-            String originalFilename = multipartFile.getOriginalFilename();
-            String fileName = date + "_" +
-                    originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
-            String saveName = folderPath + File.separator + fileName;
-            Path path = Paths.get(saveName);
-            try {
-                multipartFile.transferTo(path);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            String fileName="";
+            fileName = fileNaming(multipartFile);
             attrReplyDto.setPath(fileName);
         }
         AttrReplyEntity entity = dtoToEntityReply(attrReplyDto);
@@ -71,17 +60,13 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     @Override
     public ReplyListDTO replyDelete(AttrReplyDto attrReplyDto,ReplyRequestDTO replyRequestDTO) {
         ReplyListDTO result = new ReplyListDTO();
+        boolean delete = false;
         try {
-            String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
-            String folderPath = PATH.replace("\\", File.separator);
-            File file = new File(folderPath+File.separator+path);
-            if (file.exists()) {
-                boolean delete = file.delete();
-                if (delete) {
-                    attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-                    replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
-                    result = getReply(replyRequestDTO);
-                }
+            delete=imageDelete(attrReplyDto);
+            if (delete) {
+                attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
+                replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
+                result = getReply(replyRequestDTO);
             }
             return result;
         } catch (Exception e){
@@ -105,9 +90,11 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         List<ReplySearchDTO> replyList = new ArrayList<>();
 
         attrReplyEntitySlice.getContent().forEach(reply -> {
-            String userEmail = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx()).getEmail();
+            UserEntity user = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx());
+            String userEmail = user.getEmail();
+            String userImage = user.getProfile();
             String[] userRename = userEmail.split("@");
-            replyList.add(reEntityToReplyDto(reply,userRename[0]));
+            replyList.add(reEntityToReplyDto(reply,userRename[0],userImage));
         });
         ReplyListDTO replyListDto = ReplyListDTO.builder().list(replyList).next(attrReplyEntitySlice.hasNext()).build();
         return replyListDto;
@@ -117,19 +104,10 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     public ReplyListDTO replyUpdate(AttrReplyDto attrReplyDto, MultipartFile multipartFile, ReplyRequestDTO replyRequestDTO) {
         ReplyListDTO result = new ReplyListDTO();
         try {
-            if (multipartFile!=null) {
-                String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
-                String folderPath = PATH.replace("\\", File.separator);
-                File file = new File(folderPath + File.separator + path);
-                if (file.exists()) {
-                    boolean delete = file.delete();
-                    if (delete) {
+            if (multipartFile==null) {
 
-                        attrReplyRepository.deleteById(attrReplyDto.getAttrReplyIdx());
-                        replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
-                        result = getReply(replyRequestDTO);
-                    }
-                }
+            } else {
+
             }
             return result;
 
@@ -139,9 +117,41 @@ public class AttrReplyServiceImpl implements AttrReplyService{
 
     }
 
-    private String pathSet(){
+    @Override
+    public ReplySearchDTO getReplyOne(Long attrReplyIdx) {
+        AttrReplyEntity reply = attrReplyRepository.findByAttrReplyIdx(attrReplyIdx);
+        UserEntity user = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx());
+        ReplySearchDTO replySearchDTO = reEntityToReplyDto(reply, user.getEmail(), user.getProfile());
 
-        return null;
+        return replySearchDTO;
+    }
+
+    private String fileNaming(MultipartFile multipartFile){
+        String str = PATH;
+        String folderPath = str.replace("\\", File.separator);
+        String date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-m-ss"));
+        String originalFilename = multipartFile.getOriginalFilename();
+        String fileName = date + "_" +
+                originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
+        String saveName = folderPath + File.separator + fileName;
+        Path path = Paths.get(saveName);
+        try {
+            multipartFile.transferTo(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return fileName;
+    }
+
+    private boolean imageDelete(AttrReplyDto attrReplyDto){
+        boolean delete=false;
+        String path = attrReplyRepository.findByAttrReplyIdx(attrReplyDto.getAttrReplyIdx()).getPath();
+        String folderPath = PATH.replace("\\", File.separator);
+        File file = new File(folderPath+File.separator+path);
+        if (file.exists()) {
+            delete = file.delete();
+        }
+        return delete;
     }
 
 }
