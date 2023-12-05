@@ -24,7 +24,7 @@ public class ExchangeService {
     @Value("${exchange.api.data}")
     private String data;
 
-    public List<ExchangeResponseDto> getExchangeRate() {
+    public List<String> getJapaneseYenExchangeRate() {
         String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
         String urlWithParams =
@@ -35,13 +35,14 @@ public class ExchangeService {
         try {
             ExchangeResponseDto[] responseDtoArray = restTemplate.getForObject(urlWithParams, ExchangeResponseDto[].class);
 
-            List<ExchangeResponseDto> responseDtoList = Arrays.asList(responseDtoArray);
-
-            List<ExchangeResponseDto> filteredList = responseDtoList.stream()
-                    .filter(ExchangeResponseDto::isJapaneseYen)
-                    .collect(Collectors.toList());
-
-            return filteredList;
+            if (responseDtoArray != null) {
+                return Arrays.stream(responseDtoArray)
+                        .filter(ExchangeResponseDto::isJapaneseYen)
+                        .map(ExchangeResponseDto::getKftcDealBasR)
+                        .collect(Collectors.toList());
+            } else {
+                return List.of();
+            }
 
         } catch (HttpClientErrorException e) {
             e.printStackTrace();

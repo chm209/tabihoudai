@@ -1,7 +1,5 @@
 package com.tabihoudai.tabihoudai_api.dto;
 
-import com.tabihoudai.tabihoudai_api.controller.ExchangeController;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,7 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 public class ExchangeResponseDto {
     private String cur_unit;
-    private String kftc_bkpr;
     private String kftc_deal_bas_r;
     private String cur_nm;
 
@@ -22,5 +19,9 @@ public class ExchangeResponseDto {
 
     public boolean isJapaneseYen() {
         return "JPY(100)".equals(cur_unit);
+    }
+
+    public String getKftcDealBasR() {
+        return kftc_deal_bas_r;
     }
 }

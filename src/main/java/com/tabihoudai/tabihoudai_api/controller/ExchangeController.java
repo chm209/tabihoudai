@@ -22,9 +22,9 @@ public class ExchangeController {
     }
 
     @GetMapping("/rate")
-    public ResponseEntity<List<ExchangeResponseDto>> getExchangeRate() {
-        List<ExchangeResponseDto> exchangeRateList = exchangeService.getExchangeRate();
-        return ResponseEntity.ok(exchangeRateList);
+    public ResponseEntity<List<String>> getJapaneseYenExchangeRate() {
+        List<String> jpyRateList = exchangeService.getJapaneseYenExchangeRate();
+        return ResponseEntity.ok(jpyRateList);
     }
 }
 
