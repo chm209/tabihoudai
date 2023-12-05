@@ -20,6 +20,6 @@ public class AttrDetailDTO {
     private String tag;
     private String description;
     private double grade;
-    private List<AttrReplyDto> reply;
+
 
 }

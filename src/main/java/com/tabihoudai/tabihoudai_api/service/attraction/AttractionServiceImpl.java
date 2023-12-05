@@ -3,12 +3,10 @@ package com.tabihoudai.tabihoudai_api.service.attraction;
 
 import com.querydsl.core.Tuple;
 import com.tabihoudai.tabihoudai_api.dto.attraction.*;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrImgEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttrReplyEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
-import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
+import com.tabihoudai.tabihoudai_api.entity.attraction.*;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttrReplyRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
@@ -112,14 +110,12 @@ public class AttractionServiceImpl implements AttractionService{
     @Override
     public AttrDetailDTO getAttrDetail(Long attrIdx) {
         List<AttractionEntity> list = attractionRepository.getAttractionDetail(attrIdx);
-        List<AttrReplyEntity> replyEntityList = attrReplyRepository.getAttractionReply(attrIdx);
         List<AttrImgEntity> imgList = attractionRepository.getAttractionImg(attrIdx);
         Double attractionAvg = attrReplyRepository.getAttractionAvg(attrIdx);
 
         AttractionEntity attraction = list.get(0);
         AttrDetailDTO detailDTO = new AttrDetailDTO();
         List<String> subImgList = new ArrayList<>();
-        List<AttrReplyDto> replyList = new ArrayList<>();
 
         detailDTO.setAttrId(attraction.getAttrIdx());
         detailDTO.setAttraction(attraction.getAttraction());
@@ -127,9 +123,7 @@ public class AttractionServiceImpl implements AttractionService{
         detailDTO.setTag(attraction.getTag());
         detailDTO.setDescription(attraction.getDescription());
         detailDTO.setGrade(attractionAvg);
-        replyEntityList.forEach(arr -> {
-            replyList.add(entityToDTOReply(arr));
-        });
+
         imgList.forEach(arr -> {
             if(arr.getType()=='0'){
                 detailDTO.setMainImg(arr.getPath());
@@ -138,7 +132,6 @@ public class AttractionServiceImpl implements AttractionService{
             }
         });
         detailDTO.setSubImg(subImgList);
-        detailDTO.setReply(replyList);
 
         return detailDTO;
     }
