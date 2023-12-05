@@ -23,4 +23,6 @@ public interface AttractionRepository {
 
     List<RegionEntity> getRegion();
 
+    AttractionEntity getAttraction(Long attrIdx);
+
 }

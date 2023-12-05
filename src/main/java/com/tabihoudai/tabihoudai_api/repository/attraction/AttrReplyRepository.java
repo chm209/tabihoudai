@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,9 +24,10 @@ public interface AttrReplyRepository extends JpaRepository<AttrReplyEntity,Long>
 
     AttrReplyEntity findByAttrReplyIdx(Long attrReplyIdx);
 
+    @Transactional
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE AttrReplyEntity ar SET ar.content = :content, ar.path = :path WHERE ar.attrReplyIdx = :attrReplyIdx")
-    AttrReplyEntity updateReply(@Param("content") String content, @Param("path") String path, @Param("attrReplyIdx") Long attrReplyIdx);
+    @Query("UPDATE AttrReplyEntity ar SET ar.content = :content, ar.path = :path, ar.score = :score WHERE ar.attrReplyIdx = :attrReplyIdx")
+    void updateReply(@Param("content") String content, @Param("path") String path, @Param("score") Double score, @Param("attrReplyIdx") Long attrReplyIdx);
 
 
 }

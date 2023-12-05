@@ -6,6 +6,7 @@ import com.tabihoudai.tabihoudai_api.entity.attraction.AttractionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.RegionEntity;
 import com.tabihoudai.tabihoudai_api.entity.attraction.UserEntity;
 import com.tabihoudai.tabihoudai_api.repository.attraction.AttrReplyRepository;
+import com.tabihoudai.tabihoudai_api.repository.attraction.AttractionRepository;
 import com.tabihoudai.tabihoudai_api.repository.attraction.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AttrReplyServiceImpl implements AttrReplyService{
 
+    private final AttractionRepository attractionRepository;
+
     private final AttrReplyRepository attrReplyRepository;
 
     private final UserRepository userRepository;
@@ -52,6 +55,7 @@ public class AttrReplyServiceImpl implements AttrReplyService{
             replyRequestDTO.setAttrIdx(save.getAttrIdx().getAttrIdx());
             return getReply(replyRequestDTO);
         } catch (Exception e){
+            log.info(e.getMessage());
             return null;
         }
 
@@ -85,7 +89,7 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         }
         Pageable request = replyRequestDTO.getPageable(sort);
 
-        AttractionEntity attraction = AttractionEntity.builder().attrIdx(replyRequestDTO.getAttrIdx()).build();
+        AttractionEntity attraction = attractionRepository.getAttraction(replyRequestDTO.getAttrIdx());
         Slice<AttrReplyEntity> attrReplyEntitySlice = attrReplyRepository.findAllByAttrIdx(attraction, request);
         List<ReplySearchDTO> replyList = new ArrayList<>();
 
@@ -100,20 +104,34 @@ public class AttrReplyServiceImpl implements AttrReplyService{
         return replyListDto;
     }
 
+
     @Override
     public ReplyListDTO replyUpdate(AttrReplyDto attrReplyDto, MultipartFile multipartFile, ReplyRequestDTO replyRequestDTO) {
         ReplyListDTO result = new ReplyListDTO();
+        String content =attrReplyDto.getContent();
+        String path = attrReplyDto.getPath();
+        Double score = attrReplyDto.getScore();
+        Long attrReplyIdx = attrReplyDto.getAttrReplyIdx();
+        replyRequestDTO.setAttrIdx(attrReplyDto.getAttrIdx());
         try {
-            if (multipartFile==null) {
-
+            if (!attrReplyDto.isImageRecycle()) {
+                if (multipartFile.isEmpty()){
+                    imageDelete(attrReplyDto);
+                    attrReplyRepository.updateReply(content,path,score,attrReplyIdx);
+                } else {
+                    imageDelete(attrReplyDto);
+                    String fileName = fileNaming(multipartFile);
+                    attrReplyRepository.updateReply(content,fileName,score,attrReplyIdx);
+                }
             } else {
-
+                attrReplyRepository.updateReply(content,path,score,attrReplyIdx);
             }
-            return result;
-
         } catch (Exception e){
+            log.info(e.getMessage());
             return result;
         }
+        result= getReply(replyRequestDTO);
+        return result;
 
     }
 
@@ -121,7 +139,8 @@ public class AttrReplyServiceImpl implements AttrReplyService{
     public ReplySearchDTO getReplyOne(Long attrReplyIdx) {
         AttrReplyEntity reply = attrReplyRepository.findByAttrReplyIdx(attrReplyIdx);
         UserEntity user = userRepository.findAllByUserIdx(reply.getUserIdx().getUserIdx());
-        ReplySearchDTO replySearchDTO = reEntityToReplyDto(reply, user.getEmail(), user.getProfile());
+        String[] userRename = user.getEmail().split("@");
+        ReplySearchDTO replySearchDTO = reEntityToReplyDto(reply, userRename[0], user.getProfile());
 
         return replySearchDTO;
     }

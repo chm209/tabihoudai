@@ -21,6 +21,7 @@ public interface AttractionService {
 
 
 
+
     default AttrListDTO entityToDTO(AttractionEntity attractionEntity, AttrImgEntity attrImgEntity, double avg, Long count ){
         AttrListDTO attrListDTO = AttrListDTO.builder().attrId(attractionEntity.getAttrIdx())
                 .attraction(attractionEntity.getAttraction())

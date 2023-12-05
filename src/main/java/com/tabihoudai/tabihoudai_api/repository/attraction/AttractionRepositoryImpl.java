@@ -133,5 +133,11 @@ public class AttractionRepositoryImpl implements AttractionRepository {
         return result;
     }
 
+    @Override
+    public AttractionEntity getAttraction(Long attrIdx) {
+
+        return queryFactory.selectFrom(attractionEntity).where(attractionEntity.attrIdx.eq(attrIdx)).fetchOne();
+    }
+
 
 }
