@@ -3,6 +3,7 @@ package com.tabihoudai.tabihoudai_api.entity.plan;
 import com.tabihoudai.tabihoudai_api.entity.users.UsersEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -37,4 +38,8 @@ public class PlanReplyEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "planIdx", nullable = false)
     private PlanEntity planEntity;
+
+    @ColumnDefault("0")
+    @Column(nullable = true)
+    private boolean isRead;
 }

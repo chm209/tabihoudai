@@ -32,6 +32,14 @@ public interface PlanReplyRepository extends JpaRepository<PlanReplyEntity, Long
     @Query("DELETE FROM PlanReplyEntity p WHERE p.planReplyIdx = :planIdx")
     void deleteByPlanReplyIdx(@Param("planIdx")long planIdx);
 
+    //댓글 내용, 작성자, 작성시간, 제목 순
+    @Query(value = "SELECT pr.content, pr.user_idx, pr.reg_date, p.title, p.plan_idx " +
+            "FROM PLAN_REPLY pr, PLAN p " +
+            "WHERE p.USER_IDX = :userIdx " +
+            "AND pr.PLAN_IDX = p.PLAN_IDX " +
+            "AND pr.IS_READ != 1", nativeQuery = true)
+    Object[] isRead(@Param("userIdx") String userIdx);
+
     default PlanReplyDTO planReplyEntityToDTO(PlanReplyEntity reply, UsersEntity user, PlanEntity plan) {
         return PlanReplyDTO.builder()
                 .userIdx(user.getUserIdx())

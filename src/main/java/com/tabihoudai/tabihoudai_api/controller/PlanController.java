@@ -133,5 +133,11 @@ public class PlanController {
         BlameEntity blameEntity = blameDTO.blameDtoTOEntity(blameDTO.getCategory());
         blameRepository.save(blameEntity);
     }
+
+    @GetMapping("/alert")
+    //댓글 내용, 작성자, 작성시간, 제목 순
+    public Object[] planReplyAlert(@RequestParam String userIdx){
+        return planReplyRepository.isRead(userIdx);
+    }
 }
 
