@@ -14,10 +14,3 @@ spring:
         format_sql: ture
     show-sql: true
     database: oracle
-
-application:
-  security:
-    jwt:
-      secretKey: 25432A462D4A614E645267556A586E3272357538782F413F4428472B4B625065
-      expiration: 900000 # 15m
-      refreshExpiration: 86400000 # 24h
