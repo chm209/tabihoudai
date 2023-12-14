@@ -26,10 +26,12 @@ public class SecurityConfig {
 
 
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf()
+                .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("")
-                .permitAll()
+                .requestMatchers("/map/detail/reply").hasRole("USER")
+                .requestMatchers("/**").permitAll()
+                .requestMatchers("/auth/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

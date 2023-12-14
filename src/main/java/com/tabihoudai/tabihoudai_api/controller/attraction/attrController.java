@@ -31,14 +31,14 @@ public class attrController {
         return ResponseEntity.ok(attractionService.getAttrDetail(idx));
     }
 
-    @PostMapping("/detail")
+    @PostMapping("/detail/reply")
     public ResponseEntity replyRegister(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
                                         @RequestPart(value = "file",required = false)MultipartFile multipartFile,
                                         @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){
         return ResponseEntity.ok(attrReplyService.replyRegister(attrReplyDto,multipartFile,replyRequestDTO));
     }
 
-    @DeleteMapping("/detail")
+    @DeleteMapping("/detail/reply")
     public ResponseEntity replyRemove(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
                                       @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){
         return ResponseEntity.ok(attrReplyService.replyDelete(attrReplyDto,replyRequestDTO));
@@ -62,7 +62,7 @@ public class attrController {
                 ReplyRequestDTO.builder().attrIdx(attrIdx).page(page).sort(sort).asc(asc).build()));
     }
 
-    @PutMapping("/detail")
+    @PutMapping("/detail/reply")
     public ResponseEntity replyUpdate(@RequestPart(value = "attrReplyDto") AttrReplyDto attrReplyDto,
                                       @RequestPart(value = "file",required = false)MultipartFile multipartFile,
                                       @RequestPart(value = "replyRequestDto")ReplyRequestDTO replyRequestDTO){

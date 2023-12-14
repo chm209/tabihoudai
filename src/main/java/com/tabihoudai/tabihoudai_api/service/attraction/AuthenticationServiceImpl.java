@@ -29,9 +29,9 @@ public class AuthenticationServiceImpl implements AuthenticationService{
                 .block(request.getBlock())
                 .profile(request.getProfile())
                 .nickname(request.getNickname())
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
-        repository.save(user);
+        repository.saveUser(user.getBlock(), user.getEmail(), user.getNickname(), user.getProfile(), user.getPw(), user.getRole());
         var jwtToken = jwtService.generateToken(user);
 
         return AuthResponseDTO.builder()
