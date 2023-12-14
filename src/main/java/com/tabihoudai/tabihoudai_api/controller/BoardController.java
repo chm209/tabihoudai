@@ -34,7 +34,7 @@ public class BoardController {
         return boardService.getSearchList(requestDTO, keyword, type);
     }
 
-    @GetMapping("/{boardIdx}")
+    @GetMapping("/view/{boardIdx}")
     public ResponseEntity viewBoard(@PathVariable long boardIdx){
         log.info("boardIdx = " + boardIdx);
         return ResponseEntity.status(HttpStatus.OK).body(boardService.get(boardIdx).get(0));

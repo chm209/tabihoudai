@@ -20,23 +20,46 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtExceptionFilter jwtExceptionFilter;
 
+//    @Bean
+//    public WebSecurityCustomizer configure(){
+//        return (web -> web.ignoring().requestMatchers(PathRequest.toH2Console()));
+//    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(handlingConfigurer -> handlingConfigurer.authenticationEntryPoint(jwtAuthenticationFilter))
                 .authorizeHttpRequests(authorize ->
-                authorize
-                        .requestMatchers("/api/board/list").permitAll()
-                        .requestMatchers("/api/board/search").permitAll()
-                        .requestMatchers("/api/board/view").permitAll()
-                        .requestMatchers("/api/board/write").hasRole("USER")
-                        .requestMatchers("/api/board/delete").hasRole("USER")
-                        .requestMatchers("/api/board/modify").hasRole("USER")
-                        .requestMatchers("/api/board/report").hasRole("USER")
-                        .requestMatchers("/sample/admin").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+                        authorize
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/board").permitAll()
+                                .requestMatchers("/api/reply").hasRole("USER")
+                                .requestMatchers("/api/like").hasRole("USER")
+                                .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(authorize ->
+//                authorize
+//                        .requestMatchers("/api/auth/**").permitAll()
+////                        .requestMatchers("/api/board/list").permitAll()
+////                        .requestMatchers("/api/board/search").permitAll()
+////                        .requestMatchers("/api/board/view").permitAll()
+////                        .requestMatchers("/api/board/write").hasRole("USER")
+////                        .requestMatchers("/api/board/delete").hasRole("USER")
+////                        .requestMatchers("/api/board/modify").hasRole("USER")
+////                        .requestMatchers("/api/board/report").hasRole("USER")
+////                        //.requestMatchers("/sample/admin").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
+//                )
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
+//        return http.build();
+//    }
 }
